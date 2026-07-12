@@ -1,0 +1,4 @@
+lineId,labelJa,labelKo,sortOrder
+response,依頼・障害対応,의뢰·장애 대응,1
+execution,作業実施（手順書→設計書）,작업 수행 (절차서→설계서),2
+stability,安定運用（監視→予防→変更管理）,안정 운용 (감시→예방→변경관리),3

@@ -3,6 +3,7 @@ import {
   parseAbilities,
   parseDependencies,
   parseEvidences,
+  parseGrowthLines,
   parseRoles,
   validateReferences,
 } from './loadLadderData';
@@ -19,8 +20,14 @@ const depsCsv = [
 ].join('\n');
 
 const abilitiesCsv = [
-  'abilityId,roleId,statement,statementKo,roleStatement,roleStatementKo,toolsReference,weight,isCommon,commonGroupId,sortOrder',
-  'a1,r1,"問い合わせを受け付け、連携できる","문의를 접수, 전달할 수 있다",役割文,역할문,Outlook|Teams,1,true,grp-1,1',
+  'abilityId,roleId,statement,statementKo,roleStatement,roleStatementKo,toolsReference,weight,isCommon,commonGroupId,sortOrder,growthLineId',
+  'a1,r1,"問い合わせを受け付け、連携できる","문의를 접수, 전달할 수 있다",役割文,역할문,Outlook|Teams,1,true,grp-1,1,response',
+].join('\n');
+
+const growthLinesCsv = [
+  'lineId,labelJa,labelKo,sortOrder',
+  'response,依頼・障害対応,의뢰·장애 대응,1',
+  'execution,作業実施（手順書→設計書）,작업 수행 (절차서→설계서),2',
 ].join('\n');
 
 const evidencesCsv = [
@@ -79,6 +86,7 @@ describe('loadLadderData の CSV 変換 (CSV が DB — 確定 #24)', () => {
       dependencies: parseDependencies(depsCsv),
       abilities: parseAbilities(abilitiesCsv),
       evidences: parseEvidences(evidencesCsv.replace(/a1,/g, 'aX,').replace('a1-e1,aX', 'a1-e1,aX')),
+      growthLines: parseGrowthLines(growthLinesCsv),
     };
     expect(() => validateReferences(data)).toThrow(/abilityId/);
   });
@@ -89,7 +97,49 @@ describe('loadLadderData の CSV 変換 (CSV が DB — 確定 #24)', () => {
       dependencies: parseDependencies(depsCsv),
       abilities: parseAbilities(abilitiesCsv),
       evidences: parseEvidences(evidencesCsv),
+      growthLines: parseGrowthLines(growthLinesCsv),
     };
     expect(() => validateReferences(data)).not.toThrow();
+  });
+
+  // ------------------------------------------------------------------
+  // 業務ロードマップ (v2.6 — AC-11.1/11.2/AC-11.12)
+  // ------------------------------------------------------------------
+
+  it('growth-lines: 型変換と任意 labelKo', () => {
+    const lines = parseGrowthLines(growthLinesCsv);
+    expect(lines).toHaveLength(2);
+    expect(lines[0]).toMatchObject({ lineId: 'response', labelJa: '依頼・障害対応', sortOrder: 1 });
+    expect(lines[0].labelKo).toBe('의뢰·장애 대응');
+    const noKo = parseGrowthLines('lineId,labelJa,sortOrder\nx,ラベル,1');
+    expect(noKo[0].labelKo).toBeUndefined();
+  });
+
+  it('growth-lines: lineId 重複はエラー', () => {
+    const dup = growthLinesCsv + '\n' + growthLinesCsv.split('\n')[1];
+    expect(() => parseGrowthLines(dup)).toThrow(/重複/);
+  });
+
+  it('abilities: growthLineId は任意 (空なら undefined = ラインなし)', () => {
+    const noLine = parseAbilities(abilitiesCsv.replace(',1,response', ',1,'));
+    expect(noLine[0].growthLineId).toBeUndefined();
+    // 列自体が無い旧フォーマットも許容 (シート移行中)
+    const legacy = parseAbilities(
+      abilitiesCsv
+        .replace(',sortOrder,growthLineId', ',sortOrder')
+        .replace(',1,response', ',1'),
+    );
+    expect(legacy[0].growthLineId).toBeUndefined();
+  });
+
+  it('参照整合性: growthLineId が growth-lines に無いとエラー (AC-11.2)', () => {
+    const data = {
+      roles: parseRoles(rolesCsv),
+      dependencies: parseDependencies(depsCsv),
+      abilities: parseAbilities(abilitiesCsv.replace(',1,response', ',1,unknown-line')),
+      evidences: parseEvidences(evidencesCsv),
+      growthLines: parseGrowthLines(growthLinesCsv),
+    };
+    expect(() => validateReferences(data)).toThrow(/growthLineId/);
   });
 });

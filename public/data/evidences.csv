@@ -31,8 +31,8 @@ infra-server-sp-2-a3-e3,infra-server-sp-2-a3,確認結果から正常・異常�
 infra-server-sp-2-a3-e4,infra-server-sp-2-a3,手順書に沿った一次確認を実務で行った経験がある,절차서에 따른 1차 확인을 실무로 수행한 경험이 있다,experience,incident|procedure,,,4
 infra-server-sp-2-a4-e1,infra-server-sp-2-a4,障害発生時の対応手順を理解している,장애 발생 시 대응 절차를 이해하고 있다,knowledge,incident|procedure,,,1
 infra-server-sp-2-a4-e2,infra-server-sp-2-a4,手順書に沿って初動対応を実施できる,절차서에 따라 초동 대응을 수행할 수 있다,practice,incident|procedure,,,2
-infra-server-sp-2-a4-e3,infra-server-sp-2-a4,引き継ぎに必要な情報（事象・時刻・実施内容）を整理できる,인계에 필요한 정보(사상·시각·수행 내용)를 정리할 수 있다,practice,escalation|reporting,引き継ぎメモに何を書いているか説明できますか？,인계 메모에 무엇을 쓰는지 설명할 수 있나요?,3
-infra-server-sp-2-a4-e4,infra-server-sp-2-a4,二次対応者へエスカレーションした経験がある,2차 대응자에게 에스컬레이션한 경험이 있다,experience,escalation,,,4
+infra-server-sp-2-a5-e1,infra-server-sp-2-a5,引き継ぎに必要な情報（事象・時刻・実施内容）を整理できる,인계에 필요한 정보(사상·시각·수행 내용)를 정리할 수 있다,practice,escalation|reporting,引き継ぎメモに何を書いているか説明できますか？,인계 메모에 무엇을 쓰는지 설명할 수 있나요?,1
+infra-server-sp-2-a5-e2,infra-server-sp-2-a5,二次対応者へエスカレーションした経験がある,2차 대응자에게 에스컬레이션한 경험이 있다,experience,escalation,,,2
 infra-server-sp-3-a1-e1,infra-server-sp-3-a1,OSやミドルウェアの基本的な構成を理解している,OS와 미들웨어의 기본 구성을 이해하고 있다,knowledge,knowledge-base,,,1
 infra-server-sp-3-a1-e2,infra-server-sp-3-a1,事象から調査対象のあたりを付けられる,사상에서 조사 대상의 감을 잡을 수 있다,knowledge,investigation,最近の障害で、どこから調べ始めたか思い出せますか？,최근 장애에서 어디부터 조사하기 시작했는지 떠올릴 수 있나요?,2
 infra-server-sp-3-a1-e3,infra-server-sp-3-a1,調査結果を報告書などにまとめられる,조사 결과를 보고서 등으로 정리할 수 있다,practice,investigation|reporting,,,3
@@ -45,10 +45,13 @@ infra-server-sp-3-a3-e1,infra-server-sp-3-a3,作業の影響範囲を事前に�
 infra-server-sp-3-a3-e2,infra-server-sp-3-a3,サービスの再起動や設定変更を安全に実施できる,서비스 재기동과 설정 변경을 안전하게 수행할 수 있다,practice,maintenance|config,,,2
 infra-server-sp-3-a3-e3,infra-server-sp-3-a3,作業前後の状態確認と記録ができる,작업 전후 상태 확인과 기록을 할 수 있다,practice,maintenance|reporting,,,3
 infra-server-sp-3-a3-e4,infra-server-sp-3-a3,運用保守作業を継続的に担当した経験がある,운용보수 작업을 지속적으로 담당한 경험이 있다,experience,maintenance,,,4
-infra-server-sp-3-a4-e1,infra-server-sp-3-a4,保守・リリース作業の手順と注意点を理解している,보수·릴리스 작업의 절차와 주의점을 이해하고 있다,knowledge,release|procedure,,,1
-infra-server-sp-3-a4-e2,infra-server-sp-3-a4,更新作業を手順書に沿って実施できる,업데이트 작업을 절차서에 따라 수행할 수 있다,practice,release|procedure,,,2
-infra-server-sp-3-a4-e3,infra-server-sp-3-a4,作業後の確認と、切り戻し判断の基準を理解している,작업 후 확인과 롤백 판단 기준을 이해하고 있다,knowledge,release|verification,どんな場合に切り戻すか、判断の条件を説明できますか？,어떤 경우에 롤백하는지 판단 조건을 설명할 수 있나요?,3
-infra-server-sp-3-a4-e4,infra-server-sp-3-a4,定期保守またはリリース対応を担当した経験がある,정기 보수 또는 릴리스 대응을 담당한 경험이 있다,experience,release,,,4
+infra-server-sp-3-a4-e1,infra-server-sp-3-a4,定期保守作業の手順と注意点を理解している,정기 보수 작업의 절차와 주의점을 이해하고 있다,knowledge,maintenance|procedure,,,1
+infra-server-sp-3-a4-e2,infra-server-sp-3-a4,定期保守作業を手順書に沿って実施できる,정기 보수 작업을 절차서에 따라 수행할 수 있다,practice,maintenance|procedure,,,2
+infra-server-sp-3-a4-e3,infra-server-sp-3-a4,定期保守を担当した経験がある,정기 보수를 담당한 경험이 있다,experience,maintenance,どの周期で・どんな保守作業を担当したか説明できますか？,어떤 주기로·어떤 보수 작업을 담당했는지 설명할 수 있나요?,3
+infra-server-sp-3-a5-e1,infra-server-sp-3-a5,パッチ・リリース作業の手順と注意点を理解している,패치·릴리스 작업의 절차와 주의점을 이해하고 있다,knowledge,release|procedure,,,1
+infra-server-sp-3-a5-e2,infra-server-sp-3-a5,更新作業を手順書に沿って実施できる,업데이트 작업을 절차서에 따라 수행할 수 있다,practice,release|procedure,,,2
+infra-server-sp-3-a5-e3,infra-server-sp-3-a5,作業後の確認と、切り戻し判断の基準を理解している,작업 후 확인과 롤백 판단 기준을 이해하고 있다,knowledge,release|verification,どんな場合に切り戻すか、判断の条件を説明できますか？,어떤 경우에 롤백하는지 판단 조건을 설명할 수 있나요?,3
+infra-server-sp-3-a5-e4,infra-server-sp-3-a5,パッチ適用またはリリース対応を担当した経験がある,패치 적용 또는 릴리스 대응을 담당한 경험이 있다,experience,release,,,4
 infra-server-sp-4-a1-e1,infra-server-sp-4-a1,手順書に沿って、サーバーの基本的な設定作業ができる,절차서에 따라 서버의 기본 설정 작업을 할 수 있다,practice,build|procedure,,,1
 infra-server-sp-4-a1-e2,infra-server-sp-4-a1,設計書・パラメータシートを読み、作業内容を把握できる,설계서·파라미터시트를 읽고 작업 내용을 파악할 수 있다,knowledge,design-read,,,2
 infra-server-sp-4-a1-e3,infra-server-sp-4-a1,設定項目の意味を理解し、記載の誤りに気づける,설정 항목의 의미를 이해하고 기재 오류를 알아챌 수 있다,knowledge,design-read|config,設計書の記載ミスに気づいた経験を挙げられますか？,설계서의 기재 실수를 알아챈 경험을 들 수 있나요?,3

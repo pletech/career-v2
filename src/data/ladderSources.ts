@@ -27,14 +27,22 @@ export interface LadderSourceUrls {
   dependenciesCsvUrl: string;
   abilitiesCsvUrl: string;
   evidencesCsvUrl: string;
+  /**
+   * 業務ロードマップの成長ライン定義 (v2.6)。
+   * 空文字 = このソースにはまだ存在しない (シートにタブを作成したら gid を設定)。
+   * 空の場合、ローダーはローカル CSV の growth-lines を代わりに読む。
+   */
+  growthLinesCsvUrl: string;
 }
 
-/** 優先: Google スプレッドシート (4タブを gid で指定) */
+/** 優先: Google スプレッドシート (タブを gid で指定) */
 export const SHEET_SOURCES: LadderSourceUrls = {
   rolesCsvUrl: gviz('1312172290'),
   dependenciesCsvUrl: gviz('2061670704'),
   abilitiesCsvUrl: gviz('1830285706'),
   evidencesCsvUrl: gviz('439744095'),
+  // TODO: シートに growth-lines タブを作成したら gviz('<gid>') に置き換える
+  growthLinesCsvUrl: '',
 };
 
 /** フォールバック: ビルドに同梱したローカル CSV */
@@ -43,4 +51,5 @@ export const LOCAL_SOURCES: LadderSourceUrls = {
   dependenciesCsvUrl: `${base}data/dependencies.csv`,
   abilitiesCsvUrl: `${base}data/abilities.csv`,
   evidencesCsvUrl: `${base}data/evidences.csv`,
+  growthLinesCsvUrl: `${base}data/growth-lines.csv`,
 };

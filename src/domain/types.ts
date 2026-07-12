@@ -70,9 +70,30 @@ export interface Ability {
   commonGroupId?: string;
   /** 段内の表示順 */
   sortOrder: number;
+  /**
+   * 業務ロードマップの成長ライン (v2.6 — 確定 #26)。
+   * growth-lines の lineId を参照する。空 = 未配属 (「ラインなし」行に表示)。
+   */
+  growthLineId?: string;
   // 韓国語表示 (作業用)
   statementKo?: string;
   roleStatementKo?: string;
+}
+
+// ---------------------------------------------------------------------------
+// growth-lines: 業務ロードマップの成長ライン (v2.6)
+// ---------------------------------------------------------------------------
+
+/**
+ * 業務ロードマップ (行=ライン, 列=段階) の行定義。
+ * ラインは担当区間内で途切れない (階段の連続性 > MECE — 企画書 §0-D.3)。
+ */
+export interface GrowthLine {
+  lineId: string;
+  labelJa: string;
+  sortOrder: number;
+  // 韓国語表示 (作業用)
+  labelKo?: string;
 }
 
 // ---------------------------------------------------------------------------

@@ -17,6 +17,7 @@ import type {
   DepType,
   Evidence,
   EvidenceType,
+  GrowthLine,
   Role,
   RoleStatus,
   TrackId,
@@ -29,6 +30,7 @@ export interface LadderDataSet {
   dependencies: Dependency[];
   abilities: Ability[];
   evidences: Evidence[];
+  growthLines: GrowthLine[];
 }
 
 // ---------------------------------------------------------------------------
@@ -153,6 +155,8 @@ export function parseAbilities(csvText: string): Ability[] {
       isCommon: toBool(r.isCommon ?? ''),
       commonGroupId: opt(r.commonGroupId ?? ''),
       sortOrder: toNumber(r.sortOrder, 'sortOrder', 'abilities.csv', abilityId),
+      // v2.6: 列自体が無いシートも許容する (移行中は「ラインなし」扱い)
+      growthLineId: opt(r.growthLineId ?? ''),
       statementKo: opt(r.statementKo ?? ''),
       roleStatementKo: opt(r.roleStatementKo ?? ''),
     } satisfies Ability;
@@ -185,13 +189,37 @@ export function parseEvidences(csvText: string): Evidence[] {
   return evidences;
 }
 
-/** 参照整合性の検証 (ability→role, evidence→ability, dependency→role) */
+/** growth-lines (v2.6): 業務ロードマップの成長ライン定義 */
+export function parseGrowthLines(csvText: string): GrowthLine[] {
+  const rows = csvToObjects(csvText);
+  requireHeaders(rows, ['lineId', 'labelJa', 'sortOrder'], 'growth-lines.csv');
+  const lines = rows.map((r) => {
+    const lineId = requireValue(r, 'lineId', 'growth-lines.csv', r.lineId || '(空)');
+    return {
+      lineId,
+      labelJa: requireValue(r, 'labelJa', 'growth-lines.csv', lineId),
+      sortOrder: toNumber(r.sortOrder, 'sortOrder', 'growth-lines.csv', lineId),
+      labelKo: opt(r.labelKo ?? ''),
+    } satisfies GrowthLine;
+  });
+  requireUnique(lines.map((l) => l.lineId), 'growth-lines.csv');
+  return lines;
+}
+
+/** 参照整合性の検証 (ability→role, evidence→ability, dependency→role, ability→growthLine) */
 export function validateReferences(data: LadderDataSet): void {
   const roleIds = new Set(data.roles.map((r) => r.roleId));
   const abilityIds = new Set(data.abilities.map((a) => a.abilityId));
+  const lineIds = new Set(data.growthLines.map((l) => l.lineId));
   for (const a of data.abilities) {
     if (!roleIds.has(a.roleId)) {
       throw new LadderDataError(`abilities.csv: ${a.abilityId} の roleId が roles.csv に存在しません: ${a.roleId}`);
+    }
+    // growthLineId は空を許容 (「ラインなし」行)。値がある場合のみ検証する (AC-11.2)
+    if (a.growthLineId && !lineIds.has(a.growthLineId)) {
+      throw new LadderDataError(
+        `abilities.csv: ${a.abilityId} の growthLineId が growth-lines.csv に存在しません: ${a.growthLineId}`,
+      );
     }
   }
   for (const e of data.evidences) {
@@ -223,17 +251,22 @@ async function fetchText(url: string): Promise<string> {
 }
 
 async function loadFrom(src: LadderSourceUrls): Promise<LadderDataSet> {
-  const [rolesText, depsText, abilitiesText, evidencesText] = await Promise.all([
+  // growth-lines はソースに URL が無ければローカル CSV を読む
+  // (シートにタブを作るまでの移行措置 — ladderSources.ts の TODO 参照)
+  const growthLinesUrl = src.growthLinesCsvUrl || LOCAL_SOURCES.growthLinesCsvUrl;
+  const [rolesText, depsText, abilitiesText, evidencesText, growthLinesText] = await Promise.all([
     fetchText(src.rolesCsvUrl),
     fetchText(src.dependenciesCsvUrl),
     fetchText(src.abilitiesCsvUrl),
     fetchText(src.evidencesCsvUrl),
+    fetchText(growthLinesUrl),
   ]);
   const data: LadderDataSet = {
     roles: parseRoles(rolesText),
     dependencies: parseDependencies(depsText),
     abilities: parseAbilities(abilitiesText),
     evidences: parseEvidences(evidencesText),
+    growthLines: parseGrowthLines(growthLinesText),
   };
   validateReferences(data);
   return data;

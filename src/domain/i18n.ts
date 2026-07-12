@@ -58,6 +58,8 @@ interface UiStrings {
   stagePrefix: string; // 段階
   preparingNote: string;
   langLabel: string;
+  roadmapLegend: string;
+  noLine: string;
 }
 
 export const STRINGS: Record<Lang, UiStrings> = {
@@ -105,6 +107,8 @@ export const STRINGS: Record<Lang, UiStrings> = {
     stagePrefix: '段階',
     preparingNote: '「準備中」の役割は、階段の段として表示されますが、チェック項目は後日公開されます。',
     langLabel: '表示言語',
+    roadmapLegend: '行 = 業務の成長ライン ／ 列 = 段階（役割）。同じ業務が段階とともにどう深まるかを一望できます。',
+    noLine: '（ラインなし）',
   },
   ko: {
     disclaimer:
@@ -148,6 +152,8 @@ export const STRINGS: Record<Lang, UiStrings> = {
     stagePrefix: '단계',
     preparingNote: '「준비 중」인 역할은 계단의 단으로 표시되지만, 체크 항목은 추후 공개됩니다.',
     langLabel: '표시 언어',
+    roadmapLegend: '행 = 업무 성장 라인 / 열 = 단계(역할). 같은 업무가 단계에 따라 어떻게 깊어지는지 한눈에 볼 수 있습니다.',
+    noLine: '(라인 없음)',
   },
 };
 

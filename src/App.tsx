@@ -12,8 +12,11 @@ import { TRACK_LABELS, type CareerDataSet } from './types/career';
 import { loadCareerDataFromSheets } from './data/loadCareerDataFromSheets';
 import LadderScreen from './features/ladder/LadderScreen';
 
-/** 階段ビュー (v2, 育成面談用) を既定とし、既存の全体マップは補助画面として残す */
-type ViewMode = 'ladder' | 'map';
+/**
+ * 階段ビュー (v2, 育成面談用) を既定とし、既存の全体マップは補助画面として残す。
+ * roadmap = 業務ロードマップ (v2.6): 行=業務の成長ライン × 列=段階のマトリクス。
+ */
+type ViewMode = 'ladder' | 'roadmap' | 'map';
 
 const App: React.FC = () => {
   const [viewMode, setViewMode] = useState<ViewMode>('ladder');
@@ -167,7 +170,11 @@ const App: React.FC = () => {
             <div className="min-w-0">
               <h1 className="text-base md:text-xl font-bold text-gray-800 tracking-tight truncate leading-tight">Career Path</h1>
               <p className="text-[9px] md:text-[11px] text-gray-400 truncate">
-                {viewMode === 'ladder' ? '階段型キャリアパス（育成面談用）' : 'キャリアパスモデル（育成面談用）'}
+                {viewMode === 'ladder'
+                  ? '階段型キャリアパス（育成面談用）'
+                  : viewMode === 'roadmap'
+                    ? '業務ロードマップ（業務×段階の成長マップ）'
+                    : 'キャリアパスモデル（育成面談用）'}
               </p>
             </div>
             <div className="inline-flex shrink-0 items-center gap-2">
@@ -182,6 +189,17 @@ const App: React.FC = () => {
                   }`}
                 >
                   階段ビュー
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={viewMode === 'roadmap'}
+                  onClick={() => setViewMode('roadmap')}
+                  className={`rounded-md px-2.5 py-1 text-[11px] md:text-xs font-medium transition-colors ${
+                    viewMode === 'roadmap' ? 'bg-white text-cyan-700 shadow-sm' : 'text-gray-500'
+                  }`}
+                >
+                  業務ロードマップ
                 </button>
                 <button
                   type="button"
@@ -240,8 +258,11 @@ const App: React.FC = () => {
         </div>
       </header>
 
-      {viewMode === 'ladder' ? (
-        <LadderScreen />
+      {viewMode === 'ladder' || viewMode === 'roadmap' ? (
+        <LadderScreen
+          mode={viewMode === 'roadmap' ? 'roadmap' : 'steps'}
+          onRequestSteps={() => setViewMode('ladder')}
+        />
       ) : (
         <>
       {inlineErrorBanner}

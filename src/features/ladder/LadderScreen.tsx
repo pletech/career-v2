@@ -5,6 +5,7 @@ import { loc } from '../../domain/i18n';
 import { loadLadderData, type LadderDataSet } from '../../data/loadLadderData';
 import { DEFAULT_TARGET, useLadderState } from '../../state/useLadderState';
 import InterviewPanel from '../interview/InterviewPanel';
+import RoadmapView from '../roadmap/RoadmapView';
 import TargetSelector from '../selector/TargetSelector';
 import LadderView from './LadderView';
 
@@ -18,7 +19,17 @@ import LadderView from './LadderView';
  * - 表示言語: 日本語 (正本) / 한국어 (作業用) — 確定 #21
  */
 
-const LadderScreen: React.FC = () => {
+interface LadderScreenProps {
+  /**
+   * steps = 階段ビュー (既定) / roadmap = 業務ロードマップ (v2.6)。
+   * データロード・チェック状態・言語を両ビューで共有するため、同じ画面が両モードを描画する。
+   */
+  mode?: 'steps' | 'roadmap';
+  /** ロードマップの能力クリック時に階段ビューへ戻すためのコールバック (AC-11.6) */
+  onRequestSteps?: () => void;
+}
+
+const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps', onRequestSteps }) => {
   const {
     targetRoleId,
     setTargetRoleId,
@@ -189,6 +200,31 @@ const LadderScreen: React.FC = () => {
             Retry
           </button>
         </div>
+      </div>
+    );
+  }
+
+  // ===================== 業務ロードマップ (v2.6) =====================
+  if (mode === 'roadmap') {
+    const categoryRoles = data.roles.filter(
+      (r) => r.category === (targetRole?.category ?? 'サーバー'),
+    );
+    return (
+      <div className="flex flex-1 overflow-hidden bg-gray-50">
+        <RoadmapView
+          roles={categoryRoles}
+          growthLines={data.growthLines}
+          abilities={data.abilities}
+          evidencesByAbility={evidencesByAbility}
+          evidenceChecks={evidenceChecks}
+          managerConfirms={managerConfirms}
+          lang={lang}
+          onSelectAbility={(abilityId) => {
+            // 閲覧専用: チェック操作は階段ビューに一元化 (AC-11.6)
+            setSelectedAbilityId(abilityId);
+            onRequestSteps?.();
+          }}
+        />
       </div>
     );
   }
