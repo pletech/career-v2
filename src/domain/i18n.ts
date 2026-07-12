@@ -107,7 +107,8 @@ export const STRINGS: Record<Lang, UiStrings> = {
     stagePrefix: '段階',
     preparingNote: '「準備中」の役割は、階段の段として表示されますが、チェック項目は後日公開されます。',
     langLabel: '表示言語',
-    roadmapLegend: '行 = 業務の成長ライン ／ 列 = 段階（役割）。同じ業務が段階とともにどう深まるかを一望できます。',
+    roadmapLegend:
+      '横 = 段階（役割）／ 縦 = 業務の高度さ。下ほど基礎的な業務、上ほど高度な業務です。段階が上がるにつれて、担う業務が左下から右上へ階段のように広がっていきます。',
     noLine: '（ラインなし）',
   },
   ko: {
@@ -152,7 +153,8 @@ export const STRINGS: Record<Lang, UiStrings> = {
     stagePrefix: '단계',
     preparingNote: '「준비 중」인 역할은 계단의 단으로 표시되지만, 체크 항목은 추후 공개됩니다.',
     langLabel: '표시 언어',
-    roadmapLegend: '행 = 업무 성장 라인 / 열 = 단계(역할). 같은 업무가 단계에 따라 어떻게 깊어지는지 한눈에 볼 수 있습니다.',
+    roadmapLegend:
+      '가로 = 단계(역할) / 세로 = 업무의 난이도. 아래일수록 기초 업무, 위일수록 고도의 업무입니다. 단계가 올라갈수록 담당 업무가 왼쪽 아래에서 오른쪽 위로 계단처럼 확장됩니다.',
     noLine: '(라인 없음)',
   },
 };
