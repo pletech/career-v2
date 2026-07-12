@@ -1,0 +1,7 @@
+﻿roleId,track,category,stageOrder,pathType,titleJa,shortLabel,summary,status,shortGoal,titleKo,shortLabelKo,summaryKo,shortGoalKo
+infra-server-common-1,infrastructure,サーバー,1,common,運用監視補助・ヘルプデスク,運用監視補助,問い合わせ対応、定型作業の支援、基本確認業務を通じて、運用現場を支える役割,published,運用現場の基本動作を身につける,운용감시 보조·헬프데스크,운용감시 보조,"문의 대응, 정형 작업 지원, 기본 확인 업무를 통해 운용 현장을 지원하는 역할",운용 현장의 기본 동작을 익힌다
+infra-server-sp-2,infrastructure,サーバー,2,specialist,運用監視（一次対応担当）,運用監視（一次対応）,監視システムを用いて異常を検知し、手順に沿って一次対応とエスカレーションを行う役割,published,監視と一次対応を一人で回せるようになる,운용감시 (1차대응 담당),운용감시 (1차대응),"감시 시스템으로 이상을 감지하고, 절차에 따라 1차 대응과 에스컬레이션을 수행하는 역할",감시와 1차 대응을 혼자 수행할 수 있게 된다
+infra-server-sp-3,infrastructure,サーバー,3,specialist,運用保守（二次対応・障害対応担当）,運用保守（二次対応）,障害の原因調査、ログ確認、設定確認、復旧対応など、より深い運用保守を担う役割,published,障害の原因調査と復旧対応を担えるようになる,운용보수 (2차대응·장애대응 담당),운용보수 (2차대응),"장애 원인 조사, 로그 확인, 설정 확인, 복구 대응 등 보다 깊은 운용보수를 담당하는 역할",장애 원인 조사와 복구 대응을 맡을 수 있게 된다
+infra-server-sp-4,infrastructure,サーバー,4,specialist,構築・設定（手順書・詳細設計書ベース構築担当）,構築・設定,設計情報やパラメータをもとに、インフラ環境を構築・設定する役割,published,設計書ベースの構築を担えるようになる,구축·설정 (절차서·상세설계서 기반 구축 담당),구축·설정,설계 정보와 파라미터를 바탕으로 인프라 환경을 구축·설정하는 역할,설계서 기반 구축을 맡을 수 있게 된다
+infra-server-sp-5,infrastructure,サーバー,5,specialist,システム設計（詳細設計・運用設計担当）,システム設計,,placeholder,,시스템 설계 (상세설계·운용설계 담당),시스템 설계,,
+infra-server-sp-6,infrastructure,サーバー,6,specialist,TL（テックリード／技術責任）,TL（技術責任）,,placeholder,,TL (테크리드/기술책임),TL (기술책임),,

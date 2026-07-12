@@ -1,0 +1,286 @@
+@import "tailwindcss";
+
+/* React Flow base styles */
+@import "@xyflow/react/dist/style.css";
+
+/* ============================================================
+   Global wireframe styles
+   ============================================================ */
+
+:root {
+  /* Track accent colors */
+  --color-dev: #3b82f6;          /* blue-500 */
+  --color-dev-light: #dbeafe;    /* blue-100 */
+  --color-dev-ring: #2563eb;     /* blue-600 */
+
+  --color-infra: #06b6d4;        /* cyan-500 */
+  --color-infra-light: #cffafe;  /* cyan-100 */
+  --color-infra-ring: #0891b2;   /* cyan-600 */
+
+  --color-its: #8b5cf6;          /* violet-500 */
+  --color-its-light: #ede9fe;    /* violet-100 */
+  --color-its-ring: #7c3aed;     /* violet-600 */
+
+  /* Path type fills */
+  --color-specialist: #f0f9ff;   /* sky-50 */
+  --color-manager: #fefce8;      /* yellow-50 */
+  --color-common: #ffffff;
+  --color-stage1: #F7FBF4;
+}
+
+html, body, #root {
+  height: 100dvh;
+  margin: 0;
+  font-family: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+/* ============================================================
+   React Flow customization
+   ============================================================ */
+
+.react-flow__pane {
+  background-color: #fafbfc !important;
+}
+
+.react-flow__attribution {
+  display: none !important;
+}
+
+.react-flow__edge-path {
+  stroke-width: 2;
+}
+
+.edge-normal .react-flow__edge-path {
+  stroke: #94a3b8;
+  stroke-width: 2;
+}
+
+.edge-optional .react-flow__edge-path {
+  stroke: #94a3b8;
+  stroke-width: 1.5;
+  stroke-dasharray: 6 4;
+}
+
+.edge-cross-track .react-flow__edge-path {
+  stroke: #f59e0b;
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+}
+
+/* ============================================================
+   Custom node styles
+   ============================================================ */
+
+.career-node {
+  box-sizing: border-box;
+  width: 200px;
+  border-radius: 8px;
+  border: 2px solid #e2e8f0;
+  padding: 10px 14px;
+  min-width: 200px;
+  max-width: 200px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-size: 13px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.career-node:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.10);
+  transform: translateY(-1px);
+}
+
+/* Track-specific border colors */
+.career-node.track-development {
+  border-color: var(--color-dev);
+}
+
+.career-node.track-infrastructure {
+  border-color: var(--color-infra);
+}
+
+.career-node.track-it-support {
+  border-color: var(--color-its);
+}
+
+/* Specialist / Manager background colors (development + infrastructure) */
+.career-node.track-development.path-specialist,
+.career-node.track-infrastructure.path-specialist {
+  background: var(--color-specialist);
+}
+
+.career-node.track-development.path-manager,
+.career-node.track-infrastructure.path-manager {
+  background: var(--color-manager);
+}
+
+/* Manager track nodes use a dashed outline */
+.career-node.path-manager {
+  border-style: dashed;
+}
+
+.career-node.track-development.path-common,
+.career-node.track-infrastructure.path-common {
+  background: var(--color-common);
+}
+
+/* Stage 1 nodes */
+.career-node.stage-1 {
+  background: var(--color-stage1) !important;
+  background-color: var(--color-stage1) !important;
+}
+
+/* 全ノード同幅のため stage-1.path-common の特別幅は不要 */
+
+.career-node.selected {
+  box-shadow: 0 0 0 3px var(--color-dev-ring), 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.career-node.selected.track-development {
+  box-shadow: 0 0 0 3px var(--color-dev-ring), 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.career-node.selected.track-infrastructure {
+  box-shadow: 0 0 0 3px var(--color-infra-ring), 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.career-node.selected.track-it-support {
+  box-shadow: 0 0 0 3px var(--color-its-ring), 0 4px 12px rgba(0,0,0,0.12);
+}
+
+/* Connected neighbor nodes */
+.career-node.connected {
+  box-shadow: 0 0 0 2px #fbbf24, 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.career-node.style-provisional {
+  opacity: 0.9;
+}
+
+/* Stage badge */
+.career-node .stage-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+}
+
+.career-node.track-development .stage-badge {
+  background: var(--color-dev-light);
+  color: var(--color-dev-ring);
+}
+
+.career-node.track-infrastructure .stage-badge {
+  background: var(--color-infra-light);
+  color: var(--color-infra-ring);
+}
+
+.career-node.track-it-support .stage-badge {
+  background: var(--color-its-light);
+  color: var(--color-its-ring);
+}
+
+/* Path type badge */
+.career-node .path-badge {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 500;
+  padding: 1px 5px;
+  border-radius: 3px;
+  margin-left: 4px;
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+/* ============================================================
+   Locked node styles (5〜6段階: 公開予定)
+   ============================================================ */
+
+.career-node.locked {
+  opacity: 0.42;
+  filter: grayscale(0.4);
+  border-style: dashed;
+  cursor: pointer;
+}
+
+.career-node.locked:hover {
+  opacity: 0.58;
+  transform: none;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.career-node.locked .node-title {
+  color: #94a3b8;
+}
+
+.career-node.locked .lock-icon {
+  font-size: 10px;
+  margin-left: 2px;
+  opacity: 0.8;
+}
+
+/* ============================================================
+   Scrollbar styling
+   ============================================================ */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f8fafc;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ============================================================
+   Stage lane overlay labels
+   ============================================================ */
+
+.stage-lane-label {
+  position: absolute;
+  left: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
+  writing-mode: horizontal-tb;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Small-screen refinements */
+@media (max-width: 768px) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+
+  /* 全ノード同幅（デスクトップと同比率） */
+  .career-node {
+    width: 188px;
+    min-width: 188px;
+    max-width: 188px;
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+}
+
+/* Keep long infrastructure network labels on one line */
+.career-node[data-node-id="infra-network-sp-2"] .node-title,
+.career-node[data-node-id="infra-network-sp-3"] .node-title {
+  white-space: nowrap;
+  font-size: 12px;
+  letter-spacing: -0.01em;
+}

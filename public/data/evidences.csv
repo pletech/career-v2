@@ -1,0 +1,69 @@
+﻿evidenceId,abilityId,statement,statementKo,evidenceType,workTags,selfCheckTip,selfCheckTipKo,sortOrder
+infra-server-common-1-a1-e1,infra-server-common-1-a1,よくある問い合わせの種類と、それぞれの引き継ぎ先を理解している,자주 오는 문의의 종류와 각각의 인계처를 이해하고 있다,knowledge,inquiry,,,1
+infra-server-common-1-a1-e2,infra-server-common-1-a1,問い合わせ内容を聞き取り、要点を記録できる,문의 내용을 청취하고 요점을 기록할 수 있다,practice,inquiry|reporting,,,2
+infra-server-common-1-a1-e3,infra-server-common-1-a1,引き継ぎに必要な情報を整理して伝えられる,인계에 필요한 정보를 정리해 전달할 수 있다,practice,inquiry|escalation,引き継ぎの際に、どんな情報をまとめて渡しているか説明できますか？,인계할 때 어떤 정보를 정리해 넘기는지 설명할 수 있나요?,3
+infra-server-common-1-a1-e4,infra-server-common-1-a1,問い合わせの受付から担当者への連携までを実務で行った経験がある,문의 접수부터 담당자 연계까지 실무로 수행한 경험이 있다,experience,inquiry,,,4
+infra-server-common-1-a2-e1,infra-server-common-1-a2,手順書を読み、作業の流れを把握できる,절차서를 읽고 작업 흐름을 파악할 수 있다,knowledge,procedure,,,1
+infra-server-common-1-a2-e2,infra-server-common-1-a2,手順書どおりに作業を実施し、結果を確認できる,절차서대로 작업을 수행하고 결과를 확인할 수 있다,practice,procedure,,,2
+infra-server-common-1-a2-e3,infra-server-common-1-a2,手順と実際の状況が異なる場合に、作業を止めて確認できる,절차와 실제 상황이 다를 때 작업을 멈추고 확인할 수 있다,knowledge,procedure,手順どおりに進まなかったとき、どう対応したか思い出せますか？,절차대로 진행되지 않았을 때 어떻게 대응했는지 떠올릴 수 있나요?,3
+infra-server-common-1-a2-e4,infra-server-common-1-a2,定型作業を継続的に担当した経験がある,정형 작업을 지속적으로 담당한 경험이 있다,experience,procedure,,,4
+infra-server-common-1-a3-e1,infra-server-common-1-a3,アカウント管理の基本的な仕組みを理解している,계정 관리의 기본 구조를 이해하고 있다,knowledge,account|knowledge-base,,,1
+infra-server-common-1-a3-e2,infra-server-common-1-a3,手順書に沿ってアカウントの登録・変更・削除を実施できる,절차서에 따라 계정 등록·변경·삭제를 수행할 수 있다,practice,account|procedure,,,2
+infra-server-common-1-a3-e3,infra-server-common-1-a3,アカウント対応を実務で行った経験がある,계정 대응을 실무로 수행한 경험이 있다,experience,account,対応したアカウント業務の種類と件数感を説明できますか？,대응한 계정 업무의 종류와 건수 감을 설명할 수 있나요?,3
+infra-server-common-1-a4-e1,infra-server-common-1-a4,初期設定の手順書を読み、作業内容を把握できる,초기 설정 절차서를 읽고 작업 내용을 파악할 수 있다,knowledge,kitting|procedure,,,1
+infra-server-common-1-a4-e2,infra-server-common-1-a4,手順書に沿ってPCや周辺機器の初期設定を実施できる,절차서에 따라 PC·주변기기 초기 설정을 수행할 수 있다,practice,kitting,,,2
+infra-server-common-1-a4-e3,infra-server-common-1-a4,設定後の動作確認と、不備があった場合の報告ができる,설정 후 동작 확인과 미비 시 보고를 할 수 있다,practice,kitting|verification,,,3
+infra-server-common-1-a4-e4,infra-server-common-1-a4,複数台の端末設定を担当した経験がある,여러 대의 단말 설정을 담당한 경험이 있다,experience,kitting,何台くらい・どんな流れで対応したか説明できますか？,몇 대 정도·어떤 흐름으로 대응했는지 설명할 수 있나요?,4
+infra-server-common-1-a5-e1,infra-server-common-1-a5,作業ログや対応記録を、決められた形式で残せる,작업 로그와 대응 기록을 정해진 형식으로 남길 수 있다,practice,reporting,,,1
+infra-server-common-1-a5-e2,infra-server-common-1-a5,実施した作業の内容を、第三者が分かる形で文書化できる,수행한 작업 내용을 제3자가 알 수 있는 형태로 문서화할 수 있다,practice,reporting,,,2
+infra-server-common-1-a5-e3,infra-server-common-1-a5,作業結果を口頭または文書で報告した経験がある,작업 결과를 구두 또는 문서로 보고한 경험이 있다,experience,reporting,誰に・どんな形式で報告したか、具体例を挙げられますか？,누구에게·어떤 형식으로 보고했는지 구체 사례를 들 수 있나요?,3
+infra-server-common-1-a5-e4,infra-server-common-1-a5,報告内容について質問された際に、経緯を説明できる,보고 내용에 대해 질문받았을 때 경위를 설명할 수 있다,knowledge,reporting,,,4
+infra-server-sp-2-a1-e1,infra-server-sp-2-a1,監視の仕組み（何を・どう監視しているか）を大まかに理解している,감시 구조(무엇을·어떻게 감시하는지)를 대략 이해하고 있다,knowledge,monitoring|knowledge-base,,,1
+infra-server-sp-2-a1-e2,infra-server-sp-2-a1,監視画面や通知から異常の発生に気づける,감시 화면과 알림에서 이상 발생을 알아챌 수 있다,practice,monitoring,,,2
+infra-server-sp-2-a1-e3,infra-server-sp-2-a1,アラートの対象（サーバー・サービス・ジョブなど）を特定できる,알람 대상(서버·서비스·잡 등)을 특정할 수 있다,practice,monitoring,,,3
+infra-server-sp-2-a1-e4,infra-server-sp-2-a1,監視業務を実務で担当した経験がある,감시 업무를 실무로 담당한 경험이 있다,experience,monitoring,どんな体制・シフトで監視していたか説明できますか？,어떤 체제·시프트로 감시했는지 설명할 수 있나요?,4
+infra-server-sp-2-a2-e1,infra-server-sp-2-a2,発報内容から、何がどこで起きたかを読み取れる,발보 내용에서 무엇이 어디서 발생했는지 읽어낼 수 있다,knowledge,incident|monitoring,,,1
+infra-server-sp-2-a2-e2,infra-server-sp-2-a2,影響範囲や緊急度を大まかに判断できる,영향 범위와 긴급도를 대략 판단할 수 있다,knowledge,incident,緊急度をどう判断したか、具体例を挙げられますか？,긴급도를 어떻게 판단했는지 구체 사례를 들 수 있나요?,2
+infra-server-sp-2-a2-e3,infra-server-sp-2-a2,障害の概要を整理し、関係者へ伝えた経験がある,장애 개요를 정리해 관계자에게 전달한 경험이 있다,experience,incident|reporting,,,3
+infra-server-sp-2-a3-e1,infra-server-sp-2-a3,基本的なログの見方を理解している,기본적인 로그 보는 법을 이해하고 있다,knowledge,log,,,1
+infra-server-sp-2-a3-e2,infra-server-sp-2-a3,サービスやプロセスの稼働状態を確認できる,서비스와 프로세스의 가동 상태를 확인할 수 있다,practice,incident,,,2
+infra-server-sp-2-a3-e3,infra-server-sp-2-a3,確認結果から正常・異常のあたりを付けられる,확인 결과로 정상·이상의 감을 잡을 수 있다,knowledge,incident,,,3
+infra-server-sp-2-a3-e4,infra-server-sp-2-a3,手順書に沿った一次確認を実務で行った経験がある,절차서에 따른 1차 확인을 실무로 수행한 경험이 있다,experience,incident|procedure,,,4
+infra-server-sp-2-a4-e1,infra-server-sp-2-a4,障害発生時の対応手順を理解している,장애 발생 시 대응 절차를 이해하고 있다,knowledge,incident|procedure,,,1
+infra-server-sp-2-a4-e2,infra-server-sp-2-a4,手順書に沿って初動対応を実施できる,절차서에 따라 초동 대응을 수행할 수 있다,practice,incident|procedure,,,2
+infra-server-sp-2-a4-e3,infra-server-sp-2-a4,引き継ぎに必要な情報（事象・時刻・実施内容）を整理できる,인계에 필요한 정보(사상·시각·수행 내용)를 정리할 수 있다,practice,escalation|reporting,引き継ぎメモに何を書いているか説明できますか？,인계 메모에 무엇을 쓰는지 설명할 수 있나요?,3
+infra-server-sp-2-a4-e4,infra-server-sp-2-a4,二次対応者へエスカレーションした経験がある,2차 대응자에게 에스컬레이션한 경험이 있다,experience,escalation,,,4
+infra-server-sp-3-a1-e1,infra-server-sp-3-a1,OSやミドルウェアの基本的な構成を理解している,OS와 미들웨어의 기본 구성을 이해하고 있다,knowledge,knowledge-base,,,1
+infra-server-sp-3-a1-e2,infra-server-sp-3-a1,事象から調査対象のあたりを付けられる,사상에서 조사 대상의 감을 잡을 수 있다,knowledge,investigation,最近の障害で、どこから調べ始めたか思い出せますか？,최근 장애에서 어디부터 조사하기 시작했는지 떠올릴 수 있나요?,2
+infra-server-sp-3-a1-e3,infra-server-sp-3-a1,調査結果を報告書などにまとめられる,조사 결과를 보고서 등으로 정리할 수 있다,practice,investigation|reporting,,,3
+infra-server-sp-3-a1-e4,infra-server-sp-3-a1,障害調査を担当者として実施した経験がある,장애 조사를 담당자로서 수행한 경험이 있다,experience,investigation,,,4
+infra-server-sp-3-a2-e1,infra-server-sp-3-a2,ログから異常箇所や時系列を読み取れる,로그에서 이상 지점과 시계열을 읽어낼 수 있다,knowledge,log,,,1
+infra-server-sp-3-a2-e2,infra-server-sp-3-a2,設定内容を確認し、想定と異なる箇所に気づける,설정 내용을 확인해 예상과 다른 부분을 알아챌 수 있다,practice,config,,,2
+infra-server-sp-3-a2-e3,infra-server-sp-3-a2,切り分けの結果から原因の仮説を立てられる,판별 결과로 원인 가설을 세울 수 있다,knowledge,investigation,,,3
+infra-server-sp-3-a2-e4,infra-server-sp-3-a2,障害原因の切り分けを自分で完了した経験がある,장애 원인 판별을 스스로 완료한 경험이 있다,experience,investigation,印象に残っている障害と、切り分けの流れを説明できますか？,인상에 남는 장애와 판별 흐름을 설명할 수 있나요?,4
+infra-server-sp-3-a3-e1,infra-server-sp-3-a3,作業の影響範囲を事前に確認できる,작업의 영향 범위를 사전에 확인할 수 있다,knowledge,maintenance,,,1
+infra-server-sp-3-a3-e2,infra-server-sp-3-a3,サービスの再起動や設定変更を安全に実施できる,서비스 재기동과 설정 변경을 안전하게 수행할 수 있다,practice,maintenance|config,,,2
+infra-server-sp-3-a3-e3,infra-server-sp-3-a3,作業前後の状態確認と記録ができる,작업 전후 상태 확인과 기록을 할 수 있다,practice,maintenance|reporting,,,3
+infra-server-sp-3-a3-e4,infra-server-sp-3-a3,運用保守作業を継続的に担当した経験がある,운용보수 작업을 지속적으로 담당한 경험이 있다,experience,maintenance,,,4
+infra-server-sp-3-a4-e1,infra-server-sp-3-a4,保守・リリース作業の手順と注意点を理解している,보수·릴리스 작업의 절차와 주의점을 이해하고 있다,knowledge,release|procedure,,,1
+infra-server-sp-3-a4-e2,infra-server-sp-3-a4,更新作業を手順書に沿って実施できる,업데이트 작업을 절차서에 따라 수행할 수 있다,practice,release|procedure,,,2
+infra-server-sp-3-a4-e3,infra-server-sp-3-a4,作業後の確認と、切り戻し判断の基準を理解している,작업 후 확인과 롤백 판단 기준을 이해하고 있다,knowledge,release|verification,どんな場合に切り戻すか、判断の条件を説明できますか？,어떤 경우에 롤백하는지 판단 조건을 설명할 수 있나요?,3
+infra-server-sp-3-a4-e4,infra-server-sp-3-a4,定期保守またはリリース対応を担当した経験がある,정기 보수 또는 릴리스 대응을 담당한 경험이 있다,experience,release,,,4
+infra-server-sp-4-a1-e1,infra-server-sp-4-a1,手順書に沿って、サーバーの基本的な設定作業ができる,절차서에 따라 서버의 기본 설정 작업을 할 수 있다,practice,build|procedure,,,1
+infra-server-sp-4-a1-e2,infra-server-sp-4-a1,設計書・パラメータシートを読み、作業内容を把握できる,설계서·파라미터시트를 읽고 작업 내용을 파악할 수 있다,knowledge,design-read,,,2
+infra-server-sp-4-a1-e3,infra-server-sp-4-a1,設定項目の意味を理解し、記載の誤りに気づける,설정 항목의 의미를 이해하고 기재 오류를 알아챌 수 있다,knowledge,design-read|config,設計書の記載ミスに気づいた経験を挙げられますか？,설계서의 기재 실수를 알아챈 경험을 들 수 있나요?,3
+infra-server-sp-4-a1-e4,infra-server-sp-4-a1,サーバー構築を担当者として実施した経験がある,서버 구축을 담당자로서 수행한 경험이 있다,experience,build,,,4
+infra-server-sp-4-a2-e1,infra-server-sp-4-a2,ミドルウェアの役割と基本構成を理解している,미들웨어의 역할과 기본 구성을 이해하고 있다,knowledge,middleware|knowledge-base,,,1
+infra-server-sp-4-a2-e2,infra-server-sp-4-a2,手順書に沿ってインストールと設定を実施できる,절차서에 따라 설치와 설정을 수행할 수 있다,practice,middleware|procedure,,,2
+infra-server-sp-4-a2-e3,infra-server-sp-4-a2,設定変更が他の構成へ与える影響を考慮できる,설정 변경이 다른 구성에 주는 영향을 고려할 수 있다,knowledge,middleware|config,,,3
+infra-server-sp-4-a2-e4,infra-server-sp-4-a2,ミドルウェアの導入を実務で行った経験がある,미들웨어 도입을 실무로 수행한 경험이 있다,experience,middleware,,,4
+infra-server-sp-4-a3-e1,infra-server-sp-4-a3,確認すべき観点（疎通・起動・連携）を挙げられる,확인해야 할 관점(소통·기동·연계)을 들 수 있다,knowledge,verification,,,1
+infra-server-sp-4-a3-e2,infra-server-sp-4-a3,基本的な確認手段（コマンドや画面確認）を使える,기본적인 확인 수단(커맨드·화면 확인)을 사용할 수 있다,practice,verification,,,2
+infra-server-sp-4-a3-e3,infra-server-sp-4-a3,構築後の確認作業を実務で行った経験がある,구축 후 확인 작업을 실무로 수행한 경험이 있다,experience,verification,,,3
+infra-server-sp-4-a4-e1,infra-server-sp-4-a4,証跡として何を残すべきかを理解している,증적으로 무엇을 남겨야 하는지 이해하고 있다,knowledge,evidence-record,,,1
+infra-server-sp-4-a4-e2,infra-server-sp-4-a4,決められた形式で証跡を取得・整理できる,정해진 형식으로 증적을 취득·정리할 수 있다,practice,evidence-record,,,2
+infra-server-sp-4-a4-e3,infra-server-sp-4-a4,納品や報告に使う証跡を作成した経験がある,납품·보고에 쓰는 증적을 작성한 경험이 있다,experience,evidence-record|reporting,どんな形式で証跡を残したか説明できますか？,어떤 형식으로 증적을 남겼는지 설명할 수 있나요?,3
+infra-server-sp-4-a5-e1,infra-server-sp-4-a5,既存環境で作業する際のリスクを理解している,기존 환경에서 작업할 때의 리스크를 이해하고 있다,knowledge,config|maintenance,,,1
+infra-server-sp-4-a5-e2,infra-server-sp-4-a5,変更内容の影響範囲を事前に確認できる,변경 내용의 영향 범위를 사전에 확인할 수 있다,knowledge,config,,,2
+infra-server-sp-4-a5-e3,infra-server-sp-4-a5,手順書に沿って設定変更や構成変更を実施できる,절차서에 따라 설정 변경·구성 변경을 수행할 수 있다,practice,config|procedure,,,3
+infra-server-sp-4-a5-e4,infra-server-sp-4-a5,既存環境の変更対応を実務で行った経験がある,기존 환경 변경 대응을 실무로 수행한 경험이 있다,experience,config,稼働中の環境で特に気をつけたことを説明できますか？,가동 중인 환경에서 특히 조심한 점을 설명할 수 있나요?,4

@@ -1,0 +1,6 @@
+﻿dependencyId,fromId,toId,depType,gateRule,note
+dep-infra-server-001,infra-server-common-1,infra-server-sp-2,role-ladder,,
+dep-infra-server-002,infra-server-sp-2,infra-server-sp-3,role-ladder,,
+dep-infra-server-003,infra-server-sp-3,infra-server-sp-4,role-ladder,,
+dep-infra-server-004,infra-server-sp-4,infra-server-sp-5,role-ladder,,5段階は後日公開。ゲートのみ先行定義
+dep-infra-server-005,infra-server-sp-5,infra-server-sp-6,role-ladder,,6段階は後日公開
