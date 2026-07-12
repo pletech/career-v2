@@ -143,14 +143,17 @@ const RoadmapView: React.FC<RoadmapViewProps> = ({
       return { key, label, color, cells, minStage, maxStage };
     };
 
-    const defs = sortedLines.map((line, i) =>
-      build(
-        line.lineId,
-        loc(lang, line.labelJa, line.labelKo),
-        LINE_COLORS[i % LINE_COLORS.length],
-        (a) => a.growthLineId === line.lineId,
-      ),
-    );
+    const defs = sortedLines
+      .map((line, i) =>
+        build(
+          line.lineId,
+          loc(lang, line.labelJa, line.labelKo),
+          LINE_COLORS[i % LINE_COLORS.length],
+          (a) => a.growthLineId === line.lineId,
+        ),
+      )
+      // 能力が1件も無いラインは表示しない (シート移行中に空行が並ぶのを防ぐ)
+      .filter((row) => row.cells.size > 0);
 
     // ライン未配属の能力は「（ラインなし）」行で必ず表示する (AC-11.7)。
     // 難易度軸には乗らないため、先頭 (= デスクトップでは最下段) に置く
