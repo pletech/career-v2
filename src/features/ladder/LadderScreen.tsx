@@ -23,13 +23,12 @@ interface LadderScreenProps {
   /**
    * steps = 階段ビュー (既定) / roadmap = 業務ロードマップ (v2.6)。
    * データロード・チェック状態・言語を両ビューで共有するため、同じ画面が両モードを描画する。
+   * ロードマップの能力タップはビューを遷移せず、その場でチェックリストを開く (v2.6i)。
    */
   mode?: 'steps' | 'roadmap';
-  /** ロードマップの能力クリック時に階段ビューへ戻すためのコールバック (AC-11.6) */
-  onRequestSteps?: () => void;
 }
 
-const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps', onRequestSteps }) => {
+const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps' }) => {
   const {
     targetRoleId,
     setTargetRoleId,
@@ -204,31 +203,6 @@ const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps', onRequestSt
     );
   }
 
-  // ===================== 業務ロードマップ (v2.6) =====================
-  if (mode === 'roadmap') {
-    const categoryRoles = data.roles.filter(
-      (r) => r.category === (targetRole?.category ?? 'サーバー'),
-    );
-    return (
-      <div className="flex flex-1 overflow-hidden bg-gray-50">
-        <RoadmapView
-          roles={categoryRoles}
-          growthLines={data.growthLines}
-          abilities={data.abilities}
-          evidencesByAbility={evidencesByAbility}
-          evidenceChecks={evidenceChecks}
-          managerConfirms={managerConfirms}
-          lang={lang}
-          onSelectAbility={(abilityId) => {
-            // 閲覧専用: チェック操作は階段ビューに一元化 (AC-11.6)
-            setSelectedAbilityId(abilityId);
-            onRequestSteps?.();
-          }}
-        />
-      </div>
-    );
-  }
-
   const ladderView = (
     <LadderView
       key={effectiveTargetId}
@@ -267,6 +241,53 @@ const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps', onRequestSt
       onLangChange={setLang}
     />
   );
+
+  // ===================== 業務ロードマップ (v2.6) =====================
+  // 能力タップでビューは遷移せず、その場でチェックリストパネルを開く (v2.6i — AC-11.6 改定)
+  if (mode === 'roadmap') {
+    const categoryRoles = data.roles.filter(
+      (r) => r.category === (targetRole?.category ?? 'サーバー'),
+    );
+    return (
+      <div className="relative flex flex-1 overflow-hidden bg-gray-50">
+        <RoadmapView
+          roles={categoryRoles}
+          growthLines={data.growthLines}
+          abilities={data.abilities}
+          evidencesByAbility={evidencesByAbility}
+          evidenceChecks={evidenceChecks}
+          managerConfirms={managerConfirms}
+          lang={lang}
+          onSelectAbility={(abilityId) => setSelectedAbilityId(abilityId)}
+        />
+
+        {/* 根拠チェックリスト: モバイル=ボトムシート / md+=右ドロワー */}
+        {selectedAbility && (
+          <div className="absolute inset-0 z-40">
+            <button
+              type="button"
+              aria-label="閉じる"
+              className="absolute inset-0 bg-black/30"
+              onClick={() => setSelectedAbilityId(null)}
+            />
+            <div className="absolute inset-x-0 bottom-0 flex max-h-[82dvh] flex-col rounded-t-2xl bg-white shadow-2xl md:inset-x-auto md:inset-y-0 md:right-0 md:max-h-none md:w-[400px] md:rounded-none md:border-l md:border-gray-200">
+              <div className="flex justify-center pt-2 md:hidden">
+                <span className="h-1 w-10 rounded-full bg-gray-200" />
+              </div>
+              <div className="min-h-0 flex-1 overflow-hidden">{interviewPanel}</div>
+              <button
+                type="button"
+                onClick={() => setSelectedAbilityId(null)}
+                className="border-t border-gray-100 py-2.5 text-center text-xs font-medium text-gray-500"
+              >
+                {lang === 'ko' ? '닫기' : '閉じる'}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-1 overflow-hidden">

@@ -364,9 +364,10 @@ const RoadmapView: React.FC<RoadmapViewProps> = ({
       managerConfirms[a.abilityId] === true,
     );
 
-  const stepLabel = (role: Role, block = false) => (
-    <div className={block ? '' : 'text-right'}>
-      <span className="inline-flex items-center gap-1.5">
+  const stepLabel = (role: Role) => (
+    <div className="text-right">
+      {/* モバイルではバッジを縦積み (STEP6 の下に 準備中) — 中途半端な折り返しを防ぐ */}
+      <span className="inline-flex flex-col items-end gap-0.5 md:flex-row md:items-center md:gap-1.5">
         <span className="rounded bg-cyan-100 px-1.5 py-0.5 text-[10px] font-bold text-cyan-800">
           STEP {role.stageOrder}
         </span>
@@ -391,7 +392,12 @@ const RoadmapView: React.FC<RoadmapViewProps> = ({
       {/* ============ スキルツリー (全ビューポート共通 — モバイルは両軸スクロール) ============ */}
       <div className="min-h-0 flex-1 px-2 pb-3 pt-3 md:px-5">
         <div className="h-full overflow-auto rounded-xl border border-gray-200 bg-white">
-          <div ref={gridWrapRef} className="relative">
+          {/*
+           * w-max が重要: ブロック要素のままだと幅がスクロールポート幅になり、
+           * (1) sticky の有効範囲がそこで切れて STEP ラベルが途中で流れる
+           * (2) SVG オーバーレイ (inset-0) がそこで切れて右側の矢印が描画されない
+           */}
+          <div ref={gridWrapRef} className="relative w-max min-w-full">
             {/* 能力単位の継承矢印 (growsInto) */}
             {hasAbilityEdges && (
               <svg className="pointer-events-none absolute inset-0 z-[5] h-full w-full" aria-hidden>
@@ -404,7 +410,7 @@ const RoadmapView: React.FC<RoadmapViewProps> = ({
               </svg>
             )}
             <div
-              className="grid min-w-[860px]"
+              className="grid w-max min-w-full"
               style={{
                 // セル内はカードを横並びにするため、列幅は内容に合わせて広がる (横スクロール許容)。
                 // minmax(220px, max-content) は親幅が足りないと max-content まで伸びないため、

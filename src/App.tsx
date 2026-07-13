@@ -259,10 +259,7 @@ const App: React.FC = () => {
       </header>
 
       {viewMode === 'ladder' || viewMode === 'roadmap' ? (
-        <LadderScreen
-          mode={viewMode === 'roadmap' ? 'roadmap' : 'steps'}
-          onRequestSteps={() => setViewMode('ladder')}
-        />
+        <LadderScreen mode={viewMode === 'roadmap' ? 'roadmap' : 'steps'} />
       ) : (
         <>
       {inlineErrorBanner}
