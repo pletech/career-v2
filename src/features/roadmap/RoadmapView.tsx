@@ -254,19 +254,17 @@ const RoadmapView: React.FC<RoadmapViewProps> = ({
     const measure = () => {
       const wrapRect = wrap.getBoundingClientRect();
       if (wrapRect.width === 0) return; // モバイルでは非表示
-      // 同じ列を通る線が重ならないよう、横位置をカード幅内で分散させる
-      const FRACS = [0.5, 0.28, 0.72, 0.39, 0.61];
+      // カードは横並びなので中心同士を素直につなぐ (縦積み時代の横分散は不要)
       const paths: EdgePath[] = [];
-      abilityEdges.forEach((e, i) => {
+      abilityEdges.forEach((e) => {
         const fromEl = cardRefs.current.get(e.from);
         const toEl = cardRefs.current.get(e.to);
         if (!fromEl || !toEl) return;
-        const frac = FRACS[i % FRACS.length];
         const f = fromEl.getBoundingClientRect();
         const t = toEl.getBoundingClientRect();
-        const x1 = f.left + f.width * frac - wrapRect.left;
+        const x1 = f.left + f.width / 2 - wrapRect.left;
         const y1 = f.top - wrapRect.top; // 出発 = 下のカードの上辺
-        const x2 = t.left + t.width * frac - wrapRect.left;
+        const x2 = t.left + t.width / 2 - wrapRect.left;
         const y2 = t.bottom - wrapRect.top; // 到着 = 上のカードの下辺 (矢印は上向き)
         const my = (y1 + y2) / 2;
         paths.push({
@@ -332,14 +330,19 @@ const RoadmapView: React.FC<RoadmapViewProps> = ({
             )}
             <div
               className="grid min-w-[860px]"
-              style={{ gridTemplateColumns: `120px repeat(${lineDefs.length}, minmax(200px, 1fr))` }}
+              style={{
+                // セル内はカードを横並びにするため、列幅は内容に合わせて広がる (横スクロール許容)。
+                // minmax(220px, max-content) は親幅が足りないと max-content まで伸びないため、
+                // ベースサイズ自体を max-content にする (最小幅はヘッダーセル側で担保)
+                gridTemplateColumns: `120px repeat(${lineDefs.length}, max-content)`,
+              }}
             >
               {/* ヘッダー行: 業務の種類 (スクロールしても上部に固定) */}
               <div className="sticky left-0 top-0 z-30 border-b border-r border-gray-200 bg-gray-50 px-3 py-2.5" />
               {lineDefs.map((line) => (
                 <div
                   key={line.key}
-                  className="sticky top-0 z-20 border-b border-gray-200 bg-gray-50 px-2 py-2.5 text-center"
+                  className="sticky top-0 z-20 min-w-[220px] border-b border-gray-200 bg-gray-50 px-2 py-2.5 text-center"
                 >
                   <span className="inline-flex items-center gap-1.5">
                     <span className={`h-2 w-2 shrink-0 rounded-full ${line.color.dot}`} aria-hidden />
@@ -390,24 +393,26 @@ const RoadmapView: React.FC<RoadmapViewProps> = ({
                               <div className="h-3" aria-hidden />
                             )}
                             <div
-                              className={`flex flex-1 flex-col gap-2.5 rounded-lg border px-1.5 py-1.5 ${line.color.band} ${
+                              className={`flex flex-1 flex-row items-start gap-1.5 rounded-lg border px-1.5 py-1.5 ${line.color.band} ${
                                 isSpanTop ? 'rounded-t-xl' : ''
                               } ${isSpanBottom ? 'rounded-b-xl' : ''}`}
                             >
                               {cellAbilities.length === 0 ? (
-                                <span className="py-1 text-center text-xs text-gray-300" aria-hidden>
+                                <span className="w-full py-1 text-center text-xs text-gray-300" aria-hidden>
                                   —
                                 </span>
                               ) : (
+                                // 横並び: 矢印が隣のカードを貫通しないように縦積みを避ける
                                 cellAbilities.map((a) => (
-                                  <AbilityCard
-                                    key={a.abilityId}
-                                    ability={a}
-                                    evaluation={evalOf(a)}
-                                    lang={lang}
-                                    onSelect={onSelectAbility}
-                                    innerRef={setCardRef(a.abilityId)}
-                                  />
+                                  <div key={a.abilityId} className="w-[168px] shrink-0">
+                                    <AbilityCard
+                                      ability={a}
+                                      evaluation={evalOf(a)}
+                                      lang={lang}
+                                      onSelect={onSelectAbility}
+                                      innerRef={setCardRef(a.abilityId)}
+                                    />
+                                  </div>
                                 ))
                               )}
                             </div>
