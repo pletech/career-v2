@@ -142,4 +142,33 @@ describe('loadLadderData の CSV 変換 (CSV が DB — 確定 #24)', () => {
     };
     expect(() => validateReferences(data)).toThrow(/growthLineId/);
   });
+
+  it('abilities: growsInto はパイプ区切りで変換され、列が無ければ空 (v2.6e)', () => {
+    const header =
+      'abilityId,roleId,statement,statementKo,roleStatement,roleStatementKo,toolsReference,weight,isCommon,commonGroupId,sortOrder,growthLineId,growsInto';
+    const withEdges = [
+      header,
+      'a1,r1,文,문,役,역,,1,false,,1,response,a2|a3',
+      'a2,r1,文,문,役,역,,1,false,,2,response,',
+      'a3,r1,文,문,役,역,,1,false,,3,response,',
+    ].join('\n');
+    const parsed = parseAbilities(withEdges);
+    expect(parsed[0].growsInto).toEqual(['a2', 'a3']);
+    expect(parsed[1].growsInto).toEqual([]);
+    // 列自体が無い旧フォーマット
+    expect(parseAbilities(abilitiesCsv)[0].growsInto).toEqual([]);
+  });
+
+  it('参照整合性: growsInto が存在しない能力を参照するとエラー (v2.6e)', () => {
+    const header =
+      'abilityId,roleId,statement,statementKo,roleStatement,roleStatementKo,toolsReference,weight,isCommon,commonGroupId,sortOrder,growthLineId,growsInto';
+    const data = {
+      roles: parseRoles(rolesCsv),
+      dependencies: parseDependencies(depsCsv),
+      abilities: parseAbilities([header, 'a1,r1,文,문,役,역,,1,false,,1,response,aX'].join('\n')),
+      evidences: parseEvidences(evidencesCsv),
+      growthLines: parseGrowthLines(growthLinesCsv),
+    };
+    expect(() => validateReferences(data)).toThrow(/growsInto/);
+  });
 });

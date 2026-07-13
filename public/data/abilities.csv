@@ -1,21 +1,21 @@
-abilityId,roleId,statement,statementKo,roleStatement,roleStatementKo,toolsReference,weight,isCommon,commonGroupId,sortOrder,growthLineId
-infra-server-common-1-a1,infra-server-common-1,問い合わせを受け付け、内容を整理して担当者へ連携できる,"문의를 접수하고, 내용을 정리해 담당자에게 전달할 수 있다",問い合わせ内容を受け付け、担当者へ連携する役割,문의 내용을 접수해 담당자에게 전달하는 역할,Outlook|Teams|ServiceNow,1,true,common-infra-stage1-inquiry,1,response
-infra-server-common-1-a2,infra-server-common-1,手順書に沿って定型作業を実施できる,절차서에 따라 정형 작업을 수행할 수 있다,手順書に沿って、アカウント対応や定型作業を行う役割,절차서에 따라 계정 대응·정형 작업을 수행하는 역할,手順書|チェックシート,1,false,,2,execution
-infra-server-common-1-a3,infra-server-common-1,アカウントの登録・変更・削除の対応ができる,계정 등록·변경·삭제 대응을 할 수 있다,手順書に沿って、アカウント対応や定型作業を行う役割,절차서에 따라 계정 대응·정형 작업을 수행하는 역할,Active Directory|Microsoft Entra ID,1,false,,3,response
-infra-server-common-1-a4,infra-server-common-1,PCや周辺機器の初期設定作業ができる,PC와 주변기기의 초기 설정 작업을 할 수 있다,PC、端末、周辺機器の初期設定やキッティングを行う役割,PC·단말·주변기기의 초기 설정과 키팅을 수행하는 역할,Windows 10/11|BIOS|Microsoft 365,1,false,,4,response
-infra-server-common-1-a5,infra-server-common-1,対応内容や作業結果を記録し、報告できる,대응 내용과 작업 결과를 기록하고 보고할 수 있다,作業結果を記録し、報告する役割,작업 결과를 기록하고 보고하는 역할,Excel|ServiceNow|メール,1,false,,5,response
-infra-server-sp-2-a1,infra-server-sp-2,監視アラートから異常を検知できる,감시 알람에서 이상을 감지할 수 있다,監視アラートや異常の内容を把握する役割,감시 알람과 이상 내용을 파악하는 역할,Zabbix|JP1|Hinemos,1,false,,1,stability
-infra-server-sp-2-a2,infra-server-sp-2,発報内容から障害の概要を整理できる,발보 내용에서 장애 개요를 정리할 수 있다,発報内容を確認し、障害概要を整理する役割,발보 내용을 확인해 장애 개요를 정리하는 역할,監視画面|メール通知|チケット,1,true,common-infra-stage2-alert-triage,2,response
-infra-server-sp-2-a3,infra-server-sp-2,障害発生時に、システム状態の一次確認ができる,장애 발생 시 시스템 상태의 1차 확인을 할 수 있다,ログ、サービス状態、プロセスを確認し、一次切り分けを行う役割,로그·서비스 상태·프로세스를 확인해 1차 판별을 수행하는 역할,Windows Server|Linux|systemctl|Event Viewer,1,false,,3,response
-infra-server-sp-2-a4,infra-server-sp-2,手順書に沿った障害の初動対応ができる,절차서에 따라 장애 초동 대응을 수행할 수 있다,手順書に沿って初動対応を行い、必要に応じて二次対応者へ引き継ぐ役割,"절차서에 따라 초동 대응하고, 필요시 2차 대응자에게 인계하는 역할",手順書|ServiceNow,1,true,common-infra-stage2-first-response,4,execution
-infra-server-sp-2-a5,infra-server-sp-2,二次対応者へ状況を整理して引き継げる,2차 대응자에게 상황을 정리해 인계할 수 있다,手順書に沿って初動対応を行い、必要に応じて二次対応者へ引き継ぐ役割,"절차서에 따라 초동 대응하고, 필요시 2차 대응자에게 인계하는 역할",ServiceNow|Jira|メール,1,true,common-infra-stage2-escalation,5,response
-infra-server-sp-3-a1,infra-server-sp-3,サーバー障害の原因調査ができる,서버 장애의 원인 조사를 할 수 있다,サーバー障害の内容を把握し、調査対象を整理する役割,서버 장애 내용을 파악하고 조사 대상을 정리하는 역할,Windows Server|Linux|Apache|Tomcat,1,false,,1,response
-infra-server-sp-3-a2,infra-server-sp-3,ログや設定内容から、障害原因を切り分けられる,로그와 설정 내용으로 장애 원인을 판별할 수 있다,ログや設定内容を確認し、障害原因を切り分ける役割,로그·설정 내용을 확인해 장애 원인을 판별하는 역할,syslog|Event Viewer|設定ファイル,1,false,,2,response
-infra-server-sp-3-a3,infra-server-sp-3,サーバーの基本的な運用保守作業を一人で実施できる,서버의 기본적인 운용보수 작업을 혼자 수행할 수 있다,必要な運用保守作業を実施し、安定稼働を維持する役割,필요한 운용보수 작업을 수행해 안정 가동을 유지하는 역할,systemctl|Active Directory|cron,1,false,,3,execution
-infra-server-sp-3-a4,infra-server-sp-3,定期保守作業を担当できる,정기 보수 작업을 담당할 수 있다,定期保守やリリース対応を行い、運用を継続する役割,정기 보수와 릴리스 대응으로 운용을 지속하는 역할,手順書|チェックシート,1,false,,4,stability
-infra-server-sp-3-a5,infra-server-sp-3,パッチ適用・リリース作業を担当できる,패치 적용·릴리스 작업을 담당할 수 있다,定期保守やリリース対応を行い、運用を継続する役割,정기 보수와 릴리스 대응으로 운용을 지속하는 역할,Windows Update|yum|手順書,1,false,,5,stability
-infra-server-sp-4-a1,infra-server-sp-4,設計書に沿ってサーバーを構築できる,설계서에 따라 서버를 구축할 수 있다,設計書やパラメータシートを確認し、構築対象を整理する役割,설계서·파라미터시트를 확인해 구축 대상을 정리하는 역할,Windows Server|Linux|VMware,1,false,,1,execution
-infra-server-sp-4-a2,infra-server-sp-4,ミドルウェアの導入と設定ができる,미들웨어 도입과 설정을 할 수 있다,サーバーやOSを構築し、必要な設定を反映する役割,서버·OS를 구축하고 필요한 설정을 반영하는 역할,Apache|Tomcat|IIS|PostgreSQL,1,false,,2,execution
-infra-server-sp-4-a3,infra-server-sp-4,構築後の動作確認ができる,구축 후 동작 확인을 할 수 있다,ミドルウェアを導入し、動作可能な状態まで整える役割,미들웨어를 도입해 동작 가능한 상태까지 갖추는 역할,ping|telnet|curl,1,false,,3,execution
-infra-server-sp-4-a4,infra-server-sp-4,作業の証跡を残せる,작업 증적을 남길 수 있다,ミドルウェアを導入し、動作可能な状態まで整える役割,미들웨어를 도입해 동작 가능한 상태까지 갖추는 역할,Excel|スクリーンショット|作業ログ,1,false,,4,execution
-infra-server-sp-4-a5,infra-server-sp-4,既存環境の変更作業を安全に実施できる,기존 환경의 변경 작업을 안전하게 수행할 수 있다,構築後の確認と既存環境の変更対応を行う役割,구축 후 확인과 기존 환경 변경 대응을 수행하는 역할,仮想基盤|ストレージ|バックアップ設定,1,false,,5,stability
+abilityId,roleId,statement,statementKo,roleStatement,roleStatementKo,toolsReference,weight,isCommon,commonGroupId,sortOrder,growthLineId,growsInto
+infra-server-common-1-a1,infra-server-common-1,問い合わせを受け付け、内容を整理して担当者へ連携できる,"문의를 접수하고, 내용을 정리해 담당자에게 전달할 수 있다",問い合わせ内容を受け付け、担当者へ連携する役割,문의 내용을 접수해 담당자에게 전달하는 역할,Outlook|Teams|ServiceNow,1,true,common-infra-stage1-inquiry,1,response,infra-server-sp-2-a2
+infra-server-common-1-a2,infra-server-common-1,手順書に沿って定型作業を実施できる,절차서에 따라 정형 작업을 수행할 수 있다,手順書に沿って、アカウント対応や定型作業を行う役割,절차서에 따라 계정 대응·정형 작업을 수행하는 역할,手順書|チェックシート,1,false,,2,execution,infra-server-sp-2-a4
+infra-server-common-1-a3,infra-server-common-1,アカウントの登録・変更・削除の対応ができる,계정 등록·변경·삭제 대응을 할 수 있다,手順書に沿って、アカウント対応や定型作業を行う役割,절차서에 따라 계정 대응·정형 작업을 수행하는 역할,Active Directory|Microsoft Entra ID,1,false,,3,response,
+infra-server-common-1-a4,infra-server-common-1,PCや周辺機器の初期設定作業ができる,PC와 주변기기의 초기 설정 작업을 할 수 있다,PC、端末、周辺機器の初期設定やキッティングを行う役割,PC·단말·주변기기의 초기 설정과 키팅을 수행하는 역할,Windows 10/11|BIOS|Microsoft 365,1,false,,4,response,
+infra-server-common-1-a5,infra-server-common-1,対応内容や作業結果を記録し、報告できる,대응 내용과 작업 결과를 기록하고 보고할 수 있다,作業結果を記録し、報告する役割,작업 결과를 기록하고 보고하는 역할,Excel|ServiceNow|メール,1,false,,5,response,infra-server-sp-2-a5
+infra-server-sp-2-a1,infra-server-sp-2,監視アラートから異常を検知できる,감시 알람에서 이상을 감지할 수 있다,監視アラートや異常の内容を把握する役割,감시 알람과 이상 내용을 파악하는 역할,Zabbix|JP1|Hinemos,1,false,,1,stability,infra-server-sp-3-a4|infra-server-sp-3-a5
+infra-server-sp-2-a2,infra-server-sp-2,発報内容から障害の概要を整理できる,발보 내용에서 장애 개요를 정리할 수 있다,発報内容を確認し、障害概要を整理する役割,발보 내용을 확인해 장애 개요를 정리하는 역할,監視画面|メール通知|チケット,1,true,common-infra-stage2-alert-triage,2,response,infra-server-sp-3-a1
+infra-server-sp-2-a3,infra-server-sp-2,障害発生時に、システム状態の一次確認ができる,장애 발생 시 시스템 상태의 1차 확인을 할 수 있다,ログ、サービス状態、プロセスを確認し、一次切り分けを行う役割,로그·서비스 상태·프로세스를 확인해 1차 판별을 수행하는 역할,Windows Server|Linux|systemctl|Event Viewer,1,false,,3,response,infra-server-sp-3-a2
+infra-server-sp-2-a4,infra-server-sp-2,手順書に沿った障害の初動対応ができる,절차서에 따라 장애 초동 대응을 수행할 수 있다,手順書に沿って初動対応を行い、必要に応じて二次対応者へ引き継ぐ役割,"절차서에 따라 초동 대응하고, 필요시 2차 대응자에게 인계하는 역할",手順書|ServiceNow,1,true,common-infra-stage2-first-response,4,execution,infra-server-sp-3-a3
+infra-server-sp-2-a5,infra-server-sp-2,二次対応者へ状況を整理して引き継げる,2차 대응자에게 상황을 정리해 인계할 수 있다,手順書に沿って初動対応を行い、必要に応じて二次対応者へ引き継ぐ役割,"절차서에 따라 초동 대응하고, 필요시 2차 대응자에게 인계하는 역할",ServiceNow|Jira|メール,1,true,common-infra-stage2-escalation,5,response,infra-server-sp-3-a1
+infra-server-sp-3-a1,infra-server-sp-3,サーバー障害の原因調査ができる,서버 장애의 원인 조사를 할 수 있다,サーバー障害の内容を把握し、調査対象を整理する役割,서버 장애 내용을 파악하고 조사 대상을 정리하는 역할,Windows Server|Linux|Apache|Tomcat,1,false,,1,response,
+infra-server-sp-3-a2,infra-server-sp-3,ログや設定内容から、障害原因を切り分けられる,로그와 설정 내용으로 장애 원인을 판별할 수 있다,ログや設定内容を確認し、障害原因を切り分ける役割,로그·설정 내용을 확인해 장애 원인을 판별하는 역할,syslog|Event Viewer|設定ファイル,1,false,,2,response,
+infra-server-sp-3-a3,infra-server-sp-3,サーバーの基本的な運用保守作業を一人で実施できる,서버의 기본적인 운용보수 작업을 혼자 수행할 수 있다,必要な運用保守作業を実施し、安定稼働を維持する役割,필요한 운용보수 작업을 수행해 안정 가동을 유지하는 역할,systemctl|Active Directory|cron,1,false,,3,execution,infra-server-sp-4-a1|infra-server-sp-4-a2|infra-server-sp-4-a3|infra-server-sp-4-a4
+infra-server-sp-3-a4,infra-server-sp-3,定期保守作業を担当できる,정기 보수 작업을 담당할 수 있다,定期保守やリリース対応を行い、運用を継続する役割,정기 보수와 릴리스 대응으로 운용을 지속하는 역할,手順書|チェックシート,1,false,,4,stability,infra-server-sp-4-a5
+infra-server-sp-3-a5,infra-server-sp-3,パッチ適用・リリース作業を担当できる,패치 적용·릴리스 작업을 담당할 수 있다,定期保守やリリース対応を行い、運用を継続する役割,정기 보수와 릴리스 대응으로 운용을 지속하는 역할,Windows Update|yum|手順書,1,false,,5,stability,infra-server-sp-4-a5
+infra-server-sp-4-a1,infra-server-sp-4,設計書に沿ってサーバーを構築できる,설계서에 따라 서버를 구축할 수 있다,設計書やパラメータシートを確認し、構築対象を整理する役割,설계서·파라미터시트를 확인해 구축 대상을 정리하는 역할,Windows Server|Linux|VMware,1,false,,1,execution,
+infra-server-sp-4-a2,infra-server-sp-4,ミドルウェアの導入と設定ができる,미들웨어 도입과 설정을 할 수 있다,サーバーやOSを構築し、必要な設定を反映する役割,서버·OS를 구축하고 필요한 설정을 반영하는 역할,Apache|Tomcat|IIS|PostgreSQL,1,false,,2,execution,
+infra-server-sp-4-a3,infra-server-sp-4,構築後の動作確認ができる,구축 후 동작 확인을 할 수 있다,ミドルウェアを導入し、動作可能な状態まで整える役割,미들웨어를 도입해 동작 가능한 상태까지 갖추는 역할,ping|telnet|curl,1,false,,3,execution,
+infra-server-sp-4-a4,infra-server-sp-4,作業の証跡を残せる,작업 증적을 남길 수 있다,ミドルウェアを導入し、動作可能な状態まで整える役割,미들웨어를 도입해 동작 가능한 상태까지 갖추는 역할,Excel|スクリーンショット|作業ログ,1,false,,4,execution,
+infra-server-sp-4-a5,infra-server-sp-4,既存環境の変更作業を安全に実施できる,기존 환경의 변경 작업을 안전하게 수행할 수 있다,構築後の確認と既存環境の変更対応を行う役割,구축 후 확인과 기존 환경 변경 대응을 수행하는 역할,仮想基盤|ストレージ|バックアップ設定,1,false,,5,stability,

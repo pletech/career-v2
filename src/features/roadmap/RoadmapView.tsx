@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   deriveAbilityState,
   evaluateAbility,
@@ -15,16 +15,19 @@ import type {
 } from '../../domain/types';
 
 /**
- * 業務ロードマップ (v2.6d — 企画書 §0-D / AC-11)
+ * 業務ロードマップ (v2.6e — 企画書 §0-D / AC-11)
  *
  * ゲームのスキルツリーのように「下から上へ成長が登っていく」ビュー。
  * - 縦 = 段階: 左軸に STEP1 (最下段) → STEP6 (最上段)。階段ビューと同じ「上が目標」の向き
- * - 横 = 業務の種類 (growth-lines)。基礎的なラインが左、高度なラインが右
- * - 同じラインの能力は、下の段から上の段へ矢印 (▲) でつながる
+ * - 横 = 業務の種類 (growth-lines)。左ほど現場実務、右ほど設計など複雑な業務
+ * - 能力単位の継承 (growsInto — 人がキュレーション) を矢印で描画。
+ *   真の継承関係がある能力だけをつなぎ、後続の無い実務 (アカウント対応など) は
+ *   無理につながない。growsInto が未整備のデータではライン単位の矢印にフォールバック
+ * - 列ヘッダー (業務の種類) はスクロールしても上部に固定 (sticky)
  *
  * - 状態は階段ビューと同じ派生ロジック (evaluate) を再利用する
  * - 能力クリック → 階段ビューへ遷移して該当能力を選択 (閲覧専用 — AC-11.6)
- * - モバイル: ラインごとの縦セクション (基礎ライン→高度ライン順 — AC-11.11)
+ * - モバイル: ラインごとの縦セクション (AC-11.11)
  */
 
 interface RoadmapViewProps {
@@ -45,7 +48,7 @@ const STATE_ICON: Record<string, { icon: string; className: string }> = {
   confirmed: { icon: '✓', className: 'text-emerald-700' },
 };
 
-/** ラインの色 (難易度順: 添字 0 = 最も基礎)。Tailwind は静的クラスが必要なため列挙 */
+/** ラインの色 (列順: 添字 0 = 最も現場実務寄り)。Tailwind は静的クラスが必要なため列挙 */
 const LINE_COLORS = [
   {
     band: 'bg-cyan-50/70 border-cyan-100',
@@ -53,13 +56,7 @@ const LINE_COLORS = [
     text: 'text-cyan-900',
     arrow: 'text-cyan-400',
     link: 'bg-cyan-200',
-  },
-  {
-    band: 'bg-emerald-50/70 border-emerald-100',
-    dot: 'bg-emerald-500',
-    text: 'text-emerald-900',
-    arrow: 'text-emerald-400',
-    link: 'bg-emerald-200',
+    stroke: '#22d3ee',
   },
   {
     band: 'bg-violet-50/70 border-violet-100',
@@ -67,6 +64,15 @@ const LINE_COLORS = [
     text: 'text-violet-900',
     arrow: 'text-violet-400',
     link: 'bg-violet-200',
+    stroke: '#a78bfa',
+  },
+  {
+    band: 'bg-emerald-50/70 border-emerald-100',
+    dot: 'bg-emerald-500',
+    text: 'text-emerald-900',
+    arrow: 'text-emerald-400',
+    link: 'bg-emerald-200',
+    stroke: '#34d399',
   },
   {
     band: 'bg-amber-50/70 border-amber-100',
@@ -74,6 +80,7 @@ const LINE_COLORS = [
     text: 'text-amber-900',
     arrow: 'text-amber-400',
     link: 'bg-amber-200',
+    stroke: '#fbbf24',
   },
 ] as const;
 
@@ -83,12 +90,15 @@ const NO_LINE_COLOR = {
   text: 'text-gray-500',
   arrow: 'text-gray-300',
   link: 'bg-gray-200',
+  stroke: '#d1d5db',
 } as const;
+
+type LineColor = (typeof LINE_COLORS)[number] | typeof NO_LINE_COLOR;
 
 interface LineDef {
   key: string;
   label: string;
-  color: (typeof LINE_COLORS)[number] | typeof NO_LINE_COLOR;
+  color: LineColor;
   /** roleId -> abilities (sortOrder順) */
   cells: Map<string, Ability[]>;
   /** ラインの担当区間 (能力が存在する最小〜最大 stageOrder) */
@@ -96,17 +106,26 @@ interface LineDef {
   maxStage: number;
 }
 
+interface EdgePath {
+  key: string;
+  d: string;
+  head: string;
+  stroke: string;
+}
+
 const AbilityCard: React.FC<{
   ability: Ability;
   evaluation: AbilityEvaluation;
   lang: Lang;
   onSelect: (abilityId: string) => void;
-}> = ({ ability, evaluation, lang, onSelect }) => {
+  innerRef?: (el: HTMLButtonElement | null) => void;
+}> = ({ ability, evaluation, lang, onSelect, innerRef }) => {
   const s = STRINGS[lang];
   const state = deriveAbilityState(evaluation);
   const { icon, className } = STATE_ICON[state];
   return (
     <button
+      ref={innerRef}
       type="button"
       onClick={() => onSelect(ability.abilityId)}
       className="flex w-full items-start gap-1.5 rounded-lg border border-white/70 bg-white/95 px-2 py-1.5 text-left shadow-sm transition-colors hover:border-cyan-300 hover:bg-white"
@@ -145,7 +164,7 @@ const RoadmapView: React.FC<RoadmapViewProps> = ({
   );
   const stepsDesc = useMemo(() => [...stepsAsc].reverse(), [stepsAsc]);
 
-  /** 業務の種類 (列)。基礎ラインが左、高度なラインが右。ラインなしは右端 */
+  /** 業務の種類 (列)。左ほど現場実務、右ほど複雑な業務。ラインなしは右端 */
   const lineDefs = useMemo<LineDef[]>(() => {
     const roleIds = new Set(stepsAsc.map((r) => r.roleId));
     const stageOf = new Map(stepsAsc.map((r) => [r.roleId, r.stageOrder] as const));
@@ -197,6 +216,74 @@ const RoadmapView: React.FC<RoadmapViewProps> = ({
     return noLine.cells.size > 0 ? [...defs, noLine] : defs;
   }, [stepsAsc, abilities, growthLines, lang, s.noLine]);
 
+  /** 能力単位の継承エッジ (growsInto)。無ければライン単位矢印へフォールバック */
+  const abilityEdges = useMemo(() => {
+    const strokeOf = new Map<string, string>();
+    for (const line of lineDefs) {
+      for (const list of line.cells.values()) {
+        for (const a of list) strokeOf.set(a.abilityId, line.color.stroke);
+      }
+    }
+    const edges: { from: string; to: string; stroke: string }[] = [];
+    for (const a of abilities) {
+      for (const to of a.growsInto ?? []) {
+        if (!strokeOf.has(a.abilityId) || !strokeOf.has(to)) continue;
+        edges.push({ from: a.abilityId, to, stroke: strokeOf.get(a.abilityId) ?? NO_LINE_COLOR.stroke });
+      }
+    }
+    return edges;
+  }, [abilities, lineDefs]);
+
+  const hasAbilityEdges = abilityEdges.length > 0;
+
+  // ---------------------------------------------------------------------
+  // 矢印の描画 (デスクトップ): カードの実位置を測って SVG オーバーレイに描く
+  // ---------------------------------------------------------------------
+  const gridWrapRef = useRef<HTMLDivElement | null>(null);
+  const cardRefs = useRef(new Map<string, HTMLButtonElement>());
+  const setCardRef = (id: string) => (el: HTMLButtonElement | null) => {
+    if (el) cardRefs.current.set(id, el);
+    else cardRefs.current.delete(id);
+  };
+  const [edgePaths, setEdgePaths] = useState<EdgePath[]>([]);
+
+  useLayoutEffect(() => {
+    const wrap = gridWrapRef.current;
+    // エッジ無しのときは SVG 自体を描画しないため、状態のクリアは不要
+    if (!wrap || !hasAbilityEdges) return;
+    const measure = () => {
+      const wrapRect = wrap.getBoundingClientRect();
+      if (wrapRect.width === 0) return; // モバイルでは非表示
+      // 同じ列を通る線が重ならないよう、横位置をカード幅内で分散させる
+      const FRACS = [0.5, 0.28, 0.72, 0.39, 0.61];
+      const paths: EdgePath[] = [];
+      abilityEdges.forEach((e, i) => {
+        const fromEl = cardRefs.current.get(e.from);
+        const toEl = cardRefs.current.get(e.to);
+        if (!fromEl || !toEl) return;
+        const frac = FRACS[i % FRACS.length];
+        const f = fromEl.getBoundingClientRect();
+        const t = toEl.getBoundingClientRect();
+        const x1 = f.left + f.width * frac - wrapRect.left;
+        const y1 = f.top - wrapRect.top; // 出発 = 下のカードの上辺
+        const x2 = t.left + t.width * frac - wrapRect.left;
+        const y2 = t.bottom - wrapRect.top; // 到着 = 上のカードの下辺 (矢印は上向き)
+        const my = (y1 + y2) / 2;
+        paths.push({
+          key: `${e.from}->${e.to}`,
+          stroke: e.stroke,
+          d: `M ${x1} ${y1} C ${x1} ${my}, ${x2} ${my}, ${x2} ${y2 + 5}`,
+          head: `M ${x2} ${y2} l -4 7 h 8 z`,
+        });
+      });
+      setEdgePaths(paths);
+    };
+    // ResizeObserver は observe 開始時にも一度発火するため、初回測定もここで行われる
+    const ro = new ResizeObserver(measure);
+    ro.observe(wrap);
+    return () => ro.disconnect();
+  }, [abilityEdges, hasAbilityEdges, lineDefs, lang]);
+
   const evalOf = (a: Ability): AbilityEvaluation =>
     evaluateAbility(
       evidencesByAbility.get(a.abilityId) ?? [],
@@ -224,22 +311,36 @@ const RoadmapView: React.FC<RoadmapViewProps> = ({
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
-      <div className="min-h-0 flex-1 overflow-y-auto">
-        <div className="px-3 pt-3 md:px-5 md:pt-4">
-          <p className="text-[11px] leading-relaxed text-gray-500">{s.roadmapLegend}</p>
-        </div>
+      <div className="shrink-0 px-3 pt-3 md:px-5 md:pt-4">
+        <p className="text-[11px] leading-relaxed text-gray-500">{s.roadmapLegend}</p>
+      </div>
 
-        {/* ============ デスクトップ: スキルツリー (md以上) ============ */}
-        <div className="hidden px-5 pb-4 pt-3 md:block">
-          <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
+      {/* ============ デスクトップ: スキルツリー (md以上) ============ */}
+      <div className="hidden min-h-0 flex-1 px-5 pb-3 pt-3 md:block">
+        <div className="h-full overflow-auto rounded-xl border border-gray-200 bg-white">
+          <div ref={gridWrapRef} className="relative">
+            {/* 能力単位の継承矢印 (growsInto) */}
+            {hasAbilityEdges && (
+              <svg className="pointer-events-none absolute inset-0 z-[5] h-full w-full" aria-hidden>
+                {edgePaths.map((p) => (
+                  <g key={p.key} opacity={0.75}>
+                    <path d={p.d} fill="none" stroke={p.stroke} strokeWidth={1.5} />
+                    <path d={p.head} fill={p.stroke} />
+                  </g>
+                ))}
+              </svg>
+            )}
             <div
               className="grid min-w-[860px]"
               style={{ gridTemplateColumns: `120px repeat(${lineDefs.length}, minmax(200px, 1fr))` }}
             >
-              {/* ヘッダー行: 業務の種類 */}
-              <div className="sticky left-0 z-10 border-b border-r border-gray-200 bg-gray-50 px-3 py-2.5" />
+              {/* ヘッダー行: 業務の種類 (スクロールしても上部に固定) */}
+              <div className="sticky left-0 top-0 z-30 border-b border-r border-gray-200 bg-gray-50 px-3 py-2.5" />
               {lineDefs.map((line) => (
-                <div key={line.key} className="border-b border-gray-200 bg-gray-50 px-2 py-2.5 text-center">
+                <div
+                  key={line.key}
+                  className="sticky top-0 z-20 border-b border-gray-200 bg-gray-50 px-2 py-2.5 text-center"
+                >
                   <span className="inline-flex items-center gap-1.5">
                     <span className={`h-2 w-2 shrink-0 rounded-full ${line.color.dot}`} aria-hidden />
                     <span className={`text-[11.5px] font-bold leading-snug ${line.color.text}`}>
@@ -263,8 +364,12 @@ const RoadmapView: React.FC<RoadmapViewProps> = ({
                     const cellAbilities = line.cells.get(role.roleId) ?? [];
                     const inSpan =
                       role.stageOrder >= line.minStage && role.stageOrder <= line.maxStage;
-                    // このセルの上の段もラインの区間内なら、上へ登る矢印でつなぐ (スキルツリー)
-                    const linksUp = inSpan && role.stageOrder < line.maxStage && line.key !== '__no-line__';
+                    // growsInto 未整備データ向けフォールバック: ライン単位の上向き矢印
+                    const linksUp =
+                      !hasAbilityEdges &&
+                      inSpan &&
+                      role.stageOrder < line.maxStage &&
+                      line.key !== '__no-line__';
                     const isSpanTop = role.stageOrder === line.maxStage;
                     const isSpanBottom = role.stageOrder === line.minStage;
                     return (
@@ -276,7 +381,6 @@ const RoadmapView: React.FC<RoadmapViewProps> = ({
                       >
                         {inSpan ? (
                           <div className="flex h-full flex-col items-stretch">
-                            {/* 上の段への接続線 (矢印は上向き = 成長方向) */}
                             {linksUp ? (
                               <div className="flex flex-col items-center" aria-hidden>
                                 <span className={`-mb-0.5 text-[11px] leading-none ${line.color.arrow}`}>▲</span>
@@ -286,7 +390,7 @@ const RoadmapView: React.FC<RoadmapViewProps> = ({
                               <div className="h-3" aria-hidden />
                             )}
                             <div
-                              className={`flex flex-1 flex-col gap-1.5 rounded-lg border px-1.5 py-1.5 ${line.color.band} ${
+                              className={`flex flex-1 flex-col gap-2.5 rounded-lg border px-1.5 py-1.5 ${line.color.band} ${
                                 isSpanTop ? 'rounded-t-xl' : ''
                               } ${isSpanBottom ? 'rounded-b-xl' : ''}`}
                             >
@@ -302,6 +406,7 @@ const RoadmapView: React.FC<RoadmapViewProps> = ({
                                     evaluation={evalOf(a)}
                                     lang={lang}
                                     onSelect={onSelectAbility}
+                                    innerRef={setCardRef(a.abilityId)}
                                   />
                                 ))
                               )}
@@ -317,9 +422,11 @@ const RoadmapView: React.FC<RoadmapViewProps> = ({
             </div>
           </div>
         </div>
+      </div>
 
-        {/* ============ モバイル: ラインごとの縦セクション (基礎→高度, AC-11.11) ============ */}
-        <div className="flex flex-col gap-4 px-3 pb-4 pt-3 md:hidden">
+      {/* ============ モバイル: ラインごとの縦セクション (AC-11.11) ============ */}
+      <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-4 pt-3 md:hidden">
+        <div className="flex flex-col gap-4">
           {lineDefs.map((line) => (
             <section key={line.key} className="rounded-xl border border-gray-200 bg-white p-3">
               <h3 className="flex items-center gap-1.5 text-[12.5px] font-bold text-gray-800">
@@ -335,7 +442,6 @@ const RoadmapView: React.FC<RoadmapViewProps> = ({
                   if (!inSpan && cellAbilities.length === 0) return null;
                   return (
                     <div key={role.roleId} className="relative pb-3 pl-4 last:pb-0">
-                      {/* 縦の接続線 (階段のつながり) */}
                       {i < stepsAsc.length - 1 && role.stageOrder < line.maxStage && (
                         <span
                           className="absolute left-[5px] top-2 h-full w-px bg-cyan-100"
@@ -373,12 +479,12 @@ const RoadmapView: React.FC<RoadmapViewProps> = ({
             </section>
           ))}
         </div>
-
-        {/* 非断定原則の注意文言 (確定 #3 / AC-11.8) */}
-        <p className="border-t border-gray-100 bg-white px-3 py-2.5 text-[10px] leading-relaxed text-gray-400 md:px-5">
-          {s.disclaimer}
-        </p>
       </div>
+
+      {/* 非断定原則の注意文言 (確定 #3 / AC-11.8) */}
+      <p className="shrink-0 border-t border-gray-100 bg-white px-3 py-2.5 text-[10px] leading-relaxed text-gray-400 md:px-5">
+        {s.disclaimer}
+      </p>
     </div>
   );
 };

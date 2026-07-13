@@ -75,6 +75,12 @@ export interface Ability {
    * growth-lines の lineId を参照する。空 = 未配属 (「ラインなし」行に表示)。
    */
   growthLineId?: string;
+  /**
+   * この能力の「次の段階の業務」(v2.6e — スキルツリーの矢印)。
+   * 真の継承関係がある能力のみ人がキュレーションして設定する。
+   * 後続が無い能力 (例: アカウント対応) は空 — 無理につながない。
+   */
+  growsInto?: string[];
   // 韓国語表示 (作業用)
   statementKo?: string;
   roleStatementKo?: string;

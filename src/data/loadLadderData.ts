@@ -157,6 +157,8 @@ export function parseAbilities(csvText: string): Ability[] {
       sortOrder: toNumber(r.sortOrder, 'sortOrder', 'abilities.csv', abilityId),
       // v2.6: 列自体が無いシートも許容する (移行中は「ラインなし」扱い)
       growthLineId: opt(r.growthLineId ?? ''),
+      // v2.6e: 次の段階の業務への継承 (パイプ区切り)。列が無ければ空
+      growsInto: toList(r.growsInto ?? ''),
       statementKo: opt(r.statementKo ?? ''),
       roleStatementKo: opt(r.roleStatementKo ?? ''),
     } satisfies Ability;
@@ -220,6 +222,14 @@ export function validateReferences(data: LadderDataSet): void {
       throw new LadderDataError(
         `abilities.csv: ${a.abilityId} の growthLineId が growth-lines.csv に存在しません: ${a.growthLineId}`,
       );
+    }
+    // growsInto の参照整合性 (v2.6e)
+    for (const to of a.growsInto ?? []) {
+      if (!abilityIds.has(to)) {
+        throw new LadderDataError(
+          `abilities.csv: ${a.abilityId} の growsInto が存在しない能力を参照しています: ${to}`,
+        );
+      }
     }
   }
   for (const e of data.evidences) {
