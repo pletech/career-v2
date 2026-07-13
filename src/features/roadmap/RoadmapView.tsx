@@ -388,8 +388,8 @@ const RoadmapView: React.FC<RoadmapViewProps> = ({
         <p className="text-[11px] leading-relaxed text-gray-500">{s.roadmapLegend}</p>
       </div>
 
-      {/* ============ デスクトップ: スキルツリー (md以上) ============ */}
-      <div className="hidden min-h-0 flex-1 px-5 pb-3 pt-3 md:block">
+      {/* ============ スキルツリー (全ビューポート共通 — モバイルは両軸スクロール) ============ */}
+      <div className="min-h-0 flex-1 px-2 pb-3 pt-3 md:px-5">
         <div className="h-full overflow-auto rounded-xl border border-gray-200 bg-white">
           <div ref={gridWrapRef} className="relative">
             {/* 能力単位の継承矢印 (growsInto) */}
@@ -408,12 +408,13 @@ const RoadmapView: React.FC<RoadmapViewProps> = ({
               style={{
                 // セル内はカードを横並びにするため、列幅は内容に合わせて広がる (横スクロール許容)。
                 // minmax(220px, max-content) は親幅が足りないと max-content まで伸びないため、
-                // ベースサイズ自体を max-content にする (最小幅はヘッダーセル側で担保)
-                gridTemplateColumns: `120px repeat(${lineDefs.length}, max-content)`,
+                // ベースサイズ自体を max-content にする (最小幅はヘッダーセル側で担保)。
+                // 先頭列 (STEP ラベル) はセル側の幅クラスで制御 (モバイルは狭く)
+                gridTemplateColumns: `max-content repeat(${lineDefs.length}, max-content)`,
               }}
             >
               {/* ヘッダー行: 業務の種類 (スクロールしても上部に固定) */}
-              <div className="sticky left-0 top-0 z-30 border-b border-r border-gray-200 bg-gray-50 px-3 py-2.5" />
+              <div className="sticky left-0 top-0 z-30 w-[86px] border-b border-r border-gray-200 bg-gray-50 px-2 py-2.5 md:w-[120px] md:px-3" />
               {lineDefs.map((line) => (
                 <div
                   key={line.key}
@@ -432,7 +433,7 @@ const RoadmapView: React.FC<RoadmapViewProps> = ({
               {stepsDesc.map((role) => (
                 <React.Fragment key={role.roleId}>
                   <div
-                    className={`sticky left-0 z-10 border-b border-r border-gray-100 px-3 py-2.5 ${
+                    className={`sticky left-0 z-10 w-[86px] border-b border-r border-gray-100 px-2 py-2.5 md:w-[120px] md:px-3 ${
                       role.status === 'placeholder' ? 'bg-gray-50/80' : 'bg-white'
                     }`}
                   >
@@ -520,63 +521,6 @@ const RoadmapView: React.FC<RoadmapViewProps> = ({
               ))}
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* ============ モバイル: ラインごとの縦セクション (AC-11.11) ============ */}
-      <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-4 pt-3 md:hidden">
-        <div className="flex flex-col gap-4">
-          {lineDefs.map((line) => (
-            <section key={line.key} className="rounded-xl border border-gray-200 bg-white p-3">
-              <h3 className="flex items-center gap-1.5 text-[12.5px] font-bold text-gray-800">
-                <span className={`h-2 w-2 rounded-full ${line.color.dot}`} aria-hidden />
-                {line.label}
-              </h3>
-              <div className="mt-2 flex flex-col">
-                {stepsAsc.map((role, i) => {
-                  const cellAbilities = line.cells.get(role.roleId) ?? [];
-                  if (cellAbilities.length === 0 && role.status === 'placeholder') return null;
-                  const inSpan =
-                    role.stageOrder >= line.minStage && role.stageOrder <= line.maxStage;
-                  if (!inSpan && cellAbilities.length === 0) return null;
-                  return (
-                    <div key={role.roleId} className="relative pb-3 pl-4 last:pb-0">
-                      {i < stepsAsc.length - 1 && role.stageOrder < line.maxStage && (
-                        <span
-                          className="absolute left-[5px] top-2 h-full w-px bg-cyan-100"
-                          aria-hidden
-                        />
-                      )}
-                      <span
-                        className={`absolute left-0 top-1.5 h-[11px] w-[11px] rounded-full border-2 ${
-                          cellAbilities.length > 0
-                            ? 'border-cyan-400 bg-white'
-                            : 'border-gray-200 bg-gray-50'
-                        }`}
-                        aria-hidden
-                      />
-                      <div className="mb-1">{stepLabel(role, true)}</div>
-                      {cellAbilities.length === 0 ? (
-                        <p className="text-[10.5px] text-gray-300">—</p>
-                      ) : (
-                        <div className="flex flex-col gap-1.5">
-                          {cellAbilities.map((a) => (
-                            <AbilityCard
-                              key={a.abilityId}
-                              ability={a}
-                              evaluation={evalOf(a)}
-                              lang={lang}
-                              onSelect={onSelectAbility}
-                            />
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </section>
-          ))}
         </div>
       </div>
 
