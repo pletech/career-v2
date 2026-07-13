@@ -13,6 +13,7 @@ import { csvToObjects } from '../utils/csv';
 import { WORK_TAG_LABELS } from '../domain/i18n';
 import type {
   Ability,
+  Atom,
   Dependency,
   DepType,
   Evidence,
@@ -20,7 +21,9 @@ import type {
   GrowthLine,
   Role,
   RoleStatus,
+  Tag,
   TrackId,
+  Weapon,
   WorkTagId,
 } from '../domain/types';
 import { LOCAL_SOURCES, SHEET_SOURCES, type LadderSourceUrls } from './ladderSources';
@@ -31,6 +34,10 @@ export interface LadderDataSet {
   abilities: Ability[];
   evidences: Evidence[];
   growthLines: GrowthLine[];
+  // v2.7 素材→武器モデル
+  tags: Tag[];
+  atoms: Atom[];
+  weapons: Weapon[];
 }
 
 // ---------------------------------------------------------------------------
@@ -208,6 +215,62 @@ export function parseGrowthLines(csvText: string): GrowthLine[] {
   return lines;
 }
 
+/** tags (v2.7): 業務の区分 */
+export function parseTags(csvText: string): Tag[] {
+  const rows = csvToObjects(csvText);
+  requireHeaders(rows, ['tagId', 'labelJa', 'sortOrder'], 'tags.csv');
+  const tags = rows.map((r) => {
+    const tagId = requireValue(r, 'tagId', 'tags.csv', r.tagId || '(空)');
+    return {
+      tagId,
+      labelJa: requireValue(r, 'labelJa', 'tags.csv', tagId),
+      sortOrder: toNumber(r.sortOrder, 'sortOrder', 'tags.csv', tagId),
+      labelKo: opt(r.labelKo ?? ''),
+    } satisfies Tag;
+  });
+  requireUnique(tags.map((t) => t.tagId), 'tags.csv');
+  return tags;
+}
+
+/** atoms (v2.7): 原子能力 (素材) */
+export function parseAtoms(csvText: string): Atom[] {
+  const rows = csvToObjects(csvText);
+  requireHeaders(rows, ['atomId', 'tagId', 'statement', 'firstStage', 'sortOrder'], 'atoms.csv');
+  const atoms = rows.map((r) => {
+    const atomId = requireValue(r, 'atomId', 'atoms.csv', r.atomId || '(空)');
+    return {
+      atomId,
+      tagId: requireValue(r, 'tagId', 'atoms.csv', atomId),
+      statement: requireValue(r, 'statement', 'atoms.csv', atomId),
+      firstStage: toNumber(r.firstStage, 'firstStage', 'atoms.csv', atomId),
+      sortOrder: toNumber(r.sortOrder, 'sortOrder', 'atoms.csv', atomId),
+      statementKo: opt(r.statementKo ?? ''),
+    } satisfies Atom;
+  });
+  requireUnique(atoms.map((a) => a.atomId), 'atoms.csv');
+  return atoms;
+}
+
+/** weapons (v2.7): 上位能力 = 素材の組み合わせ */
+export function parseWeapons(csvText: string): Weapon[] {
+  const rows = csvToObjects(csvText);
+  requireHeaders(rows, ['weaponId', 'roleId', 'tagId', 'statement', 'composedOf', 'sortOrder'], 'weapons.csv');
+  const weapons = rows.map((r) => {
+    const weaponId = requireValue(r, 'weaponId', 'weapons.csv', r.weaponId || '(空)');
+    return {
+      weaponId,
+      roleId: requireValue(r, 'roleId', 'weapons.csv', weaponId),
+      tagId: requireValue(r, 'tagId', 'weapons.csv', weaponId),
+      statement: requireValue(r, 'statement', 'weapons.csv', weaponId),
+      composedOf: toList(r.composedOf ?? ''),
+      sortOrder: toNumber(r.sortOrder, 'sortOrder', 'weapons.csv', weaponId),
+      statementKo: opt(r.statementKo ?? ''),
+    } satisfies Weapon;
+  });
+  requireUnique(weapons.map((w) => w.weaponId), 'weapons.csv');
+  return weapons;
+}
+
 /** 参照整合性の検証 (ability→role, evidence→ability, dependency→role, ability→growthLine) */
 export function validateReferences(data: LadderDataSet): void {
   const roleIds = new Set(data.roles.map((r) => r.roleId));
@@ -242,6 +305,29 @@ export function validateReferences(data: LadderDataSet): void {
       throw new LadderDataError(`dependencies.csv: ${d.dependencyId} が参照する roleId が存在しません。`);
     }
   }
+  // v2.7: atom→tag, weapon→role/tag/atoms
+  const tagIds = new Set(data.tags.map((t) => t.tagId));
+  const atomIds = new Set(data.atoms.map((a) => a.atomId));
+  for (const a of data.atoms) {
+    if (!tagIds.has(a.tagId)) {
+      throw new LadderDataError(`atoms.csv: ${a.atomId} の tagId が tags.csv に存在しません: ${a.tagId}`);
+    }
+  }
+  for (const w of data.weapons) {
+    if (!roleIds.has(w.roleId)) {
+      throw new LadderDataError(`weapons.csv: ${w.weaponId} の roleId が roles.csv に存在しません: ${w.roleId}`);
+    }
+    if (!tagIds.has(w.tagId)) {
+      throw new LadderDataError(`weapons.csv: ${w.weaponId} の tagId が tags.csv に存在しません: ${w.tagId}`);
+    }
+    for (const atomId of w.composedOf) {
+      if (!atomIds.has(atomId)) {
+        throw new LadderDataError(
+          `weapons.csv: ${w.weaponId} の composedOf が存在しない素材を参照しています: ${atomId}`,
+        );
+      }
+    }
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -261,22 +347,29 @@ async function fetchText(url: string): Promise<string> {
 }
 
 async function loadFrom(src: LadderSourceUrls): Promise<LadderDataSet> {
-  // growth-lines はソースに URL が無ければローカル CSV を読む
+  // growth-lines / tags / atoms / weapons はソースに URL が無ければローカル CSV を読む
   // (シートにタブを作るまでの移行措置 — ladderSources.ts の TODO 参照)
-  const growthLinesUrl = src.growthLinesCsvUrl || LOCAL_SOURCES.growthLinesCsvUrl;
-  const [rolesText, depsText, abilitiesText, evidencesText, growthLinesText] = await Promise.all([
-    fetchText(src.rolesCsvUrl),
-    fetchText(src.dependenciesCsvUrl),
-    fetchText(src.abilitiesCsvUrl),
-    fetchText(src.evidencesCsvUrl),
-    fetchText(growthLinesUrl),
-  ]);
+  const or = (url: string, local: string): string => url || local;
+  const [rolesText, depsText, abilitiesText, evidencesText, growthLinesText, tagsText, atomsText, weaponsText] =
+    await Promise.all([
+      fetchText(src.rolesCsvUrl),
+      fetchText(src.dependenciesCsvUrl),
+      fetchText(src.abilitiesCsvUrl),
+      fetchText(src.evidencesCsvUrl),
+      fetchText(or(src.growthLinesCsvUrl, LOCAL_SOURCES.growthLinesCsvUrl)),
+      fetchText(or(src.tagsCsvUrl, LOCAL_SOURCES.tagsCsvUrl)),
+      fetchText(or(src.atomsCsvUrl, LOCAL_SOURCES.atomsCsvUrl)),
+      fetchText(or(src.weaponsCsvUrl, LOCAL_SOURCES.weaponsCsvUrl)),
+    ]);
   const data: LadderDataSet = {
     roles: parseRoles(rolesText),
     dependencies: parseDependencies(depsText),
     abilities: parseAbilities(abilitiesText),
     evidences: parseEvidences(evidencesText),
     growthLines: parseGrowthLines(growthLinesText),
+    tags: parseTags(tagsText),
+    atoms: parseAtoms(atomsText),
+    weapons: parseWeapons(weaponsText),
   };
   validateReferences(data);
   return data;

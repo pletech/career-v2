@@ -5,7 +5,7 @@ import { loc } from '../../domain/i18n';
 import { loadLadderData, type LadderDataSet } from '../../data/loadLadderData';
 import { DEFAULT_TARGET, useLadderState } from '../../state/useLadderState';
 import InterviewPanel from '../interview/InterviewPanel';
-import RoadmapView from '../roadmap/RoadmapView';
+import CraftView from '../roadmap/CraftView';
 import TargetSelector from '../selector/TargetSelector';
 import LadderView from './LadderView';
 
@@ -36,6 +36,8 @@ const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps' }) => {
     toggleEvidence,
     managerConfirms,
     toggleManagerConfirm,
+    atomChecks,
+    toggleAtom,
     selectedAbilityId,
     setSelectedAbilityId,
     lang,
@@ -242,49 +244,24 @@ const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps' }) => {
     />
   );
 
-  // ===================== 業務ロードマップ (v2.6) =====================
-  // 能力タップでビューは遷移せず、その場でチェックリストパネルを開く (v2.6i — AC-11.6 改定)
+  // ===================== 業務ロードマップ (v2.7 — 素材→武器モデル) =====================
+  // セル = タグ (区分)。タップでビューは遷移せず、その場で素材チェックリストが開く
+  // (ドロワーは CraftView が自前で持つ)
   if (mode === 'roadmap') {
     const categoryRoles = data.roles.filter(
       (r) => r.category === (targetRole?.category ?? 'サーバー'),
     );
     return (
       <div className="relative flex flex-1 overflow-hidden bg-gray-50">
-        <RoadmapView
+        <CraftView
           roles={categoryRoles}
-          growthLines={data.growthLines}
-          abilities={data.abilities}
-          evidencesByAbility={evidencesByAbility}
-          evidenceChecks={evidenceChecks}
-          managerConfirms={managerConfirms}
+          tags={data.tags}
+          atoms={data.atoms}
+          weapons={data.weapons}
+          atomChecks={atomChecks}
+          onToggleAtom={toggleAtom}
           lang={lang}
-          onSelectAbility={(abilityId) => setSelectedAbilityId(abilityId)}
         />
-
-        {/* 根拠チェックリスト: モバイル=ボトムシート / md+=右ドロワー */}
-        {selectedAbility && (
-          <div className="absolute inset-0 z-40">
-            <button
-              type="button"
-              aria-label="閉じる"
-              className="absolute inset-0 bg-black/30"
-              onClick={() => setSelectedAbilityId(null)}
-            />
-            <div className="absolute inset-x-0 bottom-0 flex max-h-[82dvh] flex-col rounded-t-2xl bg-white shadow-2xl md:inset-x-auto md:inset-y-0 md:right-0 md:max-h-none md:w-[400px] md:rounded-none md:border-l md:border-gray-200">
-              <div className="flex justify-center pt-2 md:hidden">
-                <span className="h-1 w-10 rounded-full bg-gray-200" />
-              </div>
-              <div className="min-h-0 flex-1 overflow-hidden">{interviewPanel}</div>
-              <button
-                type="button"
-                onClick={() => setSelectedAbilityId(null)}
-                className="border-t border-gray-100 py-2.5 text-center text-xs font-medium text-gray-500"
-              >
-                {lang === 'ko' ? '닫기' : '閉じる'}
-              </button>
-            </div>
-          </div>
-        )}
       </div>
     );
   }

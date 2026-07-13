@@ -1,11 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import {
   parseAbilities,
+  parseAtoms,
   parseDependencies,
   parseEvidences,
   parseGrowthLines,
   parseRoles,
+  parseTags,
+  parseWeapons,
   validateReferences,
+  type LadderDataSet,
 } from './loadLadderData';
 
 const rolesCsv = [
@@ -35,6 +39,40 @@ const evidencesCsv = [
   'a1-e1,a1,要点を記録できる,요점을 기록할 수 있다,practice,inquiry|reporting,説明できますか？,설명할 수 있나요?,1',
   'a1-e2,a1,経験がある,경험이 있다,experience,inquiry,,,2',
 ].join('\n');
+
+// v2.7 素材→武器モデル
+const tagsCsv = [
+  'tagId,labelJa,labelKo,sortOrder',
+  'inquiry,問い合わせ対応,문의 대응,1',
+  'reporting,記録・報告,기록·보고,2',
+].join('\n');
+
+const atomsCsv = [
+  'atomId,tagId,statement,statementKo,firstStage,sortOrder',
+  'at1,inquiry,問い合わせを受け付けられる,문의를 접수할 수 있다,1,1',
+  'at2,reporting,要点を記録できる,요점을 기록할 수 있다,1,1',
+  'at3,inquiry,発報内容を照合できる,발보 내용을 대조할 수 있다,2,2',
+].join('\n');
+
+const weaponsCsv = [
+  'weaponId,roleId,tagId,statement,statementKo,composedOf,sortOrder',
+  'w1,r2,inquiry,障害の概要を整理できる,장애 개요를 정리할 수 있다,at1|at2|at3,1',
+].join('\n');
+
+/** validateReferences 用のフルデータセットを組み立てる */
+function buildDataSet(over: Partial<LadderDataSet> = {}): LadderDataSet {
+  return {
+    roles: parseRoles(rolesCsv),
+    dependencies: parseDependencies(depsCsv),
+    abilities: parseAbilities(abilitiesCsv),
+    evidences: parseEvidences(evidencesCsv),
+    growthLines: parseGrowthLines(growthLinesCsv),
+    tags: parseTags(tagsCsv),
+    atoms: parseAtoms(atomsCsv),
+    weapons: parseWeapons(weaponsCsv),
+    ...over,
+  };
+}
 
 describe('loadLadderData の CSV 変換 (CSV が DB — 確定 #24)', () => {
   it('roles: 型変換と任意項目の undefined 化', () => {
@@ -81,25 +119,14 @@ describe('loadLadderData の CSV 変換 (CSV が DB — 確定 #24)', () => {
   });
 
   it('参照整合性: evidence が存在しない ability を参照するとエラー', () => {
-    const data = {
-      roles: parseRoles(rolesCsv),
-      dependencies: parseDependencies(depsCsv),
-      abilities: parseAbilities(abilitiesCsv),
+    const data = buildDataSet({
       evidences: parseEvidences(evidencesCsv.replace(/a1,/g, 'aX,').replace('a1-e1,aX', 'a1-e1,aX')),
-      growthLines: parseGrowthLines(growthLinesCsv),
-    };
+    });
     expect(() => validateReferences(data)).toThrow(/abilityId/);
   });
 
   it('参照整合性: 正常データは通過', () => {
-    const data = {
-      roles: parseRoles(rolesCsv),
-      dependencies: parseDependencies(depsCsv),
-      abilities: parseAbilities(abilitiesCsv),
-      evidences: parseEvidences(evidencesCsv),
-      growthLines: parseGrowthLines(growthLinesCsv),
-    };
-    expect(() => validateReferences(data)).not.toThrow();
+    expect(() => validateReferences(buildDataSet())).not.toThrow();
   });
 
   // ------------------------------------------------------------------
@@ -133,13 +160,9 @@ describe('loadLadderData の CSV 変換 (CSV が DB — 確定 #24)', () => {
   });
 
   it('参照整合性: growthLineId が growth-lines に無いとエラー (AC-11.2)', () => {
-    const data = {
-      roles: parseRoles(rolesCsv),
-      dependencies: parseDependencies(depsCsv),
+    const data = buildDataSet({
       abilities: parseAbilities(abilitiesCsv.replace(',1,response', ',1,unknown-line')),
-      evidences: parseEvidences(evidencesCsv),
-      growthLines: parseGrowthLines(growthLinesCsv),
-    };
+    });
     expect(() => validateReferences(data)).toThrow(/growthLineId/);
   });
 
@@ -162,13 +185,43 @@ describe('loadLadderData の CSV 変換 (CSV が DB — 確定 #24)', () => {
   it('参照整合性: growsInto が存在しない能力を参照するとエラー (v2.6e)', () => {
     const header =
       'abilityId,roleId,statement,statementKo,roleStatement,roleStatementKo,toolsReference,weight,isCommon,commonGroupId,sortOrder,growthLineId,growsInto';
-    const data = {
-      roles: parseRoles(rolesCsv),
-      dependencies: parseDependencies(depsCsv),
+    const data = buildDataSet({
       abilities: parseAbilities([header, 'a1,r1,文,문,役,역,,1,false,,1,response,aX'].join('\n')),
-      evidences: parseEvidences(evidencesCsv),
-      growthLines: parseGrowthLines(growthLinesCsv),
-    };
+    });
     expect(() => validateReferences(data)).toThrow(/growsInto/);
+  });
+  // ------------------------------------------------------------------
+  // 素材→武器モデル (v2.7 — AC-12)
+  // ------------------------------------------------------------------
+
+  it('tags/atoms/weapons: 型変換 (v2.7)', () => {
+    const tags = parseTags(tagsCsv);
+    expect(tags).toHaveLength(2);
+    expect(tags[0]).toMatchObject({ tagId: 'inquiry', labelJa: '問い合わせ対応', sortOrder: 1 });
+    const atoms = parseAtoms(atomsCsv);
+    expect(atoms[2]).toMatchObject({ atomId: 'at3', tagId: 'inquiry', firstStage: 2 });
+    const weapons = parseWeapons(weaponsCsv);
+    expect(weapons[0].composedOf).toEqual(['at1', 'at2', 'at3']);
+  });
+
+  it('参照整合性: atom の tagId が tags に無いとエラー (v2.7)', () => {
+    const data = buildDataSet({
+      atoms: parseAtoms(atomsCsv.replace('at1,inquiry', 'at1,unknown-tag')),
+    });
+    expect(() => validateReferences(data)).toThrow(/tagId/);
+  });
+
+  it('参照整合性: weapon の composedOf が存在しない素材を参照するとエラー (v2.7)', () => {
+    const data = buildDataSet({
+      weapons: parseWeapons(weaponsCsv.replace('at1|at2|at3', 'at1|atX')),
+    });
+    expect(() => validateReferences(data)).toThrow(/composedOf/);
+  });
+
+  it('参照整合性: weapon の roleId が roles に無いとエラー (v2.7)', () => {
+    const data = buildDataSet({
+      weapons: parseWeapons(weaponsCsv.replace('w1,r2', 'w1,rX')),
+    });
+    expect(() => validateReferences(data)).toThrow(/roleId/);
   });
 });

@@ -157,6 +157,52 @@ export interface Evidence {
 }
 
 // ---------------------------------------------------------------------------
+// v2.7: 素材→武器モデル (企画書 §0-E — アサリさんフィードバック)
+//   タグ(区分) → 原子能力(素材, 1文1概念・全域で再利用) → 武器(上位能力 = 素材の組み合わせ)
+// ---------------------------------------------------------------------------
+
+/** 業務の区分。セルにはタグ名が表示され、開くと原子能力が展開される。段階を貫通して持続 */
+export interface Tag {
+  tagId: string;
+  labelJa: string;
+  sortOrder: number;
+  labelKo?: string;
+}
+
+/**
+ * 原子能力 (素材)。1文1概念・再利用可能な最小単位。
+ * チェックの単位はこの原子。全現場の合集合を目指して網羅的に列挙する。
+ */
+export interface Atom {
+  atomId: string;
+  tagId: string;
+  statement: string;
+  /** この素材が最初に登場する段階 (stageOrder)。上位段階では差分として強調される */
+  firstStage: number;
+  sortOrder: number;
+  statementKo?: string;
+}
+
+/**
+ * 武器 (上位能力)。下位の原子能力 複数の組み合わせ (多:1) で成立する。
+ * 構成素材の文言は原子の原文そのまま表示される (文言一致 — AC-12.4)。
+ */
+export interface Weapon {
+  weaponId: string;
+  roleId: string;
+  /** 表示上の主タグ (この列のセルに置かれる) */
+  tagId: string;
+  statement: string;
+  /** 構成素材の atomId 一覧。差分素材 (firstStage = この武器の段階) を含む */
+  composedOf: string[];
+  sortOrder: number;
+  statementKo?: string;
+}
+
+/** atomId -> チェック済みか (素材単位のチェック — v2.7) */
+export type AtomCheckMap = Record<string, boolean>;
+
+// ---------------------------------------------------------------------------
 // dependencies: 前提関係
 // ---------------------------------------------------------------------------
 

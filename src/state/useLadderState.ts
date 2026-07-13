@@ -10,12 +10,13 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { EvidenceCheckMap, ManagerConfirmMap } from '../domain/types';
+import type { AtomCheckMap, EvidenceCheckMap, ManagerConfirmMap } from '../domain/types';
 import { KO_UI_ENABLED } from '../domain/i18n';
 import type { Lang } from '../domain/i18n';
 
 const CHECKS_KEY = 'career-ladder-evidence-checks:v2';
 const CONFIRMS_KEY = 'career-ladder-manager-confirms:v2';
+const ATOM_CHECKS_KEY = 'career-ladder-atom-checks:v1';
 const LANG_KEY = 'career-ladder-lang:v1';
 
 /** 既定は日本語 (共有時の事故防止 — 確定 #21)。韓国語は作業用 */
@@ -90,6 +91,8 @@ export function useLadderState() {
     loadBooleanMap(CONFIRMS_KEY),
   );
   const [selectedAbilityId, setSelectedAbilityId] = useState<string | null>(null);
+  // v2.7 素材 (原子能力) 単位のチェック — 業務ロードマップ (素材→武器) 用
+  const [atomChecks, setAtomChecks] = useState<AtomCheckMap>(() => loadBooleanMap(ATOM_CHECKS_KEY));
   const [lang, setLangRaw] = useState<Lang>(loadLang);
 
   const setLang = useCallback((next: Lang) => {
@@ -118,6 +121,14 @@ export function useLadderState() {
     }
   }, [managerConfirms]);
 
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(ATOM_CHECKS_KEY, JSON.stringify(atomChecks));
+    } catch {
+      /* 同上 */
+    }
+  }, [atomChecks]);
+
   const setTargetRoleId = useCallback((roleId: string) => {
     setTargetRoleIdRaw(roleId);
     setSelectedAbilityId(null);
@@ -136,6 +147,16 @@ export function useLadderState() {
       const next = { ...prev };
       if (next[evidenceId]) delete next[evidenceId];
       else next[evidenceId] = true;
+      return next;
+    });
+  }, []);
+
+  /** 素材 (原子能力) のチェックを反転 (v2.7) */
+  const toggleAtom = useCallback((atomId: string) => {
+    setAtomChecks((prev) => {
+      const next = { ...prev };
+      if (next[atomId]) delete next[atomId];
+      else next[atomId] = true;
       return next;
     });
   }, []);
@@ -220,6 +241,8 @@ export function useLadderState() {
       toggleEvidence,
       managerConfirms,
       toggleManagerConfirm,
+      atomChecks,
+      toggleAtom,
       selectedAbilityId,
       setSelectedAbilityId,
       lang,
@@ -235,6 +258,8 @@ export function useLadderState() {
       toggleEvidence,
       managerConfirms,
       toggleManagerConfirm,
+      atomChecks,
+      toggleAtom,
       selectedAbilityId,
       setSelectedAbilityId,
       lang,
