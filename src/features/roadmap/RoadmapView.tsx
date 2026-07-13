@@ -237,6 +237,81 @@ const RoadmapView: React.FC<RoadmapViewProps> = ({
   const hasAbilityEdges = abilityEdges.length > 0;
 
   // ---------------------------------------------------------------------
+  // カードの横位置 (スロット) 計算 — バリセンター整列
+  //   1. 親 (下段からの継承元) があるカードは親の x 平均に置く → 矢印が縦にまっすぐ登る
+  //   2. 同じ親から分岐する兄弟は親を中心に対称配置 (分岐・合流点は中央揃え)
+  //   3. 親は無いが上へつながるカードはその右、どこにもつながらないカードは右端へ
+  //   4. 衝突は右へずらして解消し、最後に列全体を左詰めに正規化
+  // ---------------------------------------------------------------------
+  const SLOT_W = 174; // カード 168px + 間隔 6px
+  const slotByAbility = useMemo(() => {
+    const parentsOf = new Map<string, string[]>();
+    const childCount = new Map<string, number>();
+    for (const a of abilities) {
+      for (const to of a.growsInto ?? []) {
+        parentsOf.set(to, [...(parentsOf.get(to) ?? []), a.abilityId]);
+        childCount.set(a.abilityId, (childCount.get(a.abilityId) ?? 0) + 1);
+      }
+    }
+
+    const result = new Map<string, number>();
+    for (const line of lineDefs) {
+      const placed = new Map<string, number>();
+      // 下の段から順に配置
+      for (const role of stepsAsc) {
+        const cards = [...(line.cells.get(role.roleId) ?? [])].sort(
+          (p, q) => p.sortOrder - q.sortOrder,
+        );
+        if (cards.length === 0) continue;
+
+        interface Group { start: number; members: Ability[] }
+        const groupByKey = new Map<string, { barycenter: number; members: Ability[] }>();
+        const noParentLinked: Ability[] = [];
+        const isolated: Ability[] = [];
+
+        for (const a of cards) {
+          const parents = (parentsOf.get(a.abilityId) ?? []).filter((p) => placed.has(p));
+          if (parents.length > 0) {
+            const key = [...parents].sort().join('|');
+            const g = groupByKey.get(key);
+            const barycenter =
+              parents.reduce((sum, p) => sum + (placed.get(p) ?? 0), 0) / parents.length;
+            if (g) g.members.push(a);
+            else groupByKey.set(key, { barycenter, members: [a] });
+          } else if ((childCount.get(a.abilityId) ?? 0) > 0) {
+            noParentLinked.push(a);
+          } else {
+            isolated.push(a);
+          }
+        }
+
+        // 同じ親を持つ兄弟は親 (バリセンター) を中心に対称に広げる
+        const groups: Group[] = [...groupByKey.values()]
+          .map((g) => ({ start: g.barycenter - (g.members.length - 1) / 2, members: g.members }))
+          .sort((p, q) => p.start - q.start);
+
+        let cursor = Number.NEGATIVE_INFINITY;
+        for (const g of groups) {
+          const start = Math.max(g.start, cursor);
+          g.members.forEach((a, i) => placed.set(a.abilityId, start + i));
+          cursor = start + g.members.length;
+        }
+        // 親なし・上へつながる → 配置済みの右隣 / 完全な末端 → さらに右
+        for (const a of [...noParentLinked, ...isolated]) {
+          const x = cursor === Number.NEGATIVE_INFINITY ? 0 : cursor;
+          placed.set(a.abilityId, x);
+          cursor = x + 1;
+        }
+      }
+      // 列内で左詰めに正規化
+      const values = [...placed.values()];
+      const min = values.length > 0 ? Math.min(...values) : 0;
+      for (const [id, x] of placed) result.set(id, x - min);
+    }
+    return result;
+  }, [abilities, lineDefs, stepsAsc]);
+
+  // ---------------------------------------------------------------------
   // 矢印の描画 (デスクトップ): カードの実位置を測って SVG オーバーレイに描く
   // ---------------------------------------------------------------------
   const gridWrapRef = useRef<HTMLDivElement | null>(null);
@@ -393,7 +468,7 @@ const RoadmapView: React.FC<RoadmapViewProps> = ({
                               <div className="h-3" aria-hidden />
                             )}
                             <div
-                              className={`flex flex-1 flex-row items-start gap-1.5 rounded-lg border px-1.5 py-1.5 ${line.color.band} ${
+                              className={`flex flex-1 flex-row items-start rounded-lg border px-1.5 py-1.5 ${line.color.band} ${
                                 isSpanTop ? 'rounded-t-xl' : ''
                               } ${isSpanBottom ? 'rounded-b-xl' : ''}`}
                             >
@@ -402,18 +477,37 @@ const RoadmapView: React.FC<RoadmapViewProps> = ({
                                   —
                                 </span>
                               ) : (
-                                // 横並び: 矢印が隣のカードを貫通しないように縦積みを避ける
-                                cellAbilities.map((a) => (
-                                  <div key={a.abilityId} className="w-[168px] shrink-0">
-                                    <AbilityCard
-                                      ability={a}
-                                      evaluation={evalOf(a)}
-                                      lang={lang}
-                                      onSelect={onSelectAbility}
-                                      innerRef={setCardRef(a.abilityId)}
-                                    />
-                                  </div>
-                                ))
+                                // 横並び + バリセンター整列: 継承先の真下に置き、矢印が縦にまっすぐ登る
+                                [...cellAbilities]
+                                  .sort(
+                                    (p, q) =>
+                                      (slotByAbility.get(p.abilityId) ?? 0) -
+                                      (slotByAbility.get(q.abilityId) ?? 0),
+                                  )
+                                  .map((a, i, sorted) => {
+                                    const slot = slotByAbility.get(a.abilityId) ?? 0;
+                                    const prevSlot =
+                                      i === 0 ? null : (slotByAbility.get(sorted[i - 1].abilityId) ?? 0);
+                                    const marginLeft =
+                                      prevSlot === null
+                                        ? slot * SLOT_W
+                                        : Math.max(0, (slot - prevSlot) * SLOT_W - 168);
+                                    return (
+                                      <div
+                                        key={a.abilityId}
+                                        className="w-[168px] shrink-0"
+                                        style={{ marginLeft }}
+                                      >
+                                        <AbilityCard
+                                          ability={a}
+                                          evaluation={evalOf(a)}
+                                          lang={lang}
+                                          onSelect={onSelectAbility}
+                                          innerRef={setCardRef(a.abilityId)}
+                                        />
+                                      </div>
+                                    );
+                                  })
                               )}
                             </div>
                             <div className="h-3" aria-hidden />
