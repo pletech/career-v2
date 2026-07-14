@@ -13,13 +13,23 @@ import { loadCareerDataFromSheets } from './data/loadCareerDataFromSheets';
 import LadderScreen from './features/ladder/LadderScreen';
 
 /**
- * 階段ビュー (v2, 育成面談用) を既定とし、既存の全体マップは補助画面として残す。
- * roadmap = 業務ロードマップ (v2.6): 行=業務の成長ライン × 列=段階のマトリクス。
+ * 業務ロードマップ (v2.7 素材→武器モデル) を既定とし、既存の全体マップは補助画面として残す。
+ * 階段ビュー (旧 abilities/evidences モデル) はタブから外したが、コード・データは温存
+ * (STEP3〜4 コンテンツの移行元・ゲート判定の再利用余地のため — 物理削除は移行完了後)。
+ * ?view=ladder で必要時に呼び出せる。
  */
 type ViewMode = 'ladder' | 'roadmap' | 'map';
 
 const App: React.FC = () => {
-  const [viewMode, setViewMode] = useState<ViewMode>('ladder');
+  const [viewMode, setViewMode] = useState<ViewMode>(() => {
+    try {
+      return new URLSearchParams(window.location.search).get('view') === 'ladder'
+        ? 'ladder'
+        : 'roadmap';
+    } catch {
+      return 'roadmap';
+    }
+  });
   const [data, setData] = useState<CareerDataSet | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -171,7 +181,7 @@ const App: React.FC = () => {
               <h1 className="text-base md:text-xl font-bold text-gray-800 tracking-tight truncate leading-tight">Career Path</h1>
               <p className="text-[9px] md:text-[11px] text-gray-400 truncate">
                 {viewMode === 'ladder'
-                  ? '階段型キャリアパス（育成面談用）'
+                  ? '階段型キャリアパス（旧ビュー）'
                   : viewMode === 'roadmap'
                     ? '業務ロードマップ（業務×段階の成長マップ）'
                     : 'キャリアパスモデル（育成面談用）'}
@@ -179,17 +189,6 @@ const App: React.FC = () => {
             </div>
             <div className="inline-flex shrink-0 items-center gap-2">
               <div className="inline-flex rounded-lg border border-gray-200 bg-gray-50 p-0.5" role="tablist">
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={viewMode === 'ladder'}
-                  onClick={() => setViewMode('ladder')}
-                  className={`rounded-md px-2.5 py-1 text-[11px] md:text-xs font-medium transition-colors ${
-                    viewMode === 'ladder' ? 'bg-white text-cyan-700 shadow-sm' : 'text-gray-500'
-                  }`}
-                >
-                  階段ビュー
-                </button>
                 <button
                   type="button"
                   role="tab"
