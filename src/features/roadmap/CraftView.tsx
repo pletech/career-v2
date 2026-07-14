@@ -3,16 +3,17 @@ import { STRINGS, loc, type Lang } from '../../domain/i18n';
 import type { Atom, AtomCheckMap, Role, Tag } from '../../domain/types';
 
 /**
- * 業務ロードマップ v2.7 — 素材→武器モデル (企画書 §0-E / AC-12)
+ * 業務ロードマップ v2.7 — 段階アコーディオン (企画書 §0-E / AC-12)
  *
- * ゲームのクラフトのように「素材 (原子能力) を集めると上位の武器 (能力) になる」構造。
- * - 行 = 段階 (下が STEP1)。当面は STEP1→STEP2 の2段フォーカス (アサリさん合意)
- * - 列 = 業務の区分 (タグ)。セルにはタグ名と素材の達成数のみ表示し、
- *   タップすると素材チェックリストが開く (ドリルダウン — 情報過多の防止)
- * - 上の段階でタグを開くと、下で身につけた素材はチェック済みのまま引き継がれ、
- *   その段階で新たに必要になる素材 (差分) が NEW として強調される
- * - 武器は構成素材の組み合わせ (多:1)。素材の文言は原文そのまま表示 (文言一致 — AC-12.4)
- * - チェックの単位は素材。武器の進捗は構成素材の達成率から自動派生
+ * - 行 = 段階 (下が STEP1)。列 = 業務の区分 (タグ)
+ * - 段階の見出しを押すと、その段階だけ「チェックリスト」が表の中で開く。
+ *   同時に開くのは1段階のみ。閉じている段階は件数だけを表示する
+ *   (アサリさん: クリックしないと見えないのが不満 / 情報過多も避ける → 折衷)
+ * - 上の段階を開くと、下で身につけた項目はチェック済みのまま引き継がれ、
+ *   その段階で新たに必要になる項目 (差分) が NEW として強調される
+ * - チェックの単位は原子 (できると言える項目)。ドリルダウンのドロワーは廃止し、
+ *   表の中でインライン展開する
+ * - モバイル: 段階ごとの縦セクション (列を横に並べない)
  */
 
 interface CraftViewProps {
@@ -24,8 +25,6 @@ interface CraftViewProps {
   lang: Lang;
 }
 
-type DrawerState = { kind: 'tag'; tagId: string; stage: number } | null;
-
 const CraftView: React.FC<CraftViewProps> = ({
   roles,
   tags,
@@ -36,85 +35,48 @@ const CraftView: React.FC<CraftViewProps> = ({
 }) => {
   const s = STRINGS[lang];
   const ko = lang === 'ko';
-  const [drawer, setDrawer] = useState<DrawerState>(null);
 
   const sortedTags = useMemo(() => [...tags].sort((a, b) => a.sortOrder - b.sortOrder), [tags]);
 
-  /** 2段フォーカス: 素材データが存在する段階のみ行にする (現在は STEP1・STEP2) */
-  const stagesShown = useMemo(
+  /** 素材データが存在する段階のみ (現在は STEP1・STEP2) */
+  const stagesDesc = useMemo(
     () => [...new Set(atoms.map((a) => a.firstStage))].sort((a, b) => b - a), // 上 = 高い段階
     [atoms],
+  );
+  const stagesAsc = useMemo(() => [...stagesDesc].reverse(), [stagesDesc]);
+
+  // 既定で STEP1 を開く。同時に開くのは1段階のみ (null = 全て閉じる)
+  const [openStage, setOpenStage] = useState<number | null>(
+    () => (atoms.length > 0 ? Math.min(...atoms.map((a) => a.firstStage)) : 1),
   );
 
   const roleOfStage = (stage: number): Role | undefined =>
     roles.find((r) => r.stageOrder === stage && r.status !== 'hidden');
 
-  const atomsOf = (tagId: string, upToStage: number): Atom[] =>
+  const atomsUpTo = (tagId: string, stage: number): Atom[] =>
     atoms
-      .filter((a) => a.tagId === tagId && a.firstStage <= upToStage)
+      .filter((a) => a.tagId === tagId && a.firstStage <= stage)
       .sort((a, b) => a.firstStage - b.firstStage || a.sortOrder - b.sortOrder);
+
+  const diffAtoms = (tagId: string, stage: number): Atom[] =>
+    atoms
+      .filter((a) => a.tagId === tagId && a.firstStage === stage)
+      .sort((a, b) => a.sortOrder - b.sortOrder);
 
   const checkedCount = (list: Atom[]): number =>
     list.filter((a) => atomChecks[a.atomId] === true).length;
 
   // ---------------------------------------------------------------------
-  // セル
+  // 部品
   // ---------------------------------------------------------------------
-  const tagCell = (tag: Tag, stage: number) => {
-    const cumulative = atomsOf(tag.tagId, stage);
-    const diff = cumulative.filter((a) => a.firstStage === stage);
-    // その段階に新規素材が無いタグは、最初に登場した段階にだけセルを出す
-    const isOrigin = cumulative.length > 0 && Math.min(...cumulative.map((a) => a.firstStage)) === stage;
-    if (!isOrigin && diff.length === 0) return null;
-
-    const done = checkedCount(cumulative);
-    const complete = cumulative.length > 0 && done === cumulative.length;
-    // セルにはタグ名を繰り返さない (列ヘッダーに既出)。達成数と状態、タップ導線のみ
-    return (
-      <button
-        type="button"
-        onClick={() => setDrawer({ kind: 'tag', tagId: tag.tagId, stage })}
-        className={`flex h-full w-full flex-col justify-center gap-1 rounded-lg border px-2.5 py-2.5 text-left transition-colors ${
-          complete
-            ? 'border-emerald-200 bg-emerald-50/60 hover:border-emerald-300'
-            : 'border-cyan-100 bg-cyan-50/50 hover:border-cyan-300 hover:bg-cyan-50'
-        }`}
-      >
-        <span className="flex flex-wrap items-center gap-1.5">
-          <span
-            className={`rounded px-1.5 py-0.5 text-[11px] font-bold ${
-              complete ? 'bg-emerald-100 text-emerald-700' : 'bg-white text-gray-700'
-            }`}
-          >
-            {done}/{cumulative.length}
-          </span>
-          {stage > 1 && diff.length > 0 && (
-            <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold text-amber-700">
-              +{diff.length} NEW
-            </span>
-          )}
-          {stage > 1 && diff.length === 0 && (
-            <span className="text-[9.5px] text-gray-400">{ko ? '인계만' : '引き継ぎのみ'}</span>
-          )}
-        </span>
-        <span className="text-[10px] text-cyan-700">
-          {ko ? '소재 보기 ▸' : '素材をみる ▸'}
-        </span>
-      </button>
-    );
-  };
-
-  // ---------------------------------------------------------------------
-  // ドロワー内容
-  // ---------------------------------------------------------------------
-  const atomRow = (atom: Atom, opts: { isNew?: boolean; inherited?: boolean }) => {
+  const atomRow = (atom: Atom, opts: { isNew?: boolean; inherited?: boolean } = {}) => {
     const checked = atomChecks[atom.atomId] === true;
     return (
       <label
         key={atom.atomId}
-        className={`flex cursor-pointer items-start gap-2 rounded-lg border px-2.5 py-2 transition-colors ${
+        className={`flex cursor-pointer items-start gap-2 rounded-lg border px-2 py-1.5 transition-colors ${
           opts.isNew
-            ? 'border-amber-200 bg-amber-50/60 hover:border-amber-300'
+            ? 'border-amber-200 bg-amber-50/70 hover:border-amber-300'
             : opts.inherited
               ? 'border-gray-100 bg-gray-50/60 hover:border-gray-200'
               : 'border-gray-100 bg-white hover:border-cyan-200'
@@ -128,7 +90,7 @@ const CraftView: React.FC<CraftViewProps> = ({
         />
         <span className="min-w-0 flex-1">
           <span
-            className={`block text-[12px] leading-snug ${
+            className={`block text-[11.5px] leading-snug ${
               opts.inherited && checked ? 'text-gray-400' : 'text-gray-800'
             }`}
           >
@@ -144,72 +106,66 @@ const CraftView: React.FC<CraftViewProps> = ({
     );
   };
 
-  const drawerContent = () => {
-    if (!drawer) return null;
-    const tag = sortedTags.find((t) => t.tagId === drawer.tagId);
-    if (!tag) return null;
-    const inherited = atomsOf(tag.tagId, drawer.stage - 1);
-    const diff = atoms
-      .filter((a) => a.tagId === tag.tagId && a.firstStage === drawer.stage)
-      .sort((a, b) => a.sortOrder - b.sortOrder);
-    const role = roleOfStage(drawer.stage);
+  /** 開いた段階のセル: チェックリストをインライン展開 */
+  const checklistBody = (tag: Tag, stage: number) => {
+    const inherited = atomsUpTo(tag.tagId, stage - 1);
+    const diff = diffAtoms(tag.tagId, stage);
+    if (stage === Math.min(...stagesAsc)) {
+      // 最下段: 差分/継承の区別なく全件
+      const all = atomsUpTo(tag.tagId, stage);
+      return <div className="flex flex-col gap-1">{all.map((a) => atomRow(a))}</div>;
+    }
     return (
-      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 py-3">
-        <p className="text-[10px] font-semibold text-gray-400">
-          STEP {drawer.stage}
-          {role ? ` ・ ${loc(lang, role.shortLabel, role.shortLabelKo)}` : ''}
-        </p>
-        <h3 className="mt-0.5 text-[15px] font-bold text-gray-800">
-          {loc(lang, tag.labelJa, tag.labelKo)}
-        </h3>
-        {drawer.stage > 1 && (
-          <>
-            <p className="mt-3 text-[11px] font-semibold text-gray-500">
-              {ko
-                ? `이 단계에서 새로 필요해지는 것 (차분 ${diff.length}건)`
-                : `この段階で新たに必要になるもの（差分 ${diff.length}件）`}
-            </p>
-            <div className="mt-1.5 flex flex-col gap-1.5">
-              {diff.length === 0 ? (
-                <p className="text-[11px] text-gray-400">{ko ? '신규 없음' : '新規なし'}</p>
-              ) : (
-                diff.map((a) => atomRow(a, { isNew: true }))
-              )}
-            </div>
-            <p className="mt-4 text-[11px] font-semibold text-gray-500">
-              {ko
-                ? `아래 단계에서 인계 (체크 상태 계승 ・ ${checkedCount(inherited)}/${inherited.length})`
-                : `下の段階から引き継ぎ（チェック状態を継承 ・ ${checkedCount(inherited)}/${inherited.length}）`}
-            </p>
-          </>
+      <div className="flex flex-col gap-1">
+        {diff.length > 0 && (
+          <p className="text-[9.5px] font-semibold text-amber-700">
+            {ko ? `이 단계에서 추가 (${diff.length})` : `この段階で追加（${diff.length}）`}
+          </p>
         )}
-        <div className="mt-1.5 flex flex-col gap-1.5 pb-2">
-          {(drawer.stage > 1 ? inherited : atomsOf(tag.tagId, drawer.stage)).map((a) =>
-            atomRow(a, { inherited: drawer.stage > 1 }),
-          )}
-        </div>
+        {diff.map((a) => atomRow(a, { isNew: true }))}
+        {inherited.length > 0 && (
+          <p className="mt-1 text-[9.5px] font-semibold text-gray-400">
+            {ko ? '아래 단계에서 인계' : '下の段階から引き継ぎ'}
+          </p>
+        )}
+        {inherited.map((a) => atomRow(a, { inherited: true }))}
       </div>
     );
   };
 
-  // ---------------------------------------------------------------------
-  // 行ラベル
-  // ---------------------------------------------------------------------
-  const stepLabel = (stage: number) => {
-    const role = roleOfStage(stage);
+  /** 閉じた段階のセル: 件数のみ (「チェックリスト n/m」) */
+  const summaryBody = (tag: Tag, stage: number) => {
+    const cumulative = atomsUpTo(tag.tagId, stage);
+    const diff = diffAtoms(tag.tagId, stage);
+    const done = checkedCount(cumulative);
+    const complete = cumulative.length > 0 && done === cumulative.length;
     return (
-      <div className="text-right">
-        <span className="inline-flex flex-col items-end gap-0.5 md:flex-row md:items-center md:gap-1.5">
-          <span className="rounded bg-cyan-100 px-1.5 py-0.5 text-[10px] font-bold text-cyan-800">
-            STEP {stage}
+      <span className="flex flex-col gap-1">
+        <span className="flex flex-wrap items-center gap-1">
+          <span className="text-[9.5px] text-gray-400">{ko ? '체크리스트' : 'チェックリスト'}</span>
+          <span
+            className={`rounded px-1.5 py-0.5 text-[11px] font-bold ${
+              complete ? 'bg-emerald-100 text-emerald-700' : 'bg-white text-gray-700'
+            }`}
+          >
+            {done}/{cumulative.length}
           </span>
+          {stage > 1 && diff.length > 0 && (
+            <span className="rounded bg-amber-100 px-1 py-0.5 text-[9.5px] font-bold text-amber-700">
+              +{diff.length} NEW
+            </span>
+          )}
         </span>
-        <span className="mt-1 block text-[10.5px] font-semibold leading-tight text-gray-600">
-          {role ? loc(lang, role.shortLabel, role.shortLabelKo) : ''}
-        </span>
-      </div>
+      </span>
     );
   };
+
+  const stepLabelText = (stage: number) => {
+    const role = roleOfStage(stage);
+    return { stage, role };
+  };
+
+  const toggle = (stage: number) => setOpenStage((cur) => (cur === stage ? null : stage));
 
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden">
@@ -217,14 +173,15 @@ const CraftView: React.FC<CraftViewProps> = ({
         <p className="text-[11px] leading-relaxed text-gray-500">{s.roadmapLegend}</p>
       </div>
 
-      <div className="min-h-0 flex-1 px-2 pb-3 pt-3 md:px-5">
+      {/* ============ デスクトップ: アコーディオン表 (md以上) ============ */}
+      <div className="hidden min-h-0 flex-1 px-2 pb-3 pt-3 md:block md:px-5">
         <div className="h-full overflow-auto rounded-xl border border-gray-200 bg-white">
           <div
             className="grid w-full min-w-[1120px]"
-            style={{ gridTemplateColumns: `max-content repeat(${sortedTags.length}, minmax(150px, 1fr))` }}
+            style={{ gridTemplateColumns: `160px repeat(${sortedTags.length}, minmax(150px, 1fr))` }}
           >
-            {/* ヘッダー行: タグ (スクロールしても上部固定) */}
-            <div className="sticky left-0 top-0 z-30 w-[80px] border-b border-r border-gray-200 bg-gray-50 px-1.5 py-2.5 md:w-[120px] md:px-3" />
+            {/* ヘッダー行: タグ (上部固定) */}
+            <div className="sticky left-0 top-0 z-30 w-40 border-b border-r border-gray-200 bg-gray-50 px-3 py-2.5" />
             {sortedTags.map((tag) => (
               <div
                 key={tag.tagId}
@@ -236,8 +193,8 @@ const CraftView: React.FC<CraftViewProps> = ({
               </div>
             ))}
 
-            {/* 上位段階の拡張予告 */}
-            <div className="sticky left-0 z-10 w-[80px] border-b border-r border-gray-100 bg-gray-50/60 px-1.5 py-2 md:w-[120px] md:px-3">
+            {/* 上位段階の予告 */}
+            <div className="sticky left-0 z-10 w-40 border-b border-r border-gray-100 bg-gray-50/60 px-3 py-2">
               <span className="block text-right text-[9.5px] leading-tight text-gray-400">STEP 3〜6</span>
             </div>
             <div
@@ -245,24 +202,129 @@ const CraftView: React.FC<CraftViewProps> = ({
               style={{ gridColumn: `span ${sortedTags.length}` }}
             >
               {ko
-                ? '분해를 순차 확장 예정 (현재는 STEP1 전수 + STEP2 차분·조합 시연을 정비 중)'
-                : '分解は順次拡張予定（現在は STEP1 の網羅と STEP2 の差分・組み合わせを整備中）'}
+                ? '분해는 순차 확장 예정 (현재는 STEP1 전수 + STEP2 차분을 정비 중)'
+                : '分解は順次拡張予定（現在は STEP1 の網羅と STEP2 の差分を整備中）'}
             </div>
 
             {/* データ行: 上 = 高い段階 */}
-            {stagesShown.map((stage) => (
-              <React.Fragment key={stage}>
-                <div className="sticky left-0 z-10 w-[80px] border-b border-r border-gray-100 bg-white px-1.5 py-2.5 md:w-[120px] md:px-3">
-                  {stepLabel(stage)}
-                </div>
-                {sortedTags.map((tag) => (
-                  <div key={tag.tagId} className="border-b border-gray-100 p-1.5">
-                    {tagCell(tag, stage)}
-                  </div>
-                ))}
-              </React.Fragment>
-            ))}
+            {stagesDesc.map((stage) => {
+              const open = openStage === stage;
+              const { role } = stepLabelText(stage);
+              return (
+                <React.Fragment key={stage}>
+                  <button
+                    type="button"
+                    onClick={() => toggle(stage)}
+                    className={`sticky left-0 z-10 flex w-40 flex-col items-start gap-1 border-b border-r border-gray-100 px-3 py-2.5 text-left ${
+                      open ? 'bg-cyan-50' : 'bg-white hover:bg-gray-50'
+                    }`}
+                  >
+                    <span className="rounded bg-cyan-100 px-1.5 py-0.5 text-[10px] font-bold text-cyan-800">
+                      STEP {stage}
+                    </span>
+                    <span className="text-[10.5px] font-semibold leading-tight text-gray-600">
+                      {role ? loc(lang, role.shortLabel, role.shortLabelKo) : ''}
+                    </span>
+                    <span className="text-[10px] font-medium text-cyan-700">
+                      {open
+                        ? ko
+                          ? '닫기 ▾'
+                          : '閉じる ▾'
+                        : ko
+                          ? '체크리스트 열기 ▸'
+                          : 'チェックリストを開く ▸'}
+                    </span>
+                  </button>
+                  {sortedTags.map((tag) => (
+                    <div
+                      key={tag.tagId}
+                      className="flex flex-col border-b border-gray-100 p-1.5"
+                    >
+                      {open ? (
+                        checklistBody(tag, stage)
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => toggle(stage)}
+                          className="flex h-full w-full flex-col justify-center rounded-lg px-1 py-1 text-left hover:bg-gray-50"
+                        >
+                          {summaryBody(tag, stage)}
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </React.Fragment>
+              );
+            })}
           </div>
+        </div>
+      </div>
+
+      {/* ============ モバイル: 段階ごとの縦セクション ============ */}
+      <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-4 pt-3 md:hidden">
+        <div className="mb-3 rounded-lg border border-gray-100 bg-gray-50/60 px-3 py-2 text-[10px] text-gray-400">
+          {ko ? 'STEP 3~6 분해는 순차 확장 예정' : 'STEP 3〜6 の分解は順次拡張予定'}
+        </div>
+        <div className="flex flex-col gap-3">
+          {stagesAsc.map((stage) => {
+            const open = openStage === stage;
+            const { role } = stepLabelText(stage);
+            return (
+              <section key={stage} className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+                <button
+                  type="button"
+                  onClick={() => toggle(stage)}
+                  className={`flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left ${
+                    open ? 'bg-cyan-50' : 'bg-white'
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <span className="rounded bg-cyan-100 px-1.5 py-0.5 text-[10px] font-bold text-cyan-800">
+                      STEP {stage}
+                    </span>
+                    <span className="text-[12px] font-semibold text-gray-700">
+                      {role ? loc(lang, role.shortLabel, role.shortLabelKo) : ''}
+                    </span>
+                  </span>
+                  <span className="text-[11px] font-medium text-cyan-700">
+                    {open ? (ko ? '닫기 ▾' : '閉じる ▾') : ko ? '체크리스트 열기 ▸' : 'チェックリストを開く ▸'}
+                  </span>
+                </button>
+                <div className="flex flex-col divide-y divide-gray-100">
+                  {sortedTags.map((tag) => {
+                    const cumulative = atomsUpTo(tag.tagId, stage);
+                    const done = checkedCount(cumulative);
+                    const complete = cumulative.length > 0 && done === cumulative.length;
+                    const diff = diffAtoms(tag.tagId, stage);
+                    return (
+                      <div key={tag.tagId} className="px-3 py-2">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-[12px] font-bold text-gray-800">
+                            {loc(lang, tag.labelJa, tag.labelKo)}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            {stage > 1 && diff.length > 0 && (
+                              <span className="rounded bg-amber-100 px-1 py-0.5 text-[9.5px] font-bold text-amber-700">
+                                +{diff.length} NEW
+                              </span>
+                            )}
+                            <span
+                              className={`rounded px-1.5 py-0.5 text-[11px] font-bold ${
+                                complete ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-700'
+                              }`}
+                            >
+                              {done}/{cumulative.length}
+                            </span>
+                          </span>
+                        </div>
+                        {open && <div className="mt-1.5">{checklistBody(tag, stage)}</div>}
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            );
+          })}
         </div>
       </div>
 
@@ -270,31 +332,6 @@ const CraftView: React.FC<CraftViewProps> = ({
       <p className="shrink-0 border-t border-gray-100 bg-white px-3 py-2.5 text-[10px] leading-relaxed text-gray-400 md:px-5">
         {s.disclaimer}
       </p>
-
-      {/* ドロワー: モバイル=ボトムシート / md+=右ドロワー */}
-      {drawer && (
-        <div className="absolute inset-0 z-40">
-          <button
-            type="button"
-            aria-label="閉じる"
-            className="absolute inset-0 bg-black/30"
-            onClick={() => setDrawer(null)}
-          />
-          <div className="absolute inset-x-0 bottom-0 flex max-h-[82dvh] flex-col rounded-t-2xl bg-white shadow-2xl md:inset-x-auto md:inset-y-0 md:right-0 md:max-h-none md:w-[420px] md:rounded-none md:border-l md:border-gray-200">
-            <div className="flex justify-center pt-2 md:hidden">
-              <span className="h-1 w-10 rounded-full bg-gray-200" />
-            </div>
-            {drawerContent()}
-            <button
-              type="button"
-              onClick={() => setDrawer(null)}
-              className="border-t border-gray-100 py-2.5 text-center text-xs font-medium text-gray-500"
-            >
-              {ko ? '닫기' : '閉じる'}
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
