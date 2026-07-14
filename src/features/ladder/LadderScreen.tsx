@@ -257,7 +257,6 @@ const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps' }) => {
           roles={categoryRoles}
           tags={data.tags}
           atoms={data.atoms}
-          weapons={data.weapons}
           atomChecks={atomChecks}
           onToggleAtom={toggleAtom}
           lang={lang}
