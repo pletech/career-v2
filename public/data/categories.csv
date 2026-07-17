@@ -1,0 +1,11 @@
+categoryId,stage,labelJa,labelKo,includes,sortOrder
+c1-inquiry,1,問い合わせ対応,문의 대응,,1
+c1-reporting,1,記録・報告（報連相）,기록·보고 (호렌소),,2
+c1-procedure,1,手順書・定型作業,절차서·정형 작업,,3
+c1-account,1,アカウント対応,계정 대응,,4
+c1-device,1,端末・周辺機器,단말·주변기기,,5
+c1-monitoring,1,監視補助・基本確認,감시 보조·기본 확인,,6
+c1-itbasics,1,IT基礎知識,IT 기초 지식,,7
+c1-security,1,セキュリティ・ルール遵守,보안·룰 준수,,8
+c1-site,1,現場理解・体制,현장 이해·체제,,9
+c2-triage,2,監視・一次対応,감시·일차 대응,c1-monitoring|c1-itbasics,1

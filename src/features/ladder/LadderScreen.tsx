@@ -255,7 +255,7 @@ const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps' }) => {
       <div className="relative flex flex-1 overflow-hidden bg-gray-50">
         <CraftView
           roles={categoryRoles}
-          tags={data.tags}
+          categories={data.categories}
           atoms={data.atoms}
           atomChecks={atomChecks}
           onToggleAtom={toggleAtom}

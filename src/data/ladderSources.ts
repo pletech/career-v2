@@ -37,6 +37,8 @@ export interface LadderSourceUrls {
   tagsCsvUrl: string;
   atomsCsvUrl: string;
   weaponsCsvUrl: string;
+  /** v2.7d カテゴリモデル (段階別カテゴリ + 包含) */
+  categoriesCsvUrl: string;
 }
 
 /** 優先: Google スプレッドシート (タブを gid で指定) */
@@ -51,6 +53,7 @@ export const SHEET_SOURCES: LadderSourceUrls = {
   tagsCsvUrl: '',
   atomsCsvUrl: '',
   weaponsCsvUrl: '',
+  categoriesCsvUrl: '',
 };
 
 /** フォールバック: ビルドに同梱したローカル CSV */
@@ -63,4 +66,5 @@ export const LOCAL_SOURCES: LadderSourceUrls = {
   tagsCsvUrl: `${base}data/tags.csv`,
   atomsCsvUrl: `${base}data/atoms.csv`,
   weaponsCsvUrl: `${base}data/weapons.csv`,
+  categoriesCsvUrl: `${base}data/categories.csv`,
 };

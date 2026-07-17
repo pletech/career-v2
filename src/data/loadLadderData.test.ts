@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   parseAbilities,
   parseAtoms,
+  parseCategories,
   parseDependencies,
   parseEvidences,
   parseGrowthLines,
@@ -48,15 +49,23 @@ const tagsCsv = [
 ].join('\n');
 
 const atomsCsv = [
-  'atomId,tagId,statement,statementKo,firstStage,sortOrder',
-  'at1,inquiry,問い合わせを受け付けられる,문의를 접수할 수 있다,1,1',
-  'at2,reporting,要点を記録できる,요점을 기록할 수 있다,1,1',
-  'at3,inquiry,発報内容を照合できる,발보 내용을 대조할 수 있다,2,2',
+  'atomId,categoryId,statement,statementKo,sortOrder',
+  'at1,c1-inquiry,問い合わせを受け付けられる,문의를 접수할 수 있다,1',
+  'at2,c1-reporting,要点を記録できる,요점을 기록할 수 있다,1',
+  'at3,c2-triage,発報内容を照合できる,발보 내용을 대조할 수 있다,1',
 ].join('\n');
 
 const weaponsCsv = [
   'weaponId,roleId,tagId,statement,statementKo,composedOf,sortOrder',
   'w1,r2,inquiry,障害の概要を整理できる,장애 개요를 정리할 수 있다,at1|at2|at3,1',
+].join('\n');
+
+// v2.7d カテゴリモデル
+const categoriesCsv = [
+  'categoryId,stage,labelJa,labelKo,includes,sortOrder',
+  'c1-inquiry,1,問い合わせ対応,문의 대응,,1',
+  'c1-reporting,1,記録・報告,기록·보고,,2',
+  'c2-triage,2,監視・一次対応,감시·일차 대응,c1-inquiry|c1-reporting,1',
 ].join('\n');
 
 /** validateReferences 用のフルデータセットを組み立てる */
@@ -70,6 +79,7 @@ function buildDataSet(over: Partial<LadderDataSet> = {}): LadderDataSet {
     tags: parseTags(tagsCsv),
     atoms: parseAtoms(atomsCsv),
     weapons: parseWeapons(weaponsCsv),
+    categories: parseCategories(categoriesCsv),
     ...over,
   };
 }
@@ -191,37 +201,36 @@ describe('loadLadderData の CSV 変換 (CSV が DB — 確定 #24)', () => {
     expect(() => validateReferences(data)).toThrow(/growsInto/);
   });
   // ------------------------------------------------------------------
-  // 素材→武器モデル (v2.7 — AC-12)
+  // カテゴリモデル (v2.7d)
   // ------------------------------------------------------------------
 
-  it('tags/atoms/weapons: 型変換 (v2.7)', () => {
-    const tags = parseTags(tagsCsv);
-    expect(tags).toHaveLength(2);
-    expect(tags[0]).toMatchObject({ tagId: 'inquiry', labelJa: '問い合わせ対応', sortOrder: 1 });
+  it('categories/atoms: 型変換 (v2.7d)', () => {
+    const cats = parseCategories(categoriesCsv);
+    expect(cats).toHaveLength(3);
+    expect(cats[2]).toMatchObject({ categoryId: 'c2-triage', stage: 2 });
+    expect(cats[2].includes).toEqual(['c1-inquiry', 'c1-reporting']);
     const atoms = parseAtoms(atomsCsv);
-    expect(atoms[2]).toMatchObject({ atomId: 'at3', tagId: 'inquiry', firstStage: 2 });
-    const weapons = parseWeapons(weaponsCsv);
-    expect(weapons[0].composedOf).toEqual(['at1', 'at2', 'at3']);
+    expect(atoms[2]).toMatchObject({ atomId: 'at3', categoryId: 'c2-triage' });
   });
 
-  it('参照整合性: atom の tagId が tags に無いとエラー (v2.7)', () => {
+  it('参照整合性: atom の categoryId が categories に無いとエラー (v2.7d)', () => {
     const data = buildDataSet({
-      atoms: parseAtoms(atomsCsv.replace('at1,inquiry', 'at1,unknown-tag')),
+      atoms: parseAtoms(atomsCsv.replace('at1,c1-inquiry', 'at1,unknown-cat')),
     });
-    expect(() => validateReferences(data)).toThrow(/tagId/);
+    expect(() => validateReferences(data)).toThrow(/categoryId/);
   });
 
-  it('参照整合性: weapon の composedOf が存在しない素材を参照するとエラー (v2.7)', () => {
+  it('参照整合性: category の includes が存在しないカテゴリを参照するとエラー (v2.7d)', () => {
+    const data = buildDataSet({
+      categories: parseCategories(categoriesCsv.replace('c1-inquiry|c1-reporting', 'c1-inquiry|c-x')),
+    });
+    expect(() => validateReferences(data)).toThrow(/includes/);
+  });
+
+  it('参照整合性: weapon の composedOf が存在しない素材を参照するとエラー (残置)', () => {
     const data = buildDataSet({
       weapons: parseWeapons(weaponsCsv.replace('at1|at2|at3', 'at1|atX')),
     });
     expect(() => validateReferences(data)).toThrow(/composedOf/);
-  });
-
-  it('参照整合性: weapon の roleId が roles に無いとエラー (v2.7)', () => {
-    const data = buildDataSet({
-      weapons: parseWeapons(weaponsCsv.replace('w1,r2', 'w1,rX')),
-    });
-    expect(() => validateReferences(data)).toThrow(/roleId/);
   });
 });

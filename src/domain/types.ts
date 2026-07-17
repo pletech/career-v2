@@ -161,26 +161,41 @@ export interface Evidence {
 //   タグ(区分) → 原子能力(素材, 1文1概念・全域で再利用) → 武器(上位能力 = 素材の組み合わせ)
 // ---------------------------------------------------------------------------
 
-/** 業務の区分。セルにはタグ名が表示され、開くと原子能力が展開される。段階を貫通して持続 */
-export interface Tag {
-  tagId: string;
+/**
+ * 業務カテゴリ (区分)。v2.7d〜: 段階ごとに独立した集合を持つ (アサリさんモデル)。
+ * 上位段階のカテゴリは、下位段階のカテゴリを丸ごと包含 (includes) し、
+ * さらにその段階固有の原子を持つ。カテゴリ名は段階間で偶然一致しうるが、
+ * 原則として異なる (同一カテゴリが段階を貫通するわけではない)。
+ */
+export interface Category {
+  categoryId: string;
+  /** このカテゴリが属する段階 (stageOrder) */
+  stage: number;
   labelJa: string;
+  /** 丸ごと包含する下位カテゴリの categoryId 一覧 (ロールアップ表示・達成率で1項目扱い) */
+  includes: string[];
   sortOrder: number;
   labelKo?: string;
 }
 
 /**
- * 原子能力 (素材)。1文1概念・再利用可能な最小単位。
- * チェックの単位はこの原子。全現場の合集合を目指して網羅的に列挙する。
+ * 原子能力 (素材)。1文1概念・再利用可能な最小単位。チェックの単位はこの原子。
+ * 「最初に登場するカテゴリ」に所属し、そのカテゴリの段階が登場段階になる。
  */
 export interface Atom {
   atomId: string;
-  tagId: string;
+  categoryId: string;
   statement: string;
-  /** この素材が最初に登場する段階 (stageOrder)。上位段階では差分として強調される */
-  firstStage: number;
   sortOrder: number;
   statementKo?: string;
+}
+
+/** @deprecated v2.7d でカテゴリモデルへ移行。旧タグ (残置・未使用) */
+export interface Tag {
+  tagId: string;
+  labelJa: string;
+  sortOrder: number;
+  labelKo?: string;
 }
 
 /**
