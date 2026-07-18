@@ -9,12 +9,12 @@ import type { Atom, AtomCheckMap, Category, Role } from '../../domain/types';
  * - 上位段階のカテゴリは、下位段階のカテゴリを丸ごと包含 (includes) し、
  *   さらにその段階固有の原子 (できると言える項目) を持つ。
  * - 包含された下位カテゴリは 1行に畳んで (ロールアップ) 表示し、
- *   「何個中何個」を示す。達成率が閾値 (80%) 以上なら「達成」、未満なら不足が一目で分かる。
+ *   「何個中何個」を示す。達成率が閾値 (70%) 以上なら「クリア」、未満なら不足が一目で分かる。
  * - チェックの単位は原子。カテゴリの達成率 = (達成した下位カテゴリ数 + チェック済み原子数) / 総項目数。
  * - 一度に開く段階は1つ (アコーディオン)。既定は最下段 (STEP1)。
  */
 
-const CLEAR = 0.8; // クリア閾値 (8割)
+const CLEAR = 0.7; // クリア閾値 (7割)
 
 interface CraftViewProps {
   roles: Role[];
@@ -252,13 +252,13 @@ const CraftView: React.FC<CraftViewProps> = ({
           )}
         </div>
 
-        {/* 達成率バー (80% にクリア基準線) */}
+        {/* 達成率バー (70% にクリア基準線) */}
         <div className="relative h-1.5 w-full bg-gray-100" aria-hidden>
           <div
             className={`h-full transition-all ${st.cleared ? 'bg-emerald-500' : 'bg-cyan-400'}`}
             style={{ width: `${Math.min(100, Math.round(st.ratio * 100))}%` }}
           />
-          <span className="absolute top-0 h-full w-px bg-gray-400/80" style={{ left: '80%' }} />
+          <span className="absolute top-0 h-full w-px bg-gray-400/80" style={{ left: '70%' }} />
         </div>
 
         <div className={`flex flex-col gap-1 p-2 ${st.cleared ? 'bg-emerald-50/40' : ''}`}>
