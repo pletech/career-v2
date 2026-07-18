@@ -332,8 +332,8 @@ const CraftView: React.FC<CraftViewProps> = ({
       <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-4 pt-3 md:px-5">
         <div className="mb-3 rounded-lg border border-gray-100 bg-gray-50/60 px-3 py-2 text-[10px] text-gray-400">
           {ko
-            ? 'STEP 3~6 카테고리는 순차 확장 예정 (현재는 STEP1 전수 + STEP2 감시·일차 대응 시연)'
-            : 'STEP 3〜6 のカテゴリは順次拡張予定（現在は STEP1 の網羅と STEP2 監視・一次対応の試作）'}
+            ? 'STEP 3~6 카테고리는 순차 확장 예정 (현재는 STEP1 전수 + STEP2 운용감시 전 카테고리 반영)'
+            : 'STEP 3〜6 のカテゴリは順次拡張予定（現在は STEP1 の網羅と STEP2 運用監視の全カテゴリを反映）'}
         </div>
 
         <div className="flex flex-col gap-3">
