@@ -122,12 +122,12 @@ const CraftView: React.FC<CraftViewProps> = ({
           {st.done}/{st.total}
         </span>
         {st.cleared ? (
-          <span className={`rounded bg-emerald-500 font-bold text-white ${pad}`}>
-            {ko ? '달성 ✓' : '達成 ✓'}
+          <span className={`rounded bg-emerald-500 font-bold text-white shadow-sm ${pad}`}>
+            {ko ? '✓ 클리어' : '✓ クリア'}
           </span>
         ) : (
           <span className={`rounded bg-amber-100 font-bold text-amber-700 ${pad}`}>
-            {ko ? `앞으로 ${need}` : `あと${need}`}
+            {ko ? `클리어까지 앞으로 ${need}` : `クリアまであと${need}`}
           </span>
         )}
       </span>
@@ -184,7 +184,7 @@ const CraftView: React.FC<CraftViewProps> = ({
           type="button"
           onClick={() => toggleRollup(key)}
           className={`flex items-center justify-between gap-2 rounded-lg border px-2 py-1.5 text-left ${
-            cst.cleared ? 'border-emerald-100 bg-emerald-50/50' : 'border-amber-100 bg-amber-50/40'
+            cst.cleared ? 'border-emerald-300 bg-emerald-50' : 'border-amber-100 bg-amber-50/40'
           } hover:brightness-95`}
         >
           <span className="flex min-w-0 items-center gap-1">
@@ -194,7 +194,12 @@ const CraftView: React.FC<CraftViewProps> = ({
             <span className="rounded bg-white/80 px-1 py-px text-[9px] font-bold text-gray-400">
               STEP {child.stage}
             </span>
-            <span className="truncate text-[11.5px] font-semibold text-gray-700">
+            <span
+              className={`truncate text-[11.5px] font-semibold ${
+                cst.cleared ? 'text-emerald-800' : 'text-gray-700'
+              }`}
+            >
+              {cst.cleared && <span aria-hidden>✓ </span>}
               {loc(lang, child.labelJa, child.labelKo)}
             </span>
           </span>
@@ -220,22 +225,43 @@ const CraftView: React.FC<CraftViewProps> = ({
     return (
       <div
         key={cat.categoryId}
-        className={`flex flex-col overflow-hidden rounded-xl border ${
-          st.cleared ? 'border-emerald-200' : 'border-gray-200'
+        className={`flex flex-col overflow-hidden rounded-xl border-2 ${
+          st.cleared ? 'border-emerald-400' : 'border-gray-200'
         } bg-white`}
       >
+        {/* クリアしたカテゴリはヘッダーを反転して一目で分かるように */}
         <div
           className={`flex items-start justify-between gap-2 px-3 py-2 ${
-            st.cleared ? 'bg-emerald-50/70' : 'bg-gray-50'
+            st.cleared ? 'bg-emerald-500' : 'bg-gray-50'
           }`}
         >
-          <span className="text-[12.5px] font-bold leading-snug text-gray-800">
+          <span
+            className={`text-[12.5px] font-bold leading-snug ${
+              st.cleared ? 'text-white' : 'text-gray-800'
+            }`}
+          >
+            {st.cleared && <span aria-hidden>✓ </span>}
             {loc(lang, cat.labelJa, cat.labelKo)}
           </span>
-          {statusBadge(st)}
+          {st.cleared ? (
+            <span className="rounded bg-white/95 px-2 py-0.5 text-[11px] font-bold text-emerald-600 shadow-sm">
+              {st.done}/{st.total} {ko ? '클리어' : 'クリア'}
+            </span>
+          ) : (
+            statusBadge(st)
+          )}
         </div>
 
-        <div className="flex flex-col gap-1 p-2">
+        {/* 達成率バー (80% にクリア基準線) */}
+        <div className="relative h-1.5 w-full bg-gray-100" aria-hidden>
+          <div
+            className={`h-full transition-all ${st.cleared ? 'bg-emerald-500' : 'bg-cyan-400'}`}
+            style={{ width: `${Math.min(100, Math.round(st.ratio * 100))}%` }}
+          />
+          <span className="absolute top-0 h-full w-px bg-gray-400/80" style={{ left: '80%' }} />
+        </div>
+
+        <div className={`flex flex-col gap-1 p-2 ${st.cleared ? 'bg-emerald-50/40' : ''}`}>
           {/* 包含した下位カテゴリ = 1行ロールアップ (その場で展開) */}
           {cat.includes.length > 0 && (
             <p className="px-0.5 text-[9.5px] font-semibold text-gray-400">
@@ -265,15 +291,18 @@ const CraftView: React.FC<CraftViewProps> = ({
       <span
         key={cat.categoryId}
         className={`inline-flex items-center gap-1.5 rounded-lg border px-2 py-1 ${
-          st.cleared ? 'border-emerald-200 bg-emerald-50/70' : 'border-gray-200 bg-white'
+          st.cleared ? 'border-emerald-500 bg-emerald-500' : 'border-gray-200 bg-white'
         }`}
       >
-        <span className="text-[11px] font-semibold text-gray-700">
+        <span
+          className={`text-[11px] font-semibold ${st.cleared ? 'text-white' : 'text-gray-700'}`}
+        >
+          {st.cleared && <span aria-hidden>✓ </span>}
           {loc(lang, cat.labelJa, cat.labelKo)}
         </span>
         <span
           className={`rounded px-1 py-0.5 text-[10px] font-bold ${
-            st.cleared ? 'bg-emerald-500 text-white' : 'bg-gray-100 text-gray-600'
+            st.cleared ? 'bg-white/95 text-emerald-600' : 'bg-gray-100 text-gray-600'
           }`}
         >
           {st.done}/{st.total}
