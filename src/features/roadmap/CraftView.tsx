@@ -43,6 +43,19 @@ const CraftView: React.FC<CraftViewProps> = ({
   const s = STRINGS[lang];
   const ko = lang === 'ko';
 
+  /** ロールアップ (包含カテゴリ) のその場展開状態。キーは "親>子" (同じ子が複数の親に出るため) */
+  const [expandedRollups, setExpandedRollups] = useState<Set<string>>(() => new Set());
+  const toggleRollup = (key: string) =>
+    setExpandedRollups((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+
+  /** 2回目以降の面談用: チェック済みを隠して残りだけ見る (アサリさん FB) */
+  const [onlyUnchecked, setOnlyUnchecked] = useState(false);
+
   const catById = useMemo(() => {
     const m = new Map<string, Category>();
     for (const c of categories) m.set(c.categoryId, c);
@@ -77,6 +90,11 @@ const CraftView: React.FC<CraftViewProps> = ({
 
   const stagesDesc = useMemo(
     () => [...new Set(categories.map((c) => c.stage))].sort((a, b) => b - a),
+    [categories],
+  );
+  /** 最下段 (基礎)。この段より上のカテゴリの固有原子は「この段階で追加」= NEW 扱い */
+  const minStage = useMemo(
+    () => (categories.length > 0 ? Math.min(...categories.map((c) => c.stage)) : 1),
     [categories],
   );
 
@@ -117,11 +135,88 @@ const CraftView: React.FC<CraftViewProps> = ({
   };
 
   // ---------------------------------------------------------------------
+  // 原子1行 (チェックボックス)。「未チェックのみ」フィルタ対応
+  // ---------------------------------------------------------------------
+  const atomRow = (a: Atom, opts: { isNew?: boolean } = {}) => {
+    const checked = atomChecks[a.atomId] === true;
+    if (onlyUnchecked && checked) return null;
+    return (
+      <label
+        key={a.atomId}
+        className={`flex cursor-pointer items-start gap-2 rounded-lg border px-2 py-1.5 transition-colors ${
+          opts.isNew
+            ? 'border-amber-200 bg-amber-50/60 hover:border-amber-300'
+            : 'border-gray-100 bg-white hover:border-cyan-200'
+        }`}
+      >
+        <input
+          type="checkbox"
+          checked={checked}
+          onChange={() => onToggleAtom(a.atomId)}
+          className="mt-0.5 h-4 w-4 shrink-0 accent-cyan-600"
+        />
+        <span className="min-w-0 flex-1">
+          <span className="block text-[11.5px] leading-snug text-gray-800">
+            {loc(lang, a.statement, a.statementKo)}
+          </span>
+          {opts.isNew && (
+            <span className="mt-0.5 inline-block rounded bg-amber-100 px-1 py-px text-[9px] font-bold text-amber-700">
+              NEW
+            </span>
+          )}
+        </span>
+      </label>
+    );
+  };
+
+  // ---------------------------------------------------------------------
+  // 包含カテゴリのロールアップ 1行 — 押すとその場で展開 (再帰)。段階の移動はしない
+  // ---------------------------------------------------------------------
+  const childRollup = (childId: string, parentKey: string): React.ReactNode => {
+    const child = catById.get(childId);
+    if (!child) return null;
+    const cst = stat(childId);
+    const key = `${parentKey}>${childId}`;
+    const expanded = expandedRollups.has(key);
+    return (
+      <div key={key} className="flex flex-col">
+        <button
+          type="button"
+          onClick={() => toggleRollup(key)}
+          className={`flex items-center justify-between gap-2 rounded-lg border px-2 py-1.5 text-left ${
+            cst.cleared ? 'border-emerald-100 bg-emerald-50/50' : 'border-amber-100 bg-amber-50/40'
+          } hover:brightness-95`}
+        >
+          <span className="flex min-w-0 items-center gap-1">
+            <span className="w-3 shrink-0 text-[10px] text-gray-500" aria-hidden>
+              {expanded ? '▾' : '▸'}
+            </span>
+            <span className="rounded bg-white/80 px-1 py-px text-[9px] font-bold text-gray-400">
+              STEP {child.stage}
+            </span>
+            <span className="truncate text-[11.5px] font-semibold text-gray-700">
+              {loc(lang, child.labelJa, child.labelKo)}
+            </span>
+          </span>
+          {statusBadge(cst, 'sm')}
+        </button>
+        {expanded && (
+          <div className="ml-2.5 mt-1 flex flex-col gap-1 border-l-2 border-gray-100 pl-2">
+            {child.includes.map((id) => childRollup(id, key))}
+            {directAtoms(childId).map((a) => atomRow(a))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // ---------------------------------------------------------------------
   // カテゴリカード (開いた段階)
   // ---------------------------------------------------------------------
   const categoryCard = (cat: Category) => {
     const st = stat(cat.categoryId);
     const own = directAtoms(cat.categoryId);
+    const ownIsNew = cat.stage > minStage; // 上位段階の固有原子 = この段階で追加 (差分)
     return (
       <div
         key={cat.categoryId}
@@ -141,55 +236,21 @@ const CraftView: React.FC<CraftViewProps> = ({
         </div>
 
         <div className="flex flex-col gap-1 p-2">
-          {/* 包含した下位カテゴリ = 1行ロールアップ (押すと下位段階へ) */}
-          {cat.includes.map((id) => {
-            const child = catById.get(id);
-            if (!child) return null;
-            const cst = stat(id);
-            return (
-              <button
-                key={id}
-                type="button"
-                onClick={() => setOpenStage(child.stage)}
-                className={`flex items-center justify-between gap-2 rounded-lg border px-2 py-1.5 text-left ${
-                  cst.cleared
-                    ? 'border-emerald-100 bg-emerald-50/50'
-                    : 'border-amber-100 bg-amber-50/40'
-                } hover:brightness-95`}
-              >
-                <span className="flex min-w-0 items-center gap-1">
-                  <span className="text-[10px] text-gray-400" aria-hidden>
-                    STEP {child.stage} ▸
-                  </span>
-                  <span className="truncate text-[11.5px] font-semibold text-gray-700">
-                    {loc(lang, child.labelJa, child.labelKo)}
-                  </span>
-                </span>
-                {statusBadge(cst, 'sm')}
-              </button>
-            );
-          })}
+          {/* 包含した下位カテゴリ = 1行ロールアップ (その場で展開) */}
+          {cat.includes.length > 0 && (
+            <p className="px-0.5 text-[9.5px] font-semibold text-gray-400">
+              {ko ? '아래 단계에서 인계' : '下の段階から引き継ぎ'}
+            </p>
+          )}
+          {cat.includes.map((id) => childRollup(id, cat.categoryId))}
 
-          {/* その段階固有の原子 (チェック対象) */}
-          {own.map((a) => {
-            const checked = atomChecks[a.atomId] === true;
-            return (
-              <label
-                key={a.atomId}
-                className="flex cursor-pointer items-start gap-2 rounded-lg border border-gray-100 bg-white px-2 py-1.5 hover:border-cyan-200"
-              >
-                <input
-                  type="checkbox"
-                  checked={checked}
-                  onChange={() => onToggleAtom(a.atomId)}
-                  className="mt-0.5 h-4 w-4 shrink-0 accent-cyan-600"
-                />
-                <span className="text-[11.5px] leading-snug text-gray-800">
-                  {loc(lang, a.statement, a.statementKo)}
-                </span>
-              </label>
-            );
-          })}
+          {/* その段階固有の原子 (チェック対象)。上位段階では NEW として強調 */}
+          {own.length > 0 && ownIsNew && (
+            <p className="mt-1 px-0.5 text-[9.5px] font-semibold text-amber-700">
+              {ko ? `이 단계에서 추가 (${own.length})` : `この段階で追加（${own.length}）`}
+            </p>
+          )}
+          {own.map((a) => atomRow(a, { isNew: ownIsNew }))}
         </div>
       </div>
     );
@@ -223,8 +284,20 @@ const CraftView: React.FC<CraftViewProps> = ({
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden">
-      <div className="shrink-0 px-3 pt-3 md:px-5 md:pt-4">
+      <div className="flex shrink-0 flex-col gap-1.5 px-3 pt-3 md:flex-row md:items-start md:justify-between md:gap-4 md:px-5 md:pt-4">
         <p className="text-[11px] leading-relaxed text-gray-500">{s.roadmapLegend}</p>
+        {/* 2回目以降の面談: 残っているものだけを見る (アサリさん FB) */}
+        <label className="inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2 py-1.5">
+          <input
+            type="checkbox"
+            checked={onlyUnchecked}
+            onChange={(e) => setOnlyUnchecked(e.target.checked)}
+            className="h-3.5 w-3.5 accent-cyan-600"
+          />
+          <span className="text-[10.5px] font-medium text-gray-600">
+            {ko ? '미체크만 표시' : '未チェックのみ表示'}
+          </span>
+        </label>
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-4 pt-3 md:px-5">
