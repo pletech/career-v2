@@ -288,10 +288,14 @@ const CraftView: React.FC<CraftViewProps> = ({
   const categoryChip = (cat: Category) => {
     const st = stat(cat.categoryId);
     return (
-      <span
+      <button
         key={cat.categoryId}
-        className={`inline-flex items-center gap-1.5 rounded-lg border px-2 py-1 ${
-          st.cleared ? 'border-emerald-500 bg-emerald-500' : 'border-gray-200 bg-white'
+        type="button"
+        onClick={() => setOpenStage(cat.stage)}
+        className={`inline-flex items-center gap-1.5 rounded-lg border px-2 py-1 transition-colors ${
+          st.cleared
+            ? 'border-emerald-500 bg-emerald-500 hover:brightness-95'
+            : 'border-gray-200 bg-white hover:border-cyan-300 hover:bg-cyan-50/40'
         }`}
       >
         <span
@@ -307,7 +311,7 @@ const CraftView: React.FC<CraftViewProps> = ({
         >
           {st.done}/{st.total}
         </span>
-      </span>
+      </button>
     );
   };
 
