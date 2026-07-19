@@ -30,6 +30,8 @@ interface CatStat {
   total: number;
   ratio: number;
   cleared: boolean;
+  /** 達成率は基準を満たしているが、包含した下位カテゴリが未クリアで待たされている状態 */
+  blockedByChild: boolean;
 }
 
 const CraftView: React.FC<CraftViewProps> = ({
@@ -75,17 +77,34 @@ const CraftView: React.FC<CraftViewProps> = ({
 
   const directAtoms = (catId: string): Atom[] => atomsByCat.get(catId) ?? [];
 
-  /** カテゴリ達成統計 (再帰: 包含した下位カテゴリは「達成なら1」として数える) */
+  /**
+   * カテゴリ達成統計 (再帰: 包含した下位カテゴリは「達成なら1」として数える)。
+   *
+   * 「クリア」は達成率 (CLEAR) 以上であることに加え、包含した下位カテゴリが
+   * 全て個別にクリア済みであることを必須とする。下位が未クリアのまま、
+   * この段階固有の新規項目だけを埋めて比率上クリアに達してしまうのを防ぐ
+   * (アサリさん概念: 「この業務ができて初めて上の業務に進める」 — 下位を飛ばして
+   * 上位だけクリアと表示することはない、2026-07-15 指摘)。
+   */
   const stat = (catId: string): CatStat => {
     const cat = catById.get(catId);
-    if (!cat) return { done: 0, total: 0, ratio: 0, cleared: false };
+    if (!cat) return { done: 0, total: 0, ratio: 0, cleared: false, blockedByChild: false };
     const own = directAtoms(catId);
     const ownDone = own.filter((a) => atomChecks[a.atomId] === true).length;
-    const childDone = cat.includes.filter((id) => stat(id).cleared).length;
+    const childStats = cat.includes.map((id) => stat(id));
+    const childDone = childStats.filter((s) => s.cleared).length;
+    const allChildrenCleared = childStats.every((s) => s.cleared);
     const total = own.length + cat.includes.length;
     const done = ownDone + childDone;
     const ratio = total === 0 ? 0 : done / total;
-    return { done, total, ratio, cleared: total > 0 && ratio >= CLEAR };
+    const ratioMet = total > 0 && ratio >= CLEAR;
+    return {
+      done,
+      total,
+      ratio,
+      cleared: ratioMet && allChildrenCleared,
+      blockedByChild: ratioMet && !allChildrenCleared,
+    };
   };
 
   const stagesDesc = useMemo(
@@ -124,6 +143,10 @@ const CraftView: React.FC<CraftViewProps> = ({
         {st.cleared ? (
           <span className={`rounded bg-emerald-500 font-bold text-white shadow-sm ${pad}`}>
             {ko ? '✓ 클리어' : '✓ クリア'}
+          </span>
+        ) : st.blockedByChild ? (
+          <span className={`rounded bg-amber-100 font-bold text-amber-700 ${pad}`}>
+            {ko ? '하위 카테고리 미클리어' : '下位カテゴリ未クリア'}
           </span>
         ) : (
           <span className={`rounded bg-amber-100 font-bold text-amber-700 ${pad}`}>
