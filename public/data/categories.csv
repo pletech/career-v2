@@ -1,14 +1,19 @@
 categoryId,stage,labelJa,labelKo,includes,sortOrder
 c1-inquiry,1,問い合わせ対応,문의 대응,,1
-c1-reporting,1,記録・報告（報連相）,기록·보고 (호렌소),,2
-c1-procedure,1,手順書・定型作業,절차서·정형 작업,,3
-c1-account,1,アカウント対応,계정 대응,,4
-c1-device,1,端末・周辺機器,단말·주변기기,,5
-c1-monitoring,1,監視補助・基本確認,감시 보조·기본 확인,,6
-c1-itbasics,1,IT基礎知識,IT 기초 지식,,7
-c1-security,1,セキュリティ・ルール遵守,보안·룰 준수,,8
-c1-site,1,現場理解・体制,현장 이해·체제,,9
+c1-triage,1,問い合わせ一次切り分け,문의 1차 분류·초기 대응,,2
+c1-reporting,1,記録・報告（報連相）,기록·보고 (호렌소),,3
+c1-procedure,1,手順書・定型作業,절차서·정형 작업,,4
+c1-operations,1,定常運用・データ保全,정기 운용·데이터 보전,,5
+c1-account,1,アカウント対応,계정 대응,,6
+c1-device,1,端末・周辺機器,단말·주변기기,,7
+c1-monitoring,1,監視補助・基本確認,감시 보조·기본 확인,,8
+c1-itbasics,1,IT基礎知識,IT 기초 지식,,9
+c1-security,1,セキュリティ・ルール遵守,보안·룰 준수,,10
+c1-site,1,現場理解・体制,현장 이해·체제,,11
 c2-monitor,2,監視・異常検知,감시·이상 감지,c1-monitoring,1
-c2-assess,2,障害状況の一次確認,장애 상황의 1차 확인,c1-itbasics,2
-c2-response,2,初動対応の実施,초동 대응 수행,c1-procedure,3
-c2-escalate,2,エスカレーション・引き継ぎ,에스컬레이션·인계,c1-reporting|c1-site,4
+c2-assess,2,障害状況の一次確認,장애 상황의 1차 확인,c1-itbasics|c1-triage,2
+c2-response,2,初動対応の実施,초동 대응 수행,c1-procedure|c1-security,3
+c2-recovery,2,復旧確認・完了処理,복구 확인·완료 처리,,4
+c2-escalate,2,エスカレーション・引き継ぎ,에스컬레이션·인계,c1-site,5
+c2-incident,2,インシデント記録・進行管理,인시던트 기록·진행 관리,c1-inquiry|c1-reporting,6
+c2-operations,2,定常運用の自立実施,정기 운용 자립 수행,c1-operations|c1-account|c1-device,7
