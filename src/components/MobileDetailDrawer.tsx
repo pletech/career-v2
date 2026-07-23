@@ -9,6 +9,8 @@ interface MobileDetailDrawerProps {
   onClose: () => void;
   onNodeClick: (nodeId: string) => void;
   getNodeById: (nodeId: string) => CareerNode | undefined;
+  roadmapReady?: boolean;
+  onOpenRoadmap?: () => void;
 }
 
 const MobileDetailDrawer: React.FC<MobileDetailDrawerProps> = ({
@@ -18,6 +20,8 @@ const MobileDetailDrawer: React.FC<MobileDetailDrawerProps> = ({
   onClose,
   onNodeClick,
   getNodeById,
+  roadmapReady = false,
+  onOpenRoadmap,
 }) => {
   useEffect(() => {
     if (!open) return;
@@ -68,7 +72,14 @@ const MobileDetailDrawer: React.FC<MobileDetailDrawerProps> = ({
         </div>
 
         <div className="h-[calc(70vh-4rem)] overflow-y-auto">
-          <DetailPanel node={node} isLocked={isLocked} onNodeClick={onNodeClick} getNodeById={getNodeById} />
+          <DetailPanel
+            node={node}
+            isLocked={isLocked}
+            onNodeClick={onNodeClick}
+            getNodeById={getNodeById}
+            roadmapReady={roadmapReady}
+            onOpenRoadmap={onOpenRoadmap}
+          />
         </div>
       </section>
     </>

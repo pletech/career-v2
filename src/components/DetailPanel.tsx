@@ -12,7 +12,43 @@ interface DetailPanelProps {
   isLocked?: boolean;
   onNodeClick: (nodeId: string) => void;
   getNodeById: (nodeId: string) => CareerNode | undefined;
+  /** この役割が「業務ロードマップ」に整備済みか (v2.7o) */
+  roadmapReady?: boolean;
+  /** 「業務ロードマップ」ビューへ切り替える */
+  onOpenRoadmap?: () => void;
 }
+
+/**
+ * 全体マップ (概要) と業務ロードマップ (詳細チェック) は役割が異なり、内容の粒度も異なる。
+ * 混同を避けるため、ノード詳細に「詳しい育成チェックは業務ロードマップへ」の導線を出す。
+ * 整備済みの役割は即遷移、未整備は「準備中」を案内する (v2.7o)。
+ */
+const RoadmapLink: React.FC<{ ready: boolean; onOpen?: () => void }> = ({ ready, onOpen }) =>
+  ready ? (
+    <button
+      type="button"
+      onClick={onOpen}
+      className="mb-5 flex w-full items-center justify-between gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2.5 text-left transition-colors hover:bg-indigo-100"
+    >
+      <span className="min-w-0">
+        <span className="block text-xs font-bold text-indigo-800">
+          この役割の詳しい育成チェック
+        </span>
+        <span className="block text-[11px] text-indigo-500">
+          業務ロードマップでチェックリストを確認できます
+        </span>
+      </span>
+      <span className="shrink-0 rounded-md bg-indigo-600 px-2.5 py-1 text-xs font-bold text-white">
+        業務ロードマップへ →
+      </span>
+    </button>
+  ) : (
+    <div className="mb-5 flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5">
+      <span className="text-[11px] leading-relaxed text-gray-500">
+        この役割の詳しい育成チェックリスト（業務ロードマップ）は<span className="font-semibold text-gray-600">準備中</span>です。順次拡張予定。
+      </span>
+    </div>
+  );
 
 interface ParsedGroup {
   title: string;
@@ -281,7 +317,12 @@ const StructuredContent: React.FC<{
   );
 };
 
-const DetailPanel: React.FC<DetailPanelProps> = ({ node, isLocked = false }) => {
+const DetailPanel: React.FC<DetailPanelProps> = ({
+  node,
+  isLocked = false,
+  roadmapReady = false,
+  onOpenRoadmap,
+}) => {
   if (!node) {
     return (
       <div className="h-full flex flex-col items-center justify-center text-center p-6">
@@ -407,6 +448,8 @@ const DetailPanel: React.FC<DetailPanelProps> = ({ node, isLocked = false }) => 
           </span>
         )}
       </div>
+
+      <RoadmapLink ready={roadmapReady} onOpen={onOpenRoadmap} />
 
       <Section title="役割" accentClass={accent.role}>
         {roleStructured ? (

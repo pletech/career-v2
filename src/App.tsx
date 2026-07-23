@@ -57,6 +57,21 @@ const App: React.FC = () => {
     void loadData();
   }, []);
 
+  /**
+   * 全体マップのノードが「業務ロードマップ」に対応済みか判定する (v2.7o)。
+   * 業務ロードマップは現在 インフラ > サーバー の STEP1・2 のみ整備済み。
+   * それ以外は「準備中」と案内する。
+   * ※ロードマップを他職種・上位段階へ拡張したら、この範囲を更新する。
+   */
+  const ROADMAP_READY_STAGES = [1, 2];
+  const isRoadmapReady = (node: CareerDataSet['nodes'][number] | null): boolean =>
+    !!node &&
+    node.track === 'infrastructure' &&
+    node.subtrack === 'サーバー' &&
+    ROADMAP_READY_STAGES.includes(node.stage);
+
+  const openRoadmap = () => setViewMode('roadmap');
+
   const {
     activeTrack,
     activeSubtrack,
@@ -293,6 +308,8 @@ const App: React.FC = () => {
                 isLocked={isSelectedNodeLocked}
                 onNodeClick={handleGraphNodeClick}
                 getNodeById={getNodeById}
+                roadmapReady={isRoadmapReady(selectedNode)}
+                onOpenRoadmap={openRoadmap}
               />
             </div>
           </div>
@@ -318,6 +335,11 @@ const App: React.FC = () => {
               onClose={() => setIsMobileDetailOpen(false)}
               onNodeClick={handleGraphNodeClick}
               getNodeById={getNodeById}
+              roadmapReady={isRoadmapReady(selectedNode)}
+              onOpenRoadmap={() => {
+                setIsMobileDetailOpen(false);
+                openRoadmap();
+              }}
             />
 
             <MobileFilterDrawer
