@@ -15,6 +15,7 @@ import type {
   Ability,
   Action,
   Category,
+  Cert,
   Dependency,
   DepType,
   Evidence,
@@ -41,6 +42,8 @@ export interface LadderDataSet {
   // v2.7d カテゴリモデル
   categories: Category[];
   actions: Action[];
+  // v2.7n 段階別の推奨資格 (参考)
+  certs: Cert[];
 }
 
 // ---------------------------------------------------------------------------
@@ -253,6 +256,26 @@ export function parseActions(csvText: string): Action[] {
   return actions;
 }
 
+/** certs (v2.7n): 段階別の推奨資格 (参考) */
+export function parseCerts(csvText: string): Cert[] {
+  const rows = csvToObjects(csvText);
+  requireHeaders(rows, ['certId', 'stage', 'nameJa', 'sortOrder'], 'certs.csv');
+  const certs = rows.map((r) => {
+    const certId = requireValue(r, 'certId', 'certs.csv', r.certId || '(空)');
+    return {
+      certId,
+      stage: toNumber(r.stage, 'stage', 'certs.csv', certId),
+      nameJa: requireValue(r, 'nameJa', 'certs.csv', certId),
+      sortOrder: toNumber(r.sortOrder, 'sortOrder', 'certs.csv', certId),
+      note: opt(r.note ?? ''),
+      nameKo: opt(r.nameKo ?? ''),
+      noteKo: opt(r.noteKo ?? ''),
+    } satisfies Cert;
+  });
+  requireUnique(certs.map((c) => c.certId), 'certs.csv');
+  return certs;
+}
+
 /** categories (v2.7d): 段階別カテゴリ + 下位カテゴリ包含 */
 export function parseCategories(csvText: string): Category[] {
   const rows = csvToObjects(csvText);
@@ -387,6 +410,7 @@ async function loadFrom(src: LadderSourceUrls): Promise<LadderDataSet> {
     actionsText,
     weaponsText,
     categoriesText,
+    certsText,
   ] = await Promise.all([
     fetchText(src.rolesCsvUrl),
     fetchText(src.dependenciesCsvUrl),
@@ -397,6 +421,7 @@ async function loadFrom(src: LadderSourceUrls): Promise<LadderDataSet> {
     fetchText(or(src.actionsCsvUrl, LOCAL_SOURCES.actionsCsvUrl)),
     fetchText(or(src.weaponsCsvUrl, LOCAL_SOURCES.weaponsCsvUrl)),
     fetchText(or(src.categoriesCsvUrl, LOCAL_SOURCES.categoriesCsvUrl)),
+    fetchText(or(src.certsCsvUrl, LOCAL_SOURCES.certsCsvUrl)),
   ]);
   const data: LadderDataSet = {
     roles: parseRoles(rolesText),
@@ -408,6 +433,7 @@ async function loadFrom(src: LadderSourceUrls): Promise<LadderDataSet> {
     actions: parseActions(actionsText),
     weapons: parseWeapons(weaponsText),
     categories: parseCategories(categoriesText),
+    certs: parseCerts(certsText),
   };
   validateReferences(data);
   return data;

@@ -179,6 +179,22 @@ export interface Category {
 }
 
 /**
+ * 推奨資格 (v2.7n)。「その段階から次の段階へ進むための」参考として段階に紐づく。
+ * 判定要件ではなく参考情報 (ツールと同じ扱い — 非断定原則)。段階1件に複数可。
+ */
+export interface Cert {
+  certId: string;
+  /** この資格を推奨する段階 (この段階から次段階へ進むための参考) */
+  stage: number;
+  nameJa: string;
+  sortOrder: number;
+  /** 補足 (何の資格か・レベル感など。任意) */
+  note?: string;
+  nameKo?: string;
+  noteKo?: string;
+}
+
+/**
  * アクション（行動項目）。1文1概念・再利用可能な最小単位。チェックの単位はこのアクション。
  * 「最初に登場するカテゴリ」に所属し、そのカテゴリの段階が登場段階になる。
  */

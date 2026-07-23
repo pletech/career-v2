@@ -3,6 +3,7 @@ import {
   parseAbilities,
   parseActions,
   parseCategories,
+  parseCerts,
   parseDependencies,
   parseEvidences,
   parseGrowthLines,
@@ -68,6 +69,13 @@ const categoriesCsv = [
   'c2-triage,2,監視・一次対応,감시·일차 대응,c1-inquiry|c1-reporting,1',
 ].join('\n');
 
+// v2.7n 推奨資格
+const certsCsv = [
+  'certId,stage,nameJa,nameKo,note,noteKo,sortOrder',
+  'cert-1,1,ITパスポート,IT 패스포트,基礎,기초,1',
+  'cert-2,2,CCNA,CCNA,,,1',
+].join('\n');
+
 /** validateReferences 用のフルデータセットを組み立てる */
 function buildDataSet(over: Partial<LadderDataSet> = {}): LadderDataSet {
   return {
@@ -80,6 +88,7 @@ function buildDataSet(over: Partial<LadderDataSet> = {}): LadderDataSet {
     actions: parseActions(actionsCsv),
     weapons: parseWeapons(weaponsCsv),
     categories: parseCategories(categoriesCsv),
+    certs: parseCerts(certsCsv),
     ...over,
   };
 }
@@ -225,6 +234,14 @@ describe('loadLadderData の CSV 変換 (CSV が DB — 確定 #24)', () => {
       categories: parseCategories(categoriesCsv.replace('c1-inquiry|c1-reporting', 'c1-inquiry|c-x')),
     });
     expect(() => validateReferences(data)).toThrow(/includes/);
+  });
+
+  it('certs: 型変換と段階・任意 note (v2.7n)', () => {
+    const certs = parseCerts(certsCsv);
+    expect(certs).toHaveLength(2);
+    expect(certs[0]).toMatchObject({ certId: 'cert-1', stage: 1, nameJa: 'ITパスポート' });
+    expect(certs[0].note).toBe('基礎');
+    expect(certs[1].note).toBeUndefined();
   });
 
   it('参照整合性: weapon の composedOf が存在しない素材を参照するとエラー (残置)', () => {

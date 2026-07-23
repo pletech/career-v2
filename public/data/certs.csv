@@ -1,0 +1,9 @@
+certId,stage,nameJa,nameKo,note,noteKo,sortOrder
+cert-s1-01,1,ITパスポート試験,IT 패스포트 시험,IT全般の基礎知識,IT 전반의 기초 지식,1
+cert-s1-02,1,CompTIA A+,CompTIA A+,PC・端末・ヘルプデスクの基礎（国際資格）,PC·단말·헬프데스크 기초(국제 자격),2
+cert-s1-03,1,基本情報技術者試験（FE）,기본정보기술자시험(FE),開発・運用の基礎、次段階の土台,개발·운용의 기초·다음 단계의 토대,3
+cert-s1-04,1,LinuC レベル1 / LPIC-1,LinuC 레벨1 / LPIC-1,サーバーOS（Linux）の基礎操作,서버 OS(Linux)의 기초 조작,4
+cert-s2-01,2,基本情報技術者試験（FE）,기본정보기술자시험(FE),未取得なら優先。運用保守の基礎,미취득이면 우선. 운용보수의 기초,1
+cert-s2-02,2,CCNA,CCNA,ネットワークの基礎〜実務,네트워크 기초~실무,2
+cert-s2-03,2,LinuC レベル1〜2 / LPIC,LinuC 레벨1~2 / LPIC,サーバー運用の実務レベル,서버 운용의 실무 레벨,3
+cert-s2-04,2,CompTIA Server+,CompTIA Server+,サーバー運用・保守の国際資格,서버 운용·보수의 국제 자격,4

@@ -257,6 +257,7 @@ const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps' }) => {
           roles={categoryRoles}
           categories={data.categories}
           actions={data.actions}
+          certs={data.certs}
           actionChecks={actionChecks}
           onToggleAction={toggleAction}
           lang={lang}

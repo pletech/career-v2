@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { STRINGS, loc, type Lang } from '../../domain/i18n';
-import type { Action, ActionCheckMap, Category, Role } from '../../domain/types';
+import type { Action, ActionCheckMap, Category, Cert, Role } from '../../domain/types';
 
 /**
  * 業務ロードマップ v2.7d — 段階別カテゴリ + 包含モデル (アサリさん面談 2026-07-14)
@@ -20,6 +20,7 @@ interface CraftViewProps {
   roles: Role[];
   categories: Category[];
   actions: Action[];
+  certs: Cert[];
   actionChecks: ActionCheckMap;
   onToggleAction: (actionId: string) => void;
   lang: Lang;
@@ -38,6 +39,7 @@ const CraftView: React.FC<CraftViewProps> = ({
   roles,
   categories,
   actions,
+  certs,
   actionChecks,
   onToggleAction,
   lang,
@@ -123,6 +125,9 @@ const CraftView: React.FC<CraftViewProps> = ({
 
   const catsOfStage = (stage: number): Category[] =>
     categories.filter((c) => c.stage === stage).sort((a, b) => a.sortOrder - b.sortOrder);
+
+  const certsOfStage = (stage: number): Cert[] =>
+    certs.filter((c) => c.stage === stage).sort((a, b) => a.sortOrder - b.sortOrder);
 
   const roleOfStage = (stage: number): Role | undefined =>
     roles.find((r) => r.stageOrder === stage && r.status !== 'hidden');
@@ -368,6 +373,7 @@ const CraftView: React.FC<CraftViewProps> = ({
             const open = openStage === stage;
             const role = roleOfStage(stage);
             const cats = catsOfStage(stage);
+            const stageCerts = certsOfStage(stage);
             return (
               <section key={stage} className="overflow-hidden rounded-xl border border-gray-200 bg-white">
                 <button
@@ -397,9 +403,40 @@ const CraftView: React.FC<CraftViewProps> = ({
                 </button>
 
                 {open ? (
-                  <div className="grid grid-cols-1 gap-2.5 border-t border-gray-100 bg-gray-50/40 p-2.5 md:grid-cols-2 xl:grid-cols-3">
-                    {cats.map((c) => categoryCard(c))}
-                  </div>
+                  <>
+                    {/* 次の段階へ進むための推奨資格 (参考 — 判定要件ではない) */}
+                    {stageCerts.length > 0 && (
+                      <div className="flex flex-col gap-1.5 border-t border-indigo-100 bg-indigo-50/50 px-3 py-2.5">
+                        <span className="text-[10.5px] font-semibold text-indigo-800">
+                          🎓{' '}
+                          {ko
+                            ? '다음 단계로 올라가기 위한 추천 자격증 (참고)'
+                            : '次の段階へ進むための推奨資格（参考）'}
+                        </span>
+                        <div className="flex flex-wrap gap-1.5">
+                          {stageCerts.map((cert) => (
+                            <span
+                              key={cert.certId}
+                              className="inline-flex items-center gap-1 rounded-lg border border-indigo-200 bg-white px-2 py-1"
+                              title={cert.note ? loc(lang, cert.note, cert.noteKo) : undefined}
+                            >
+                              <span className="text-[11px] font-semibold text-indigo-900">
+                                {loc(lang, cert.nameJa, cert.nameKo)}
+                              </span>
+                              {cert.note && (
+                                <span className="text-[9.5px] text-indigo-400">
+                                  {loc(lang, cert.note, cert.noteKo)}
+                                </span>
+                              )}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    <div className="grid grid-cols-1 gap-2.5 border-t border-gray-100 bg-gray-50/40 p-2.5 md:grid-cols-2 xl:grid-cols-3">
+                      {cats.map((c) => categoryCard(c))}
+                    </div>
+                  </>
                 ) : (
                   <div className="flex flex-wrap gap-1.5 border-t border-gray-100 px-3 py-2.5">
                     {cats.map((c) => categoryChip(c))}
