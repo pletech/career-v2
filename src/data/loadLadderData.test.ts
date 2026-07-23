@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   parseAbilities,
-  parseAtoms,
+  parseActions,
   parseCategories,
   parseDependencies,
   parseEvidences,
@@ -48,8 +48,8 @@ const tagsCsv = [
   'reporting,記録・報告,기록·보고,2',
 ].join('\n');
 
-const atomsCsv = [
-  'atomId,categoryId,statement,statementKo,sortOrder',
+const actionsCsv = [
+  'actionId,categoryId,statement,statementKo,sortOrder',
   'at1,c1-inquiry,問い合わせを受け付けられる,문의를 접수할 수 있다,1',
   'at2,c1-reporting,要点を記録できる,요점을 기록할 수 있다,1',
   'at3,c2-triage,発報内容を照合できる,발보 내용을 대조할 수 있다,1',
@@ -77,7 +77,7 @@ function buildDataSet(over: Partial<LadderDataSet> = {}): LadderDataSet {
     evidences: parseEvidences(evidencesCsv),
     growthLines: parseGrowthLines(growthLinesCsv),
     tags: parseTags(tagsCsv),
-    atoms: parseAtoms(atomsCsv),
+    actions: parseActions(actionsCsv),
     weapons: parseWeapons(weaponsCsv),
     categories: parseCategories(categoriesCsv),
     ...over,
@@ -204,18 +204,18 @@ describe('loadLadderData の CSV 変換 (CSV が DB — 確定 #24)', () => {
   // カテゴリモデル (v2.7d)
   // ------------------------------------------------------------------
 
-  it('categories/atoms: 型変換 (v2.7d)', () => {
+  it('categories/actions: 型変換 (v2.7d)', () => {
     const cats = parseCategories(categoriesCsv);
     expect(cats).toHaveLength(3);
     expect(cats[2]).toMatchObject({ categoryId: 'c2-triage', stage: 2 });
     expect(cats[2].includes).toEqual(['c1-inquiry', 'c1-reporting']);
-    const atoms = parseAtoms(atomsCsv);
-    expect(atoms[2]).toMatchObject({ atomId: 'at3', categoryId: 'c2-triage' });
+    const actions = parseActions(actionsCsv);
+    expect(actions[2]).toMatchObject({ actionId: 'at3', categoryId: 'c2-triage' });
   });
 
-  it('参照整合性: atom の categoryId が categories に無いとエラー (v2.7d)', () => {
+  it('参照整合性: action の categoryId が categories に無いとエラー (v2.7d)', () => {
     const data = buildDataSet({
-      atoms: parseAtoms(atomsCsv.replace('at1,c1-inquiry', 'at1,unknown-cat')),
+      actions: parseActions(actionsCsv.replace('at1,c1-inquiry', 'at1,unknown-cat')),
     });
     expect(() => validateReferences(data)).toThrow(/categoryId/);
   });

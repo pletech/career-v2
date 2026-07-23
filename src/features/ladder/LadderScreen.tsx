@@ -36,8 +36,8 @@ const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps' }) => {
     toggleEvidence,
     managerConfirms,
     toggleManagerConfirm,
-    atomChecks,
-    toggleAtom,
+    actionChecks,
+    toggleAction,
     selectedAbilityId,
     setSelectedAbilityId,
     lang,
@@ -256,9 +256,9 @@ const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps' }) => {
         <CraftView
           roles={categoryRoles}
           categories={data.categories}
-          atoms={data.atoms}
-          atomChecks={atomChecks}
-          onToggleAtom={toggleAtom}
+          actions={data.actions}
+          actionChecks={actionChecks}
+          onToggleAction={toggleAction}
           lang={lang}
         />
       </div>

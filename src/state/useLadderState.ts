@@ -10,13 +10,14 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { AtomCheckMap, EvidenceCheckMap, ManagerConfirmMap } from '../domain/types';
+import type { ActionCheckMap, EvidenceCheckMap, ManagerConfirmMap } from '../domain/types';
 import { KO_UI_ENABLED } from '../domain/i18n';
 import type { Lang } from '../domain/i18n';
 
 const CHECKS_KEY = 'career-ladder-evidence-checks:v2';
 const CONFIRMS_KEY = 'career-ladder-manager-confirms:v2';
-const ATOM_CHECKS_KEY = 'career-ladder-atom-checks:v1';
+// キー文字列は v2.7 (旧 atom 呼称) 当時のまま維持 — 変更すると公開サイトの既存チェック状態が失われる
+const ACTION_CHECKS_KEY = 'career-ladder-atom-checks:v1';
 const LANG_KEY = 'career-ladder-lang:v1';
 
 /** 既定は日本語 (共有時の事故防止 — 確定 #21)。韓国語は作業用 */
@@ -91,8 +92,10 @@ export function useLadderState() {
     loadBooleanMap(CONFIRMS_KEY),
   );
   const [selectedAbilityId, setSelectedAbilityId] = useState<string | null>(null);
-  // v2.7 素材 (原子能力) 単位のチェック — 業務ロードマップ (素材→武器) 用
-  const [atomChecks, setAtomChecks] = useState<AtomCheckMap>(() => loadBooleanMap(ATOM_CHECKS_KEY));
+  // v2.7 アクション単位のチェック — 業務ロードマップ用
+  const [actionChecks, setActionChecks] = useState<ActionCheckMap>(() =>
+    loadBooleanMap(ACTION_CHECKS_KEY),
+  );
   const [lang, setLangRaw] = useState<Lang>(loadLang);
 
   const setLang = useCallback((next: Lang) => {
@@ -123,11 +126,11 @@ export function useLadderState() {
 
   useEffect(() => {
     try {
-      window.localStorage.setItem(ATOM_CHECKS_KEY, JSON.stringify(atomChecks));
+      window.localStorage.setItem(ACTION_CHECKS_KEY, JSON.stringify(actionChecks));
     } catch {
       /* 同上 */
     }
-  }, [atomChecks]);
+  }, [actionChecks]);
 
   const setTargetRoleId = useCallback((roleId: string) => {
     setTargetRoleIdRaw(roleId);
@@ -151,12 +154,12 @@ export function useLadderState() {
     });
   }, []);
 
-  /** 素材 (原子能力) のチェックを反転 (v2.7) */
-  const toggleAtom = useCallback((atomId: string) => {
-    setAtomChecks((prev) => {
+  /** アクションのチェックを反転 (v2.7) */
+  const toggleAction = useCallback((actionId: string) => {
+    setActionChecks((prev) => {
       const next = { ...prev };
-      if (next[atomId]) delete next[atomId];
-      else next[atomId] = true;
+      if (next[actionId]) delete next[actionId];
+      else next[actionId] = true;
       return next;
     });
   }, []);
@@ -241,8 +244,8 @@ export function useLadderState() {
       toggleEvidence,
       managerConfirms,
       toggleManagerConfirm,
-      atomChecks,
-      toggleAtom,
+      actionChecks,
+      toggleAction,
       selectedAbilityId,
       setSelectedAbilityId,
       lang,
@@ -258,8 +261,8 @@ export function useLadderState() {
       toggleEvidence,
       managerConfirms,
       toggleManagerConfirm,
-      atomChecks,
-      toggleAtom,
+      actionChecks,
+      toggleAction,
       selectedAbilityId,
       setSelectedAbilityId,
       lang,

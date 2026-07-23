@@ -13,7 +13,7 @@ import { csvToObjects } from '../utils/csv';
 import { WORK_TAG_LABELS } from '../domain/i18n';
 import type {
   Ability,
-  Atom,
+  Action,
   Category,
   Dependency,
   DepType,
@@ -35,12 +35,12 @@ export interface LadderDataSet {
   abilities: Ability[];
   evidences: Evidence[];
   growthLines: GrowthLine[];
-  // v2.7 素材→武器モデル
+  // v2.7 旧素材→武器モデル (残置・未使用)
   tags: Tag[];
-  atoms: Atom[];
   weapons: Weapon[];
   // v2.7d カテゴリモデル
   categories: Category[];
+  actions: Action[];
 }
 
 // ---------------------------------------------------------------------------
@@ -235,22 +235,22 @@ export function parseTags(csvText: string): Tag[] {
   return tags;
 }
 
-/** atoms (v2.7d): 原子能力 (素材)。カテゴリに所属 */
-export function parseAtoms(csvText: string): Atom[] {
+/** actions (v2.7d/v2.7m): アクション (1文1概念の行動項目)。カテゴリに所属 */
+export function parseActions(csvText: string): Action[] {
   const rows = csvToObjects(csvText);
-  requireHeaders(rows, ['atomId', 'categoryId', 'statement', 'sortOrder'], 'atoms.csv');
-  const atoms = rows.map((r) => {
-    const atomId = requireValue(r, 'atomId', 'atoms.csv', r.atomId || '(空)');
+  requireHeaders(rows, ['actionId', 'categoryId', 'statement', 'sortOrder'], 'actions.csv');
+  const actions = rows.map((r) => {
+    const actionId = requireValue(r, 'actionId', 'actions.csv', r.actionId || '(空)');
     return {
-      atomId,
-      categoryId: requireValue(r, 'categoryId', 'atoms.csv', atomId),
-      statement: requireValue(r, 'statement', 'atoms.csv', atomId),
-      sortOrder: toNumber(r.sortOrder, 'sortOrder', 'atoms.csv', atomId),
+      actionId,
+      categoryId: requireValue(r, 'categoryId', 'actions.csv', actionId),
+      statement: requireValue(r, 'statement', 'actions.csv', actionId),
+      sortOrder: toNumber(r.sortOrder, 'sortOrder', 'actions.csv', actionId),
       statementKo: opt(r.statementKo ?? ''),
-    } satisfies Atom;
+    } satisfies Action;
   });
-  requireUnique(atoms.map((a) => a.atomId), 'atoms.csv');
-  return atoms;
+  requireUnique(actions.map((a) => a.actionId), 'actions.csv');
+  return actions;
 }
 
 /** categories (v2.7d): 段階別カテゴリ + 下位カテゴリ包含 */
@@ -326,13 +326,13 @@ export function validateReferences(data: LadderDataSet): void {
       throw new LadderDataError(`dependencies.csv: ${d.dependencyId} が参照する roleId が存在しません。`);
     }
   }
-  // v2.7d: atom→category, category.includes→category
-  const atomIds = new Set(data.atoms.map((a) => a.atomId));
+  // v2.7d: action→category, category.includes→category
+  const actionIds = new Set(data.actions.map((a) => a.actionId));
   const categoryIds = new Set(data.categories.map((c) => c.categoryId));
-  for (const a of data.atoms) {
+  for (const a of data.actions) {
     if (!categoryIds.has(a.categoryId)) {
       throw new LadderDataError(
-        `atoms.csv: ${a.atomId} の categoryId が categories.csv に存在しません: ${a.categoryId}`,
+        `actions.csv: ${a.actionId} の categoryId が categories.csv に存在しません: ${a.categoryId}`,
       );
     }
   }
@@ -347,10 +347,10 @@ export function validateReferences(data: LadderDataSet): void {
   }
   // weapons (残置・任意): 参照があれば検証
   for (const w of data.weapons) {
-    for (const atomId of w.composedOf) {
-      if (!atomIds.has(atomId)) {
+    for (const actionId of w.composedOf) {
+      if (!actionIds.has(actionId)) {
         throw new LadderDataError(
-          `weapons.csv: ${w.weaponId} の composedOf が存在しない素材を参照しています: ${atomId}`,
+          `weapons.csv: ${w.weaponId} の composedOf が存在しないアクションを参照しています: ${actionId}`,
         );
       }
     }
@@ -384,7 +384,7 @@ async function loadFrom(src: LadderSourceUrls): Promise<LadderDataSet> {
     evidencesText,
     growthLinesText,
     tagsText,
-    atomsText,
+    actionsText,
     weaponsText,
     categoriesText,
   ] = await Promise.all([
@@ -394,7 +394,7 @@ async function loadFrom(src: LadderSourceUrls): Promise<LadderDataSet> {
     fetchText(src.evidencesCsvUrl),
     fetchText(or(src.growthLinesCsvUrl, LOCAL_SOURCES.growthLinesCsvUrl)),
     fetchText(or(src.tagsCsvUrl, LOCAL_SOURCES.tagsCsvUrl)),
-    fetchText(or(src.atomsCsvUrl, LOCAL_SOURCES.atomsCsvUrl)),
+    fetchText(or(src.actionsCsvUrl, LOCAL_SOURCES.actionsCsvUrl)),
     fetchText(or(src.weaponsCsvUrl, LOCAL_SOURCES.weaponsCsvUrl)),
     fetchText(or(src.categoriesCsvUrl, LOCAL_SOURCES.categoriesCsvUrl)),
   ]);
@@ -405,7 +405,7 @@ async function loadFrom(src: LadderSourceUrls): Promise<LadderDataSet> {
     evidences: parseEvidences(evidencesText),
     growthLines: parseGrowthLines(growthLinesText),
     tags: parseTags(tagsText),
-    atoms: parseAtoms(atomsText),
+    actions: parseActions(actionsText),
     weapons: parseWeapons(weaponsText),
     categories: parseCategories(categoriesText),
   };

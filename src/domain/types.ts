@@ -179,11 +179,11 @@ export interface Category {
 }
 
 /**
- * 原子能力 (素材)。1文1概念・再利用可能な最小単位。チェックの単位はこの原子。
+ * アクション（行動項目）。1文1概念・再利用可能な最小単位。チェックの単位はこのアクション。
  * 「最初に登場するカテゴリ」に所属し、そのカテゴリの段階が登場段階になる。
  */
-export interface Atom {
-  atomId: string;
+export interface Action {
+  actionId: string;
   categoryId: string;
   statement: string;
   sortOrder: number;
@@ -199,8 +199,9 @@ export interface Tag {
 }
 
 /**
- * 武器 (上位能力)。下位の原子能力 複数の組み合わせ (多:1) で成立する。
- * 構成素材の文言は原子の原文そのまま表示される (文言一致 — AC-12.4)。
+ * 武器 (上位能力)。下位のアクション 複数の組み合わせ (多:1) で成立する。
+ * 構成アクションの文言はそのままの原文で表示される (文言一致 — AC-12.4)。
+ * @deprecated v2.7e でカテゴリ包含モデルへ移行。旧モデル (残置・未使用)
  */
 export interface Weapon {
   weaponId: string;
@@ -208,14 +209,14 @@ export interface Weapon {
   /** 表示上の主タグ (この列のセルに置かれる) */
   tagId: string;
   statement: string;
-  /** 構成素材の atomId 一覧。差分素材 (firstStage = この武器の段階) を含む */
+  /** 構成アクションの actionId 一覧。差分アクション (firstStage = この武器の段階) を含む */
   composedOf: string[];
   sortOrder: number;
   statementKo?: string;
 }
 
-/** atomId -> チェック済みか (素材単位のチェック — v2.7) */
-export type AtomCheckMap = Record<string, boolean>;
+/** actionId -> チェック済みか (アクション単位のチェック — v2.7) */
+export type ActionCheckMap = Record<string, boolean>;
 
 // ---------------------------------------------------------------------------
 // dependencies: 前提関係

@@ -1,16 +1,16 @@
 import React, { useMemo, useState } from 'react';
 import { STRINGS, loc, type Lang } from '../../domain/i18n';
-import type { Atom, AtomCheckMap, Category, Role } from '../../domain/types';
+import type { Action, ActionCheckMap, Category, Role } from '../../domain/types';
 
 /**
  * 業務ロードマップ v2.7d — 段階別カテゴリ + 包含モデル (アサリさん面談 2026-07-14)
  *
  * - 段階を開くと、その段階「固有」のカテゴリ群が出る (段階ごとに別集合)。
  * - 上位段階のカテゴリは、下位段階のカテゴリを丸ごと包含 (includes) し、
- *   さらにその段階固有の原子 (できると言える項目) を持つ。
+ *   さらにその段階固有のアクション (できると言える項目) を持つ。
  * - 包含された下位カテゴリは 1行に畳んで (ロールアップ) 表示し、
  *   「何個中何個」を示す。達成率が閾値 (70%) 以上なら「クリア」、未満なら不足が一目で分かる。
- * - チェックの単位は原子。カテゴリの達成率 = (達成した下位カテゴリ数 + チェック済み原子数) / 総項目数。
+ * - チェックの単位はアクション。カテゴリの達成率 = (達成した下位カテゴリ数 + チェック済みアクション数) / 総項目数。
  * - 一度に開く段階は1つ (アコーディオン)。既定は最下段 (STEP1)。
  */
 
@@ -19,9 +19,9 @@ const CLEAR = 0.7; // クリア閾値 (7割)
 interface CraftViewProps {
   roles: Role[];
   categories: Category[];
-  atoms: Atom[];
-  atomChecks: AtomCheckMap;
-  onToggleAtom: (atomId: string) => void;
+  actions: Action[];
+  actionChecks: ActionCheckMap;
+  onToggleAction: (actionId: string) => void;
   lang: Lang;
 }
 
@@ -37,9 +37,9 @@ interface CatStat {
 const CraftView: React.FC<CraftViewProps> = ({
   roles,
   categories,
-  atoms,
-  atomChecks,
-  onToggleAtom,
+  actions,
+  actionChecks,
+  onToggleAction,
   lang,
 }) => {
   const s = STRINGS[lang];
@@ -64,18 +64,18 @@ const CraftView: React.FC<CraftViewProps> = ({
     return m;
   }, [categories]);
 
-  const atomsByCat = useMemo(() => {
-    const m = new Map<string, Atom[]>();
-    for (const a of atoms) {
+  const actionsByCat = useMemo(() => {
+    const m = new Map<string, Action[]>();
+    for (const a of actions) {
       const list = m.get(a.categoryId);
       if (list) list.push(a);
       else m.set(a.categoryId, [a]);
     }
     for (const list of m.values()) list.sort((a, b) => a.sortOrder - b.sortOrder);
     return m;
-  }, [atoms]);
+  }, [actions]);
 
-  const directAtoms = (catId: string): Atom[] => atomsByCat.get(catId) ?? [];
+  const directActions = (catId: string): Action[] => actionsByCat.get(catId) ?? [];
 
   /**
    * カテゴリ達成統計 (再帰: 包含した下位カテゴリは「達成なら1」として数える)。
@@ -89,8 +89,8 @@ const CraftView: React.FC<CraftViewProps> = ({
   const stat = (catId: string): CatStat => {
     const cat = catById.get(catId);
     if (!cat) return { done: 0, total: 0, ratio: 0, cleared: false, blockedByChild: false };
-    const own = directAtoms(catId);
-    const ownDone = own.filter((a) => atomChecks[a.atomId] === true).length;
+    const own = directActions(catId);
+    const ownDone = own.filter((a) => actionChecks[a.actionId] === true).length;
     const childStats = cat.includes.map((id) => stat(id));
     const childDone = childStats.filter((s) => s.cleared).length;
     const allChildrenCleared = childStats.every((s) => s.cleared);
@@ -158,14 +158,14 @@ const CraftView: React.FC<CraftViewProps> = ({
   };
 
   // ---------------------------------------------------------------------
-  // 原子1行 (チェックボックス)。「未チェックのみ」フィルタ対応
+  // アクション1行 (チェックボックス)。「未チェックのみ」フィルタ対応
   // ---------------------------------------------------------------------
-  const atomRow = (a: Atom, opts: { isNew?: boolean } = {}) => {
-    const checked = atomChecks[a.atomId] === true;
+  const actionRow = (a: Action, opts: { isNew?: boolean } = {}) => {
+    const checked = actionChecks[a.actionId] === true;
     if (onlyUnchecked && checked) return null;
     return (
       <label
-        key={a.atomId}
+        key={a.actionId}
         className={`flex cursor-pointer items-start gap-2 rounded-lg border px-2 py-1.5 transition-colors ${
           opts.isNew
             ? 'border-amber-200 bg-amber-50/60 hover:border-amber-300'
@@ -175,7 +175,7 @@ const CraftView: React.FC<CraftViewProps> = ({
         <input
           type="checkbox"
           checked={checked}
-          onChange={() => onToggleAtom(a.atomId)}
+          onChange={() => onToggleAction(a.actionId)}
           className="mt-0.5 h-4 w-4 shrink-0 accent-cyan-600"
         />
         <span className="min-w-0 flex-1">
@@ -231,7 +231,7 @@ const CraftView: React.FC<CraftViewProps> = ({
         {expanded && (
           <div className="ml-2.5 mt-1 flex flex-col gap-1 border-l-2 border-gray-100 pl-2">
             {child.includes.map((id) => childRollup(id, key))}
-            {directAtoms(childId).map((a) => atomRow(a))}
+            {directActions(childId).map((a) => actionRow(a))}
           </div>
         )}
       </div>
@@ -243,8 +243,8 @@ const CraftView: React.FC<CraftViewProps> = ({
   // ---------------------------------------------------------------------
   const categoryCard = (cat: Category) => {
     const st = stat(cat.categoryId);
-    const own = directAtoms(cat.categoryId);
-    const ownIsNew = cat.stage > minStage; // 上位段階の固有原子 = この段階で追加 (差分)
+    const own = directActions(cat.categoryId);
+    const ownIsNew = cat.stage > minStage; // 上位段階の固有アクション = この段階で追加 (差分)
     return (
       <div
         key={cat.categoryId}
@@ -293,13 +293,13 @@ const CraftView: React.FC<CraftViewProps> = ({
           )}
           {cat.includes.map((id) => childRollup(id, cat.categoryId))}
 
-          {/* その段階固有の原子 (チェック対象)。上位段階では NEW として強調 */}
+          {/* その段階固有のアクション (チェック対象)。上位段階では NEW として強調 */}
           {own.length > 0 && ownIsNew && (
             <p className="mt-1 px-0.5 text-[9.5px] font-semibold text-amber-700">
               {ko ? `이 단계에서 추가 (${own.length})` : `この段階で追加（${own.length}）`}
             </p>
           )}
-          {own.map((a) => atomRow(a, { isNew: ownIsNew }))}
+          {own.map((a) => actionRow(a, { isNew: ownIsNew }))}
         </div>
       </div>
     );

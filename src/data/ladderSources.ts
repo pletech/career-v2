@@ -33,10 +33,11 @@ export interface LadderSourceUrls {
    * 空の場合、ローダーはローカル CSV の growth-lines を代わりに読む。
    */
   growthLinesCsvUrl: string;
-  /** v2.7 素材→武器モデル。growth-lines と同じく、空ならローカル CSV へフォールバック */
+  /** v2.7 旧素材→武器モデル (残置・未使用)。growth-lines と同じく、空ならローカル CSV へフォールバック */
   tagsCsvUrl: string;
-  atomsCsvUrl: string;
   weaponsCsvUrl: string;
+  /** v2.7m: アクション (旧 atoms)。同じく空ならローカル CSV へフォールバック */
+  actionsCsvUrl: string;
   /** v2.7d カテゴリモデル (段階別カテゴリ + 包含) */
   categoriesCsvUrl: string;
 }
@@ -49,10 +50,10 @@ export const SHEET_SOURCES: LadderSourceUrls = {
   evidencesCsvUrl: gviz('439744095'),
   // TODO: シートに growth-lines タブを作成したら gviz('<gid>') に置き換える
   growthLinesCsvUrl: '',
-  // TODO: シートに tags / atoms / weapons タブを作成したら gviz('<gid>') に置き換える (v2.7)
+  // TODO: シートに tags / actions / weapons タブを作成したら gviz('<gid>') に置き換える (v2.7)
   tagsCsvUrl: '',
-  atomsCsvUrl: '',
   weaponsCsvUrl: '',
+  actionsCsvUrl: '',
   categoriesCsvUrl: '',
 };
 
@@ -64,7 +65,7 @@ export const LOCAL_SOURCES: LadderSourceUrls = {
   evidencesCsvUrl: `${base}data/evidences.csv`,
   growthLinesCsvUrl: `${base}data/growth-lines.csv`,
   tagsCsvUrl: `${base}data/tags.csv`,
-  atomsCsvUrl: `${base}data/atoms.csv`,
   weaponsCsvUrl: `${base}data/weapons.csv`,
+  actionsCsvUrl: `${base}data/actions.csv`,
   categoriesCsvUrl: `${base}data/categories.csv`,
 };
