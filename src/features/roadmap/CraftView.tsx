@@ -16,6 +16,30 @@ import type { Action, ActionCheckMap, Category, Cert, Role } from '../../domain/
 
 const CLEAR = 0.7; // クリア閾値 (7割)
 
+/**
+ * 段階ごとの「どこまで自分でできればチェックしてよいか」の目安 (v2.8 — 外部レビュー FB 2026-07-29)。
+ *
+ * 未経験者が大半のため、全項目を「一人称 (誰の助けもなく単独)」で求めるとチェックが長期間つかず
+ * 目安として機能しない、という指摘への対応。項目ごとにレベル軸を持たせる案 (補助あり/一人称/改善提案の
+ * 3段階) もあるが、営業への確認が未了のため、まずは段階単位の注意文言のみで運用する (A案)。
+ *
+ * ※ 文言の変更はここだけで済む。レベル軸をデータに持たせる場合は CSV 化を検討する。
+ */
+const STAGE_AUTONOMY: Record<number, { ja: string; ko: string }> = {
+  1: {
+    ja: 'この段階は「補助・確認してくれる人がいればできる」でチェックして構いません。',
+    ko: '이 단계는 "보조·확인해 주는 사람이 있으면 가능"으로 체크해도 괜찮습니다.',
+  },
+  2: {
+    ja: 'この段階は「手順書があれば、原則ひとりでできる」を目安にチェックしてください。',
+    ko: '이 단계는 "절차서가 있으면 원칙적으로 혼자 가능"을 기준으로 체크해 주세요.',
+  },
+  3: {
+    ja: 'この段階は「ひとりでできる」に加え、「改善や対策を提案できる」を目安にチェックしてください。',
+    ko: '이 단계는 "혼자 가능"에 더해 "개선·대책을 제안할 수 있음"을 기준으로 체크해 주세요.',
+  },
+};
+
 interface CraftViewProps {
   roles: Role[];
   categories: Category[];
@@ -362,10 +386,26 @@ const CraftView: React.FC<CraftViewProps> = ({
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-4 pt-3 md:px-5">
-        <div className="mb-3 rounded-lg border border-gray-100 bg-gray-50/60 px-3 py-2 text-[10px] text-gray-400">
-          {ko
-            ? 'STEP 3~6 카테고리는 순차 확장 예정 (현재는 STEP1 전수 + STEP2 운용감시 전 카테고리 반영)'
-            : 'STEP 3〜6 のカテゴリは順次拡張予定（現在は STEP1 の網羅と STEP2 運用監視の全カテゴリを反映）'}
+        {/* 適用範囲・第1版の前提 (外部レビュー FB 2026-07-29: 粗い粒度で出す理由を明記する) */}
+        <div className="mb-3 flex flex-col gap-1 rounded-lg border border-gray-100 bg-gray-50/60 px-3 py-2 text-[10px] leading-relaxed text-gray-400">
+          <span>
+            <span className="mr-1 rounded bg-amber-100 px-1 py-0.5 text-[9px] font-bold text-amber-700">
+              BETA
+            </span>
+            {ko
+              ? '베타판입니다. 반기마다 재검토하여 내용을 갱신합니다.'
+              : 'ベータ版です。半期ごとに見直し、内容を更新します。'}
+          </span>
+          <span>
+            {ko
+              ? '현재는 인프라 > 서버의 STEP1~3(운용감시보조·운용감시·운용보수)을 반영. STEP4~6은 순차 확장 예정.'
+              : '現在は インフラ > サーバー の STEP1〜3（運用監視補助・運用監視・運用保守）を反映。STEP4〜6 は順次拡張予定。'}
+          </span>
+          <span>
+            {ko
+              ? '서버와 네트워크는 역할이 겹치는 부분이 많아 제1판에서는 공통 카테고리로 다룹니다(필요에 따라 향후 분할).'
+              : 'サーバーとネットワークは役割が重なるため、第1版では共通のカテゴリとして扱っています（必要に応じて今後分割します）。'}
+          </span>
         </div>
 
         <div className="flex flex-col gap-3">
@@ -404,6 +444,16 @@ const CraftView: React.FC<CraftViewProps> = ({
 
                 {open ? (
                   <>
+                    {/* この段階でチェックしてよい「自立度」の目安 (v2.8 — 判定要件ではない) */}
+                    {STAGE_AUTONOMY[stage] && (
+                      <p className="border-t border-amber-100 bg-amber-50/60 px-3 py-2 text-[10.5px] leading-relaxed text-amber-900">
+                        <span className="font-semibold">
+                          {ko ? '체크 기준' : 'チェックの目安'}:{' '}
+                        </span>
+                        {loc(lang, STAGE_AUTONOMY[stage].ja, STAGE_AUTONOMY[stage].ko)}
+                      </p>
+                    )}
+
                     {/* 次の段階へ進むための推奨資格 (参考 — 判定要件ではない) */}
                     {stageCerts.length > 0 && (
                       <div className="flex flex-col gap-1.5 border-t border-indigo-100 bg-indigo-50/50 px-3 py-2.5">
@@ -412,6 +462,12 @@ const CraftView: React.FC<CraftViewProps> = ({
                           {ko
                             ? '다음 단계로 올라가기 위한 추천 자격증 (참고)'
                             : '次の段階へ進むための推奨資格（参考）'}
+                        </span>
+                        {/* 会社の支援制度 (外部レビュー FB: 「会社は何をしてくれるのか」に答える) */}
+                        <span className="text-[9.5px] leading-relaxed text-indigo-500">
+                          {ko
+                            ? '참고서·온라인 강좌·수험료 보조와 자격 수당 제도가 있습니다. 사내 스터디(아카데미)와 담당 상사(카운셀러)에게 상담할 수 있습니다.'
+                            : '参考書・オンライン講座・受験費用の補助と資格手当の制度があります。社内勉強会（アカデミー）や担当上長（カウンセラー）に相談できます。'}
                         </span>
                         <div className="flex flex-wrap gap-1.5">
                           {stageCerts.map((cert) => (

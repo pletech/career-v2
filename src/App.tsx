@@ -59,11 +59,11 @@ const App: React.FC = () => {
 
   /**
    * 全体マップのノードが「業務ロードマップ」に対応済みか判定する (v2.7o)。
-   * 業務ロードマップは現在 インフラ > サーバー の STEP1・2 のみ整備済み。
+   * 業務ロードマップは現在 インフラ > サーバー の STEP1〜3 のみ整備済み。
    * それ以外は「準備中」と案内する。
    * ※ロードマップを他職種・上位段階へ拡張したら、この範囲を更新する。
    */
-  const ROADMAP_READY_STAGES = [1, 2];
+  const ROADMAP_READY_STAGES = [1, 2, 3];
   const isRoadmapReady = (node: CareerDataSet['nodes'][number] | null): boolean =>
     !!node &&
     node.track === 'infrastructure' &&
