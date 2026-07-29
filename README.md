@@ -18,7 +18,7 @@
 | 答える問い | 次の段階へ行くには今何を埋めるか | どんな道があり、自分はどこにいるか |
 | 使う場面 | 実際の育成面談（一緒にチェックする） | 全体の説明・方向相談 |
 | 粒度 | 狭く深く（インフラ>サーバー STEP1〜3 を行動単位で） | 広く浅く（全職種・全段階を一望） |
-| データ | `categories.csv` / `actions.csv` / `certs.csv` | 別スプレッドシートの `nodes` シート + `careerData.ts` |
+| データ | `categories.csv` / `actions.csv` / `certs.csv` | `nodes.csv`（表示内容）+ `careerData.ts`（構造・座標・エッジ） |
 
 2つはデータソースが別で内容の粒度も異なるため、全体マップのノード詳細から業務ロードマップへの導線を出しています（整備済みの役割は遷移ボタン、未整備は「準備中」表示）。
 
@@ -54,7 +54,15 @@
 
 ## データ（CSV が DB）
 
-コンテンツの値はコードに持たず、CSV を参照します。Google スプレッドシートの公開CSVを優先し、取得失敗時は同梱のローカルCSVへフォールバックします（`src/data/loadLadderData.ts`）。
+コンテンツの値はコードに持たず、`public/data/*.csv` を参照します。
+
+> **2026-07-29: Google スプレッドシートの参照をやめ、リポジトリ同梱の CSV に一本化しました。**
+> 公開シートは「リンクを知っている全員が閲覧可」でないと動かないため、サーバー移設後に
+> ログインを付けてもデータURLだけは公開のままになり、ページの認証を迂回できてしまいます。
+> また、シート編集は push も Actions もローカル確認も経ずに本番へ反映されるため、
+> 「ローカルで確認してから配信する」運用と両立しません。
+> 元シートのURLと gid は `ladderSources.ts` / `sheetSources.ts` の冒頭コメントに
+> アーカイブとして残してあります（戻す場合はそこに URL を書く）。
 
 ### `public/data/` のファイル
 
@@ -64,6 +72,7 @@
 | `actions.csv` | アクション（行動項目） | `actionId` `categoryId` `statement` `statementKo` `sortOrder` |
 | `certs.csv` | 段階別の推奨資格 | `certId` `stage` `nameJa` `nameKo` `note` `noteKo` `sortOrder` |
 | `roles.csv` | 役割（段階の名前・状態） | `roleId` `track` `category` `stageOrder` `titleJa` `shortLabel` `status` … |
+| `nodes.csv` | 全体マップの表示内容（役割説明・必要スキル等） | `id` `titleJa` `shortLabel` `role` `requiredSkills` `requiredExperience` `recommendedCerts` … |
 | `dependencies.csv` | 段階間の前提関係 | `dependencyId` `fromId` `toId` `depType` |
 | `abilities.csv` / `evidences.csv` | 旧「階段ビュー」用（残置・タブ非表示） | — |
 | `tags.csv` / `weapons.csv` / `growth-lines.csv` | 旧モデルの残置（未使用） | — |
@@ -81,10 +90,12 @@
 
 ### 編集の流れ
 
-1. **業務ロードマップの内容**（カテゴリ・アクション・資格）→ `public/data/*.csv`（またはスプレッドシートの対応タブ）
-2. **全体マップの表示内容** → 別スプレッドシートの `nodes` シート
+1. **業務ロードマップの内容**（カテゴリ・アクション・資格）→ `public/data/categories.csv` / `actions.csv` / `certs.csv`
+2. **全体マップの表示内容** → `public/data/nodes.csv`
 3. **全体マップの構造・座標・エッジ** → `src/data/careerData.ts`
-4. **スプレッドシートの参照先** → `src/data/ladderSources.ts`（ロードマップ）/ `src/data/sheetSources.ts`（全体マップ）
+4. **参照先の設定** → `src/data/ladderSources.ts`（ロードマップ）/ `src/data/sheetSources.ts`（全体マップ）
+
+いずれもコミットが唯一の反映経路です（外部シートは参照しません）。
 
 ---
 
