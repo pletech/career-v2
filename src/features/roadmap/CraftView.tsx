@@ -17,6 +17,20 @@ import type { Action, ActionCheckMap, Category, Cert, Role } from '../../domain/
 const CLEAR = 0.7; // クリア閾値 (7割)
 
 /**
+ * 「引き継いだ業務を支援なしで実施できる」ことを確認するアクションの ID 規約 (v2.8)。
+ *
+ * 段階ごとの「チェックの目安」で下位段階は「補助・確認してくれる人がいればできる」と
+ * したため、下位段階のクリアは「ひとりでできる」を意味しない。一方ロールアップは
+ * `actionChecks[actionId]` を共有するだけなので、下位で「補助あり」としてチェックした
+ * 項目は上位でもチェック済みに見え、自立度の再確認が起きない (外部レビュー指摘 2026-07-29)。
+ * そこで包含関係ごとに確認用アクションを1件置く。
+ *
+ * 包含関係は 1 対 1 (AC-12.19: カテゴリの親は 1 つだけ) なので、下位 categoryId から
+ * 一意な actionId を導ける。**actionId はチェック状態の保存キーなので改名しないこと。**
+ */
+const selfCheckActionId = (childCategoryId: string): string => `ind-${childCategoryId}`;
+
+/**
  * 段階ごとの「どこまで自分でできればチェックしてよいか」の目安 (v2.8 — 外部レビュー FB 2026-07-29)。
  *
  * 未経験者が大半のため、全項目を「一人称 (誰の助けもなく単独)」で求めるとチェックが長期間つかず
@@ -186,20 +200,31 @@ const CraftView: React.FC<CraftViewProps> = ({
     );
   };
 
+  /** カテゴリ固有アクションを「引き継いだ業務の自立確認」と「その段階で増えた業務」に分ける */
+  const splitSelfChecks = (cat: Category) => {
+    const ids = new Set(cat.includes.map(selfCheckActionId));
+    const all = directActions(cat.categoryId);
+    return {
+      selfChecks: all.filter((a) => ids.has(a.actionId)),
+      own: all.filter((a) => !ids.has(a.actionId)),
+    };
+  };
+
   // ---------------------------------------------------------------------
   // アクション1行 (チェックボックス)。「未チェックのみ」フィルタ対応
   // ---------------------------------------------------------------------
-  const actionRow = (a: Action, opts: { isNew?: boolean } = {}) => {
+  const actionRow = (a: Action, opts: { isNew?: boolean; isSelfCheck?: boolean } = {}) => {
     const checked = actionChecks[a.actionId] === true;
     if (onlyUnchecked && checked) return null;
+    const tone = opts.isSelfCheck
+      ? 'border-violet-200 bg-violet-50/70 hover:border-violet-300'
+      : opts.isNew
+        ? 'border-amber-200 bg-amber-50/60 hover:border-amber-300'
+        : 'border-gray-100 bg-white hover:border-cyan-200';
     return (
       <label
         key={a.actionId}
-        className={`flex cursor-pointer items-start gap-2 rounded-lg border px-2 py-1.5 transition-colors ${
-          opts.isNew
-            ? 'border-amber-200 bg-amber-50/60 hover:border-amber-300'
-            : 'border-gray-100 bg-white hover:border-cyan-200'
-        }`}
+        className={`flex cursor-pointer items-start gap-2 rounded-lg border px-2 py-1.5 transition-colors ${tone}`}
       >
         <input
           type="checkbox"
@@ -211,10 +236,16 @@ const CraftView: React.FC<CraftViewProps> = ({
           <span className="block text-[11.5px] leading-snug text-gray-800">
             {loc(lang, a.statement, a.statementKo)}
           </span>
-          {opts.isNew && (
-            <span className="mt-0.5 inline-block rounded bg-amber-100 px-1 py-px text-[9px] font-bold text-amber-700">
-              NEW
+          {opts.isSelfCheck ? (
+            <span className="mt-0.5 inline-block rounded bg-violet-100 px-1 py-px text-[9px] font-bold text-violet-700">
+              {ko ? '자립 확인' : '自立確認'}
             </span>
+          ) : (
+            opts.isNew && (
+              <span className="mt-0.5 inline-block rounded bg-amber-100 px-1 py-px text-[9px] font-bold text-amber-700">
+                NEW
+              </span>
+            )
           )}
         </span>
       </label>
@@ -260,7 +291,9 @@ const CraftView: React.FC<CraftViewProps> = ({
         {expanded && (
           <div className="ml-2.5 mt-1 flex flex-col gap-1 border-l-2 border-gray-100 pl-2">
             {child.includes.map((id) => childRollup(id, key))}
-            {directActions(childId).map((a) => actionRow(a))}
+            {/* 展開先でも自立確認は見分けが付くようにする (親カードと同じ扱い) */}
+            {splitSelfChecks(child).selfChecks.map((a) => actionRow(a, { isSelfCheck: true }))}
+            {splitSelfChecks(child).own.map((a) => actionRow(a))}
           </div>
         )}
       </div>
@@ -272,8 +305,10 @@ const CraftView: React.FC<CraftViewProps> = ({
   // ---------------------------------------------------------------------
   const categoryCard = (cat: Category) => {
     const st = stat(cat.categoryId);
-    const own = directActions(cat.categoryId);
     const ownIsNew = cat.stage > minStage; // 上位段階の固有アクション = この段階で追加 (差分)
+    // 自立確認は「この段階で追加された業務」ではなく「引き継いだ業務を支援なしでやれるか」なので、
+    // NEW と混ぜず別グループにする (外部レビュー 2026-07-29)
+    const { selfChecks, own } = splitSelfChecks(cat);
     return (
       <div
         key={cat.categoryId}
@@ -321,6 +356,23 @@ const CraftView: React.FC<CraftViewProps> = ({
             </p>
           )}
           {cat.includes.map((id) => childRollup(id, cat.categoryId))}
+
+          {/* 引き継いだ業務の自立確認。下位段階は「補助ありでも可」なので、ここで一人称を確認する */}
+          {selfChecks.length > 0 && (
+            <>
+              <p className="mt-1 px-0.5 text-[9.5px] font-semibold text-violet-700">
+                {ko
+                  ? `인계한 업무의 자립 확인 (${selfChecks.length})`
+                  : `引き継いだ業務の自立確認（${selfChecks.length}）`}
+              </p>
+              <p className="px-0.5 text-[9px] leading-relaxed text-violet-500">
+                {ko
+                  ? '아래 단계는 "보조가 있으면 가능"으로 체크할 수 있으므로, 여기서 혼자 할 수 있게 되었는지 확인합니다.'
+                  : '下の段階は「補助があればできる」でチェックできるため、ここで支援なしでできるようになったかを確認します。'}
+              </p>
+            </>
+          )}
+          {selfChecks.map((a) => actionRow(a, { isSelfCheck: true }))}
 
           {/* その段階固有のアクション (チェック対象)。上位段階では NEW として強調 */}
           {own.length > 0 && ownIsNew && (
