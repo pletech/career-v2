@@ -1,13 +1,12 @@
 certId,stage,nameJa,nameKo,note,noteKo,sortOrder
 cert-s1-01,1,ITパスポート試験,IT 패스포트 시험,IT全般の基礎知識,IT 전반의 기초 지식,1
-cert-s1-02,1,CompTIA A+,CompTIA A+,PC・端末・ヘルプデスクの基礎（国際資格）,PC·단말·헬프데스크 기초(국제 자격),2
-cert-s1-03,1,基本情報技術者試験（FE）,기본정보기술자시험(FE),開発・運用の基礎、次段階の土台,개발·운용의 기초·다음 단계의 토대,3
-cert-s1-04,1,LinuC レベル1 / LPIC-1,LinuC 레벨1 / LPIC-1,サーバーOS（Linux）の基礎操作,서버 OS(Linux)의 기초 조작,4
-cert-s1-05,1,CCNA,CCNA,インフラ案件で入口として求められることが多い,인프라 안건의 입구로 요구되는 경우가 많음,5
+cert-s1-03,1,基本情報技術者試験（FE）,기본정보기술자시험(FE),開発・運用の基礎、次段階の土台,개발·운용의 기초·다음 단계의 토대,2
+cert-s1-04,1,LPIC-1,LPIC-1,サーバーOS（Linux）の基礎操作,서버 OS(Linux)의 기초 조작,3
+cert-s1-05,1,CCNA,CCNA,インフラ案件で入口として求められることが多い,인프라 안건의 입구로 요구되는 경우가 많음,4
 cert-s2-01,2,基本情報技術者試験（FE）,기본정보기술자시험(FE),未取得なら優先。運用保守の基礎,미취득이면 우선. 운용보수의 기초,1
 cert-s2-02,2,CCNA,CCNA,未取得なら優先。障害の切り分けに必要なネットワーク知識,미취득이면 우선. 장애 범위를 좁히는 데 필요한 네트워크 지식,2
-cert-s2-03,2,LinuC レベル1〜2 / LPIC,LinuC 레벨1~2 / LPIC,サーバー運用の実務レベル,서버 운용의 실무 레벨,3
-cert-s2-04,2,CompTIA Server+,CompTIA Server+,サーバー運用・保守の国際資格,서버 운용·보수의 국제 자격,4
+cert-s2-03,2,LPIC-1〜2,LPIC-1~2,サーバー運用の実務レベル,서버 운용의 실무 레벨,3
+cert-s2-04,2,AZ-800/AZ-801: Windows Server Hybrid Administrator Associate,AZ-800/AZ-801: Windows Server Hybrid Administrator Associate,Windows Server の運用・保守（Linux 側は LPIC）。2試験構成,Windows Server 운용·보수(Linux 쪽은 LPIC). 2개 시험 구성,4
 cert-s3-01,3,応用情報技術者試験（AP）,응용정보기술자시험(AP),運用保守の応用範囲。次段階（構築）の土台,운용보수의 응용 범위. 다음 단계(구축)의 토대,1
-cert-s3-02,3,LinuC レベル2 / LPIC-2,LinuC 레벨2 / LPIC-2,サーバー障害の原因調査・切り分けの実務レベル,서버 장애의 원인 조사·범위 좁히기 실무 레벨,2
+cert-s3-02,3,LPIC-2,LPIC-2,サーバー障害の原因調査・切り分けの実務レベル,서버 장애의 원인 조사·범위 좁히기 실무 레벨,2
 cert-s3-03,3,ITIL 4 Foundation,ITIL 4 Foundation,インシデント管理・サービス運用の共通言語,인시던트 관리·서비스 운용의 공통 언어,3
