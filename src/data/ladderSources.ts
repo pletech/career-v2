@@ -1,26 +1,35 @@
 /**
- * 階段ビュー (v2) のデータソース設定 (確定 #24 / #25)
+ * データソース設定。
  *
- * コンテンツの値はコードに持たず、外部の CSV を DB として参照する。
- * データは Google スプレッドシート (1ファイルに roles/abilities/evidences/dependencies
- * の4タブ) にあり、各タブを gviz CSV エンドポイントで取得する。
+ * コンテンツの値はコードに持たず、CSV を DB として参照する。
  *
- * スプレッドシートが未公開でも動くよう、取得に失敗したら public/data/ の
- * ローカル CSV にフォールバックする (loadLadderData.ts)。
+ * 2026-07-29: **Google スプレッドシートの参照をやめ、リポジトリ同梱の
+ * `public/data/*.csv` に一本化した。** 理由:
  *
- * ▼ スプレッドシートを差し替える場合
- *   SHEET_ID と各 gid を変更するだけ。gid は各タブの URL 末尾 (?gid=...) にある。
- *   ※ シートは「リンクを知っている全員: 閲覧者」で共有されている必要がある
- *     (でないと gviz が CSV ではなくログイン用 HTML を返し、ローカルへフォールバックする)。
+ *  - 公開シートは「リンクを知っている全員: 閲覧者」でなければ gviz が動かない。
+ *    将来サーバー移設でログインを付けても、データURLだけは公開のままで
+ *    ページの認証を迂回してデータだけ取得できてしまう。ファイルなら
+ *    同じ認証の後ろに置ける。
+ *  - シート編集は push も Actions もローカル確認も経ずに本番へ反映される。
+ *    「ローカルで確認してから配信する」運用と両立しない。
+ *  - 半期ごとの見直しという運用に、即時反映の価値がほとんどない。
+ *  - 誤った編集が即座に全員へ出る (実際に certs.csv の半角カンマで
+ *    読み込み失敗事故があり、コミット前だったので助かった)。
+ *  - 変更履歴に「なぜ」が残らない。
+ *
+ * 切り替え前に、シートとローカル CSV の内容が同一であることを確認済み
+ * (差分は末尾改行と真偽値の大文字小文字のみ。`toBool` が小文字化するため無影響)。
+ *
+ * 元シート (アーカイブとして保存。ランタイムでは参照しない):
+ *   https://docs.google.com/spreadsheets/d/1tQhtL-WCryTffG9iOpr2dNsUxsadVwUQ_KP3naJlv8Y/
+ *   タブ gid: roles=1312172290 / dependencies=2061670704 /
+ *             abilities=1830285706 / evidences=439744095
+ *
+ * ローダーは `url || local` でフォールバックするため、SHEET_SOURCES を
+ * 空文字にすればローカル CSV を読む。シート運用へ戻す場合はここに URL を書く。
  */
 
 const base = import.meta.env.BASE_URL;
-
-const SHEET_ID = '1tQhtL-WCryTffG9iOpr2dNsUxsadVwUQ_KP3naJlv8Y';
-
-/** 公開シートを CSV で取得する gviz エンドポイント (CORS 対応) */
-const gviz = (gid: string): string =>
-  `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&headers=1&gid=${gid}`;
 
 export interface LadderSourceUrls {
   rolesCsvUrl: string;
@@ -44,15 +53,16 @@ export interface LadderSourceUrls {
   certsCsvUrl: string;
 }
 
-/** 優先: Google スプレッドシート (タブを gid で指定) */
+/**
+ * 外部シートは使わない (全項目 空文字 → ローカル CSV を読む)。
+ * シート運用へ戻す場合のみ、ここに gviz URL を入れる。
+ */
 export const SHEET_SOURCES: LadderSourceUrls = {
-  rolesCsvUrl: gviz('1312172290'),
-  dependenciesCsvUrl: gviz('2061670704'),
-  abilitiesCsvUrl: gviz('1830285706'),
-  evidencesCsvUrl: gviz('439744095'),
-  // TODO: シートに growth-lines タブを作成したら gviz('<gid>') に置き換える
+  rolesCsvUrl: '',
+  dependenciesCsvUrl: '',
+  abilitiesCsvUrl: '',
+  evidencesCsvUrl: '',
   growthLinesCsvUrl: '',
-  // TODO: シートに tags / actions / weapons タブを作成したら gviz('<gid>') に置き換える (v2.7)
   tagsCsvUrl: '',
   weaponsCsvUrl: '',
   actionsCsvUrl: '',
