@@ -17,9 +17,9 @@ c2-recovery,2,復旧確認・完了処理,복구 확인·완료 처리,,4
 c2-escalate,2,エスカレーション・引き継ぎ,에스컬레이션·인계,c1-site,5
 c2-incident,2,インシデント記録・進行管理,인시던트 기록·진행 관리,c1-inquiry|c1-reporting,6
 c2-operations,2,定常運用の自立実施,정기 운용 자립 수행,c1-operations|c1-account|c1-device,7
-c3-analysis,3,監視分析・予防対応,감시 분석·예방 대응,c2-monitor,1
-c3-diagnosis,3,原因調査・切り分け,원인 조사·판별,c2-assess,2
-c3-recovery,3,復旧対応・恒久対策,복구 대응·항구 대책,c2-response|c2-recovery,3
+c3-analysis,3,監視分析・改善提案,감시 분석·개선 제안,c2-monitor,1
+c3-diagnosis,3,原因調査・切り分け,원인 조사·범위 좁히기,c2-assess,2
+c3-recovery,3,復旧対応・恒久対策の検討,복구 대응·근본 대책 검토,c2-response|c2-recovery,3
 c3-incident,3,二次対応の受付・進行管理,2차 대응 접수·진행 관리,c2-escalate|c2-incident,4
-c3-maintenance,3,定期保守・パッチ適用,정기 보수·패치 적용,c2-operations,5
+c3-maintenance,3,定期保守・変更作業,정기 보수·변경 작업,c2-operations,5
 c3-document,3,手順書・ナレッジ整備,절차서·지식 정비,,6
