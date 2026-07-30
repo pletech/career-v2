@@ -327,7 +327,15 @@ const CraftView: React.FC<CraftViewProps> = ({
           } hover:brightness-95`}
         >
           <span className="flex min-w-0 items-center gap-1">
-            <span className="w-3 shrink-0 text-[10px] text-gray-500" aria-hidden>
+            {/*
+              開閉できることが分かるよう、矢印を枠付きにして「操作できる」見た目にする。
+              「開く/閉じる」の語をここに入れると 26px 幅を取り、カテゴリ名が切れるため
+              (実測: セキュリティ・ルール遵守 が 8px 不足) 語は見出し側に置いた。
+            */}
+            <span
+              className="shrink-0 rounded border border-gray-300 bg-white px-0.5 text-[10px] font-bold leading-none text-gray-500"
+              aria-hidden
+            >
               {expanded ? '▾' : '▸'}
             </span>
             <span className="rounded bg-white/80 px-1 py-px text-[9px] font-bold text-gray-400">
@@ -409,10 +417,20 @@ const CraftView: React.FC<CraftViewProps> = ({
         </div>
 
         <div className={`flex flex-col gap-1 p-2 ${st.cleared ? 'bg-emerald-50/40' : ''}`}>
-          {/* 包含した下位カテゴリ = 1行ロールアップ (その場で展開) */}
+          {/*
+            包含した下位カテゴリ = 1行ロールアップ (その場で展開)。
+
+            既定で畳んでいるため、この行が「項目の入れ物」ではなく「状態表示」に見え、
+            引き継いだ項目が**無いように見える**という指摘を受けた (大場さん 2026-07-30)。
+            畳む方針そのものは変えない (STEP2 を開くと STEP1 の 120 項目が出てしまう) ので、
+            **中身があることを見出しで明示する**。
+          */}
           {cat.includes.length > 0 && (
             <p className="px-0.5 text-[9.5px] font-semibold text-gray-400">
               {ko ? '아래 단계에서 인계' : '下の段階から引き継ぎ'}
+              <span className="ml-1 font-normal text-gray-400">
+                {ko ? '（누르면 항목이 열립니다）' : '（押すと項目が開きます）'}
+              </span>
             </p>
           )}
           {cat.includes.map((id) => childRollup(id, cat.categoryId))}
