@@ -269,16 +269,25 @@ const CraftView: React.FC<CraftViewProps> = ({
   // アクション1行 (チェックボックス)。「未チェックのみ」フィルタ対応
   // ---------------------------------------------------------------------
   /**
-   * アクション1行。
-   * `showSolo` の段階 (目安が補助を許す段階) では **補助あり / ひとりで の2つ**を出す。
-   * 上位段階は引き継いだ項目を1人称で問い直すため、その水準をここで直接付ける
+   * アクション1行。`level` は **その段階がクリア判定に使う水準** (`levelOfStage`)。
+   *
+   * 目安が補助を許す段階では **サポートあり / 1人称 の2つ**を出す。上位段階は引き継いだ
+   * 項目を 1人称 で問い直すため、その水準をここで直接付ける
    * (大場さん提案 2026-07-30 — 上位に確認用の項目を別に置くより、項目ごとに見える)。
+   *
+   * ここを取り違えると **チェックしても達成数が動かない**。
+   * 以前は1つ目のチェックボックスを常に `assisted` で描いていたため、
+   * 目安が 1人称 の段階 (STEP2・3) では
+   * 「書き込む先 = assisted / 数える先 = solo」でずれ、
+   * 押しても `0/8` のままだった。水準は必ず呼び出し側から受け取る。
    */
-  const actionRow = (a: Action, opts: { isNew?: boolean; showSolo?: boolean } = {}) => {
+  const actionRow = (a: Action, opts: { isNew?: boolean; level: CheckLevel }) => {
     const assisted = actionChecks[a.actionId] === true;
     const solo = actionSoloChecks[a.actionId] === true;
+    /** 目安が補助を許す段階は2つ出す。それ以外は 1人称 の1つだけ */
+    const twoLevel = opts.level === 'assisted';
     // 「未チェックのみ」: その行で出している水準が全部埋まっていれば隠す
-    if (onlyUnchecked && (opts.showSolo ? assisted && solo : assisted)) return null;
+    if (onlyUnchecked && (twoLevel ? assisted && solo : solo)) return null;
 
     const tone = opts.isNew
       ? 'border-amber-200 bg-amber-50/60'
@@ -305,8 +314,9 @@ const CraftView: React.FC<CraftViewProps> = ({
         className={`flex items-start gap-2 rounded-lg border px-2 py-1.5 ${tone}`}
       >
         <span className="mt-0.5 flex shrink-0 items-center gap-2">
-          {box('assisted', assisted, ko ? '지원 있음으로 대응 가능' : 'サポートありで対応できる')}
-          {opts.showSolo && box('solo', solo, ko ? '1인칭으로 대응 가능' : '1人称で対応できる')}
+          {twoLevel &&
+            box('assisted', assisted, ko ? '지원 있음으로 대응 가능' : 'サポートありで対応できる')}
+          {box('solo', solo, ko ? '1인칭으로 대응 가능' : '1人称で対応できる')}
         </span>
         <span className="min-w-0 flex-1">
           <span className="block text-[11.5px] leading-snug text-gray-800">
@@ -384,7 +394,7 @@ const CraftView: React.FC<CraftViewProps> = ({
             {/* 展開先でも、その段階の目安に応じて2段チェックを出す */}
             {levelOfStage(child.stage) === 'assisted' && levelHeader()}
             {directActions(childId).map((a) =>
-              actionRow(a, { showSolo: levelOfStage(child.stage) === 'assisted' }),
+              actionRow(a, { level: levelOfStage(child.stage) }),
             )}
           </div>
         )}
@@ -401,8 +411,8 @@ const CraftView: React.FC<CraftViewProps> = ({
     // 自立確認は「この段階で追加された業務」ではなく「引き継いだ業務を支援なしでやれるか」なので、
     // NEW と混ぜず別グループにする (外部レビュー 2026-07-29)
     const own = directActions(cat.categoryId);
-    // 目安が補助を許す段階だけ「補助あり／ひとりで」の2段で記録する
-    const showSolo = levelOfStage(cat.stage) === 'assisted';
+    // クリア判定と同じ水準でチェック行を描く。ここがずれると押しても数が動かない
+    const level = levelOfStage(cat.stage);
     return (
       <div
         key={cat.categoryId}
@@ -467,8 +477,8 @@ const CraftView: React.FC<CraftViewProps> = ({
               {ko ? `이 단계에서 추가 (${own.length})` : `この段階で追加（${own.length}）`}
             </p>
           )}
-          {showSolo && own.length > 0 && levelHeader()}
-          {own.map((a) => actionRow(a, { isNew: ownIsNew, showSolo }))}
+          {level === 'assisted' && own.length > 0 && levelHeader()}
+          {own.map((a) => actionRow(a, { isNew: ownIsNew, level }))}
         </div>
       </div>
     );
