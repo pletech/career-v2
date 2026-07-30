@@ -192,6 +192,21 @@ const CraftView: React.FC<CraftViewProps> = ({
     [categories],
   );
 
+  // -------------------------------------------------------------------------
+  // このページが「何の」ロードマップかを示すための値。
+  //
+  // 「開いても、インフラなのか開発なのか、インフラのどの段階までなのか分からない」
+  // という想定 (2026-07-31) への対応。**すべてデータから導く** —
+  // 文章に手書きすると区分が増えた瞬間に嘘になる (BETA 帯の
+  // 「インフラ > サーバー の STEP1〜3」が実際に手書きだった)。
+  // -------------------------------------------------------------------------
+  const activeRoute = routes.find((r) => r.key === activeRouteKey) ?? routes[0] ?? null;
+  /** チェック項目がある段階の範囲 */
+  const coveredMin = stagesDesc.length > 0 ? stagesDesc[stagesDesc.length - 1] : null;
+  const coveredMax = stagesDesc.length > 0 ? stagesDesc[0] : null;
+  /** 役割としては存在する段階の上限。roles.csv は STEP6 まで持つので「どこまで伸びるか」が出る */
+  const ladderMax = roles.length > 0 ? Math.max(...roles.map((r) => r.stageOrder)) : coveredMax;
+
   const [openStage, setOpenStage] = useState<number | null>(
     () => (categories.length > 0 ? Math.min(...categories.map((c) => c.stage)) : 1),
   );
@@ -495,19 +510,28 @@ const CraftView: React.FC<CraftViewProps> = ({
   return (
     <div className="flex h-full w-full flex-col overflow-hidden">
       {/*
-        ルート (区分 × 分類) の選択。**ロードマップ自身が持つ状態**で、
-        旧「階段ビュー」の目標役割には依存しない。選択肢は roles から導かれる。
+        対象範囲の帯 — 「これは何のロードマップで、どこまで載っているのか」。
+
+        ルート (区分 × 分類) は **ロードマップ自身が持つ状態**で、旧「階段ビュー」の
+        目標役割には依存しない。選択肢は roles から導かれる。
+
+        ルートが1つのときも **隠さずに固定ラベルとして出す**。
+        以前は `routes.length > 1` で丸ごと非表示にしていたため、区分も収録範囲も
+        BETA 帯の注意文の中にしか無く、「制約の説明」に見えて
+        「このページが何か」としては読まれなかった。
 
         ⚠️ カテゴリはまだルートで絞り込めない (`categories.csv` に区分の軸が無い)。
-        そのため **roles.csv に他区分の役割を足すと、このセレクタだけが現れて
+        そのため **roles.csv に他区分の役割を足すと、セレクタだけが増えて
         カテゴリは変わらない**という中途半端な状態になる。他区分を入れる前に
         必ず `categories.csv`・`certs.csv` の軸を先に足すこと (HANDOFF §4b)。
-        ルートが1つのうちは押す意味が無いので出さない。
       */}
-      {routes.length > 1 && (
-        <div className="flex shrink-0 flex-wrap items-center gap-1.5 px-3 pt-3 md:px-5 md:pt-4">
-          <span className="text-[10px] font-semibold text-gray-400">{ko ? '직종' : '区分'}</span>
-          {routes.map((r) => (
+      <div className="flex shrink-0 flex-wrap items-center gap-x-2 gap-y-1 px-3 pt-3 md:px-5 md:pt-4">
+        {/* ルートが無い (roles が空) ときはラベルだけ残らないように出さない */}
+        {routes.length > 0 && (
+          <span className="text-[10px] font-semibold text-gray-400">区分</span>
+        )}
+        {routes.length > 1 ? (
+          routes.map((r) => (
             <button
               key={r.key}
               type="button"
@@ -520,9 +544,28 @@ const CraftView: React.FC<CraftViewProps> = ({
             >
               {TRACK_LABELS[r.track]} &gt; {r.subtrack}
             </button>
-          ))}
-        </div>
-      )}
+          ))
+        ) : activeRoute ? (
+          <span className="rounded-lg border border-cyan-500 bg-cyan-50 px-2.5 py-1 text-[11.5px] font-bold text-cyan-800">
+            {TRACK_LABELS[activeRoute.track]} &gt; {activeRoute.subtrack}
+          </span>
+        ) : null}
+
+        {coveredMin !== null && coveredMax !== null && (
+          <>
+            <span className="ml-1 text-[10px] font-semibold text-gray-400">収録範囲</span>
+            <span className="rounded-lg border border-gray-200 bg-white px-2.5 py-1 text-[11.5px] font-bold text-gray-700">
+              STEP{coveredMin}
+              {coveredMax > coveredMin && `〜${coveredMax}`}
+            </span>
+            {ladderMax !== null && ladderMax > coveredMax && (
+              <span className="text-[10px] text-gray-400">
+                {`STEP${coveredMax + 1}${ladderMax > coveredMax + 1 ? `〜${ladderMax}` : ''} は準備中`}
+              </span>
+            )}
+          </>
+        )}
+      </div>
 
       <div className="flex shrink-0 flex-col gap-1.5 px-3 pt-3 md:flex-row md:items-start md:justify-between md:gap-4 md:px-5 md:pt-4">
         <p className="text-[11px] leading-relaxed text-gray-500">{s.roadmapLegend}</p>
@@ -551,11 +594,30 @@ const CraftView: React.FC<CraftViewProps> = ({
               ? '베타판입니다. 반기마다 재검토하여 내용을 갱신합니다.'
               : 'ベータ版です。半期ごとに見直し、内容を更新します。'}
           </span>
-          <span>
-            {ko
-              ? '현재는 인프라 > 서버의 STEP1~3(운용감시보조·운용감시·운용보수)을 반영. STEP4~6은 순차 확장 예정.'
-              : '現在は インフラ > サーバー の STEP1〜3（運用監視補助・運用監視・運用保守）を反映。STEP4〜6 は順次拡張予定。'}
-          </span>
+          {/*
+            以前ここは「インフラ > サーバー の STEP1〜3（…）」という **手書きの文章**だった。
+            区分が増えたり段階を足した瞬間に嘘になるので、データから組み立てる。
+          */}
+          {activeRoute && coveredMin !== null && coveredMax !== null && (
+            <span>
+              {'現在は '}
+              {TRACK_LABELS[activeRoute.track]} &gt; {activeRoute.subtrack}
+              {' の STEP'}
+              {coveredMin}
+              {coveredMax > coveredMin && `〜${coveredMax}`}
+              {(() => {
+                const names = [...stagesDesc]
+                  .reverse()
+                  .map((st) => roleOfStage(st)?.shortLabel)
+                  .filter((n): n is string => !!n);
+                return names.length > 0 ? `（${names.join('・')}）` : null;
+              })()}
+              {'を反映。'}
+              {ladderMax !== null &&
+                ladderMax > coveredMax &&
+                `STEP${coveredMax + 1}${ladderMax > coveredMax + 1 ? `〜${ladderMax}` : ''} は順次拡張予定。`}
+            </span>
+          )}
           <span>
             {ko
               ? '서버와 네트워크는 역할이 겹치는 부분이 많아 제1판에서는 공통 카테고리로 다룹니다(필요에 따라 향후 분할).'
