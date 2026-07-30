@@ -3,6 +3,7 @@ import { buildLadder } from '../../domain/buildLadder';
 import { evaluateStep, groupEvidencesByAbility } from '../../domain/evaluate';
 import { loc } from '../../domain/i18n';
 import { loadLadderData, type LadderDataSet } from '../../data/loadLadderData';
+import type { TrackId } from '../../domain/types';
 import { DEFAULT_TARGET, useLadderState } from '../../state/useLadderState';
 import InterviewPanel from '../interview/InterviewPanel';
 import CraftView from '../roadmap/CraftView';
@@ -37,6 +38,7 @@ const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps' }) => {
     managerConfirms,
     toggleManagerConfirm,
     actionChecks,
+    actionSoloChecks,
     toggleAction,
     selectedAbilityId,
     setSelectedAbilityId,
@@ -90,6 +92,34 @@ const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps' }) => {
   );
 
   const targetRole = ladder?.targetRole ?? null;
+
+  // -------------------------------------------------------------------------
+  // 業務ロードマップの対象範囲 (ルート = 区分 × 分類)
+  //
+  // 以前はロードマップの範囲を旧「階段ビュー」の目標役割 (targetRole) から導いていた。
+  // ロードマップ側には目標役割を変える UI が無いため、**見えない画面の状態に
+  // ぶら下がっている**状態で、実質サーバー固定だった。旧ビューを触ると
+  // ロードマップの範囲が動くという絡まりでもある。
+  // → ロードマップは自分のルート選択を持つ。旧ビューとは独立させる。
+  //
+  // 選択肢は**データから導く** (UI にハードコードしない)。役割が存在するルートが
+  // 選択肢になり、`categories` に段階が無いルートは CraftView 側で「準備中」を出す。
+  // -------------------------------------------------------------------------
+  const roadmapRoutes = useMemo(() => {
+    if (!data) return [];
+    const seen = new Map<string, { key: string; track: TrackId; subtrack: string }>();
+    data.roles
+      .filter((r) => r.status !== 'hidden')
+      .forEach((r) => {
+        const key = `${r.track}/${r.category}`;
+        if (!seen.has(key)) seen.set(key, { key, track: r.track, subtrack: r.category });
+      });
+    return [...seen.values()];
+  }, [data]);
+
+  const [roadmapRouteKey, setRoadmapRouteKey] = useState<string | null>(null);
+  const activeRoute =
+    roadmapRoutes.find((r) => r.key === roadmapRouteKey) ?? roadmapRoutes[0] ?? null;
 
   // 目標より上の段階 (準備中プレビュー)
   const higherRoles = useMemo(() => {
@@ -248,17 +278,24 @@ const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps' }) => {
   // セル = タグ (区分)。タップでビューは遷移せず、その場で素材チェックリストが開く
   // (ドロワーは CraftView が自前で持つ)
   if (mode === 'roadmap') {
-    const categoryRoles = data.roles.filter(
-      (r) => r.category === (targetRole?.category ?? 'サーバー'),
-    );
+    // ルート内の役割だけを渡す。旧ビューの targetRole は参照しない
+    const routeRoles = activeRoute
+      ? data.roles.filter(
+          (r) => r.track === activeRoute.track && r.category === activeRoute.subtrack,
+        )
+      : [];
     return (
       <div className="relative flex flex-1 overflow-hidden bg-gray-50">
         <CraftView
-          roles={categoryRoles}
+          routes={roadmapRoutes}
+          activeRouteKey={activeRoute?.key ?? null}
+          onRouteChange={setRoadmapRouteKey}
+          roles={routeRoles}
           categories={data.categories}
           actions={data.actions}
           certs={data.certs}
           actionChecks={actionChecks}
+          actionSoloChecks={actionSoloChecks}
           onToggleAction={toggleAction}
           lang={lang}
         />

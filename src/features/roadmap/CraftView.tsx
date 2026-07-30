@@ -1,6 +1,15 @@
 import React, { useMemo, useState } from 'react';
 import { STRINGS, loc, type Lang } from '../../domain/i18n';
-import type { Action, ActionCheckMap, Category, Cert, Role } from '../../domain/types';
+import type {
+  Action,
+  ActionCheckMap,
+  Category,
+  Cert,
+  CheckLevel,
+  Role,
+  TrackId,
+} from '../../domain/types';
+import { TRACK_LABELS } from '../../types/career';
 
 /**
  * 業務ロードマップ v2.7d — 段階別カテゴリ + 包含モデル (アサリさん面談 2026-07-14)
@@ -17,18 +26,15 @@ import type { Action, ActionCheckMap, Category, Cert, Role } from '../../domain/
 const CLEAR = 0.7; // クリア閾値 (7割)
 
 /**
- * 「引き継いだ業務を支援なしで実施できる」ことを確認するアクションの ID 規約 (v2.8)。
+ * 上位段階が下位カテゴリを引き継ぐときに求めるチェック水準 (v2.9)。
  *
- * 段階ごとの「チェックの目安」で下位段階は「補助・確認してくれる人がいればできる」と
- * したため、下位段階のクリアは「ひとりでできる」を意味しない。一方ロールアップは
- * `actionChecks[actionId]` を共有するだけなので、下位で「補助あり」としてチェックした
- * 項目は上位でもチェック済みに見え、自立度の再確認が起きない (外部レビュー指摘 2026-07-29)。
- * そこで包含関係ごとに確認用アクションを1件置く。
- *
- * 包含関係は 1 対 1 (AC-12.19: カテゴリの親は 1 つだけ) なので、下位 categoryId から
- * 一意な actionId を導ける。**actionId はチェック状態の保存キーなので改名しないこと。**
+ * 下位段階の目安は「補助・確認してくれる人がいればできる」止まりなので、
+ * 下位のクリアは「ひとりでできる」を意味しない。上位が引き継ぐときは 1 人称で問い直す。
+ * v2.8 では包含関係ごとに確認用アクションを 18 件置いていたが、
+ * **項目ごとに 2 段のチェックを持たせる方式に置き換えた** (大場さん提案 2026-07-30)。
+ * 項目単位で「どこまで 1 人称でできるか」が見え、行も増えない。
  */
-const selfCheckActionId = (childCategoryId: string): string => `ind-${childCategoryId}`;
+const INHERITED_LEVEL: CheckLevel = 'solo';
 
 /**
  * 段階ごとの「どこまで自分でできればチェックしてよいか」の目安 (v2.8 — 外部レビュー FB 2026-07-29)。
@@ -39,8 +45,9 @@ const selfCheckActionId = (childCategoryId: string): string => `ind-${childCateg
  *
  * ※ 文言の変更はここだけで済む。レベル軸をデータに持たせる場合は CSV 化を検討する。
  */
-const STAGE_AUTONOMY: Record<number, { ja: string; ko: string }> = {
+const STAGE_AUTONOMY: Record<number, { ja: string; ko: string; allowsAssist?: true }> = {
   1: {
+    allowsAssist: true,
     ja: 'この段階は「補助・確認してくれる人がいればできる」でチェックして構いません。',
     ko: '이 단계는 "보조·확인해 주는 사람이 있으면 가능"으로 체크해도 괜찮습니다.',
   },
@@ -54,13 +61,27 @@ const STAGE_AUTONOMY: Record<number, { ja: string; ko: string }> = {
   },
 };
 
+/** 業務ロードマップの対象範囲。区分 (track) × 分類 (subtrack) の組 */
+export interface RoadmapRoute {
+  key: string;
+  track: TrackId;
+  subtrack: string;
+}
+
 interface CraftViewProps {
+  /** 選択できるルート。**データから導かれる** (UI にハードコードしない) */
+  routes: RoadmapRoute[];
+  activeRouteKey: string | null;
+  onRouteChange: (key: string) => void;
   roles: Role[];
   categories: Category[];
   actions: Action[];
   certs: Cert[];
+  /** 「補助・確認してくれる人がいればできる」水準 */
   actionChecks: ActionCheckMap;
-  onToggleAction: (actionId: string) => void;
+  /** 「ひとりでできる」水準 (v2.9) */
+  actionSoloChecks: ActionCheckMap;
+  onToggleAction: (actionId: string, level: CheckLevel) => void;
   lang: Lang;
 }
 
@@ -74,11 +95,15 @@ interface CatStat {
 }
 
 const CraftView: React.FC<CraftViewProps> = ({
+  routes,
+  activeRouteKey,
+  onRouteChange,
   roles,
   categories,
   actions,
   certs,
   actionChecks,
+  actionSoloChecks,
   onToggleAction,
   lang,
 }) => {
@@ -126,12 +151,17 @@ const CraftView: React.FC<CraftViewProps> = ({
    * (アサリさん概念: 「この業務ができて初めて上の業務に進める」 — 下位を飛ばして
    * 上位だけクリアと表示することはない、2026-07-15 指摘)。
    */
-  const stat = (catId: string): CatStat => {
+  const marksOf = (level: CheckLevel): ActionCheckMap =>
+    level === 'solo' ? actionSoloChecks : actionChecks;
+
+  const stat = (catId: string, level: CheckLevel): CatStat => {
     const cat = catById.get(catId);
     if (!cat) return { done: 0, total: 0, ratio: 0, cleared: false, blockedByChild: false };
     const own = directActions(catId);
-    const ownDone = own.filter((a) => actionChecks[a.actionId] === true).length;
-    const childStats = cat.includes.map((id) => stat(id));
+    const marks = marksOf(level);
+    const ownDone = own.filter((a) => marks[a.actionId] === true).length;
+    // 引き継いだ下位カテゴリは、その段階の目安ではなく **1人称** で問い直す
+    const childStats = cat.includes.map((id) => stat(id, INHERITED_LEVEL));
     const childDone = childStats.filter((s) => s.cleared).length;
     const allChildrenCleared = childStats.every((s) => s.cleared);
     const total = own.length + cat.includes.length;
@@ -172,6 +202,10 @@ const CraftView: React.FC<CraftViewProps> = ({
 
   const toggle = (stage: number) => setOpenStage((cur) => (cur === stage ? null : stage));
 
+  /** その段階が自分のクリアを判定する水準。目安が補助を許す段階だけ assisted */
+  const levelOfStage = (stage: number): CheckLevel =>
+    STAGE_AUTONOMY[stage]?.allowsAssist ? 'assisted' : 'solo';
+
   // ---------------------------------------------------------------------
   // 達成バッジ
   // ---------------------------------------------------------------------
@@ -200,57 +234,74 @@ const CraftView: React.FC<CraftViewProps> = ({
     );
   };
 
-  /** カテゴリ固有アクションを「引き継いだ業務の自立確認」と「その段階で増えた業務」に分ける */
-  const splitSelfChecks = (cat: Category) => {
-    const ids = new Set(cat.includes.map(selfCheckActionId));
-    const all = directActions(cat.categoryId);
-    return {
-      selfChecks: all.filter((a) => ids.has(a.actionId)),
-      own: all.filter((a) => !ids.has(a.actionId)),
-    };
-  };
-
   // ---------------------------------------------------------------------
   // アクション1行 (チェックボックス)。「未チェックのみ」フィルタ対応
   // ---------------------------------------------------------------------
-  const actionRow = (a: Action, opts: { isNew?: boolean; isSelfCheck?: boolean } = {}) => {
-    const checked = actionChecks[a.actionId] === true;
-    if (onlyUnchecked && checked) return null;
-    const tone = opts.isSelfCheck
-      ? 'border-violet-200 bg-violet-50/70 hover:border-violet-300'
-      : opts.isNew
-        ? 'border-amber-200 bg-amber-50/60 hover:border-amber-300'
-        : 'border-gray-100 bg-white hover:border-cyan-200';
-    return (
+  /**
+   * アクション1行。
+   * `showSolo` の段階 (目安が補助を許す段階) では **補助あり / ひとりで の2つ**を出す。
+   * 上位段階は引き継いだ項目を1人称で問い直すため、その水準をここで直接付ける
+   * (大場さん提案 2026-07-30 — 上位に確認用の項目を別に置くより、項目ごとに見える)。
+   */
+  const actionRow = (a: Action, opts: { isNew?: boolean; showSolo?: boolean } = {}) => {
+    const assisted = actionChecks[a.actionId] === true;
+    const solo = actionSoloChecks[a.actionId] === true;
+    // 「未チェックのみ」: その行で出している水準が全部埋まっていれば隠す
+    if (onlyUnchecked && (opts.showSolo ? assisted && solo : assisted)) return null;
+
+    const tone = opts.isNew
+      ? 'border-amber-200 bg-amber-50/60'
+      : 'border-gray-100 bg-white';
+    const box = (level: CheckLevel, checked: boolean, label: string) => (
       <label
-        key={a.actionId}
-        className={`flex cursor-pointer items-start gap-2 rounded-lg border px-2 py-1.5 transition-colors ${tone}`}
+        className="flex cursor-pointer items-center gap-1"
+        title={label}
+        onClick={(e) => e.stopPropagation()}
       >
         <input
           type="checkbox"
           checked={checked}
-          onChange={() => onToggleAction(a.actionId)}
-          className="mt-0.5 h-4 w-4 shrink-0 accent-cyan-600"
+          onChange={() => onToggleAction(a.actionId, level)}
+          className={`h-4 w-4 shrink-0 ${level === 'solo' ? 'accent-violet-600' : 'accent-cyan-600'}`}
+          aria-label={`${loc(lang, a.statement, a.statementKo)} — ${label}`}
         />
+      </label>
+    );
+
+    return (
+      <div
+        key={a.actionId}
+        className={`flex items-start gap-2 rounded-lg border px-2 py-1.5 ${tone}`}
+      >
+        <span className="mt-0.5 flex shrink-0 items-center gap-2">
+          {box('assisted', assisted, ko ? '지원 있음으로 대응 가능' : 'サポートありで対応できる')}
+          {opts.showSolo && box('solo', solo, ko ? '1인칭으로 대응 가능' : '1人称で対応できる')}
+        </span>
         <span className="min-w-0 flex-1">
           <span className="block text-[11.5px] leading-snug text-gray-800">
             {loc(lang, a.statement, a.statementKo)}
           </span>
-          {opts.isSelfCheck ? (
-            <span className="mt-0.5 inline-block rounded bg-violet-100 px-1 py-px text-[9px] font-bold text-violet-700">
-              {ko ? '자립 확인' : '自立確認'}
+          {opts.isNew && (
+            <span className="mt-0.5 inline-block rounded bg-amber-100 px-1 py-px text-[9px] font-bold text-amber-700">
+              NEW
             </span>
-          ) : (
-            opts.isNew && (
-              <span className="mt-0.5 inline-block rounded bg-amber-100 px-1 py-px text-[9px] font-bold text-amber-700">
-                NEW
-              </span>
-            )
           )}
         </span>
-      </label>
+      </div>
     );
   };
+
+  /** 2段チェックの列見出し (カテゴリごとに一度だけ) */
+  const levelHeader = () => (
+    <p className="px-0.5 pt-0.5 text-[9px] leading-relaxed text-gray-400">
+      {ko ? '왼쪽 ' : '左 '}
+      <span className="font-bold text-cyan-700">{ko ? '지원 있음' : 'サポートあり'}</span>
+      {' ／ '}
+      {ko ? '오른쪽 ' : '右 '}
+      <span className="font-bold text-violet-700">{ko ? '1인칭' : '1人称'}</span>
+      {ko ? ' — 각각 대응 가능한지를 기록합니다' : ' — それぞれ対応できるかを記録します'}
+    </p>
+  );
 
   // ---------------------------------------------------------------------
   // 包含カテゴリのロールアップ 1行 — 押すとその場で展開 (再帰)。段階の移動はしない
@@ -258,7 +309,7 @@ const CraftView: React.FC<CraftViewProps> = ({
   const childRollup = (childId: string, parentKey: string): React.ReactNode => {
     const child = catById.get(childId);
     if (!child) return null;
-    const cst = stat(childId);
+    const cst = stat(childId, INHERITED_LEVEL);
     const key = `${parentKey}>${childId}`;
     const expanded = expandedRollups.has(key);
     return (
@@ -291,9 +342,11 @@ const CraftView: React.FC<CraftViewProps> = ({
         {expanded && (
           <div className="ml-2.5 mt-1 flex flex-col gap-1 border-l-2 border-gray-100 pl-2">
             {child.includes.map((id) => childRollup(id, key))}
-            {/* 展開先でも自立確認は見分けが付くようにする (親カードと同じ扱い) */}
-            {splitSelfChecks(child).selfChecks.map((a) => actionRow(a, { isSelfCheck: true }))}
-            {splitSelfChecks(child).own.map((a) => actionRow(a))}
+            {/* 展開先でも、その段階の目安に応じて2段チェックを出す */}
+            {levelOfStage(child.stage) === 'assisted' && levelHeader()}
+            {directActions(childId).map((a) =>
+              actionRow(a, { showSolo: levelOfStage(child.stage) === 'assisted' }),
+            )}
           </div>
         )}
       </div>
@@ -304,11 +357,13 @@ const CraftView: React.FC<CraftViewProps> = ({
   // カテゴリカード (開いた段階)
   // ---------------------------------------------------------------------
   const categoryCard = (cat: Category) => {
-    const st = stat(cat.categoryId);
+    const st = stat(cat.categoryId, levelOfStage(cat.stage));
     const ownIsNew = cat.stage > minStage; // 上位段階の固有アクション = この段階で追加 (差分)
     // 自立確認は「この段階で追加された業務」ではなく「引き継いだ業務を支援なしでやれるか」なので、
     // NEW と混ぜず別グループにする (外部レビュー 2026-07-29)
-    const { selfChecks, own } = splitSelfChecks(cat);
+    const own = directActions(cat.categoryId);
+    // 目安が補助を許す段階だけ「補助あり／ひとりで」の2段で記録する
+    const showSolo = levelOfStage(cat.stage) === 'assisted';
     return (
       <div
         key={cat.categoryId}
@@ -357,30 +412,14 @@ const CraftView: React.FC<CraftViewProps> = ({
           )}
           {cat.includes.map((id) => childRollup(id, cat.categoryId))}
 
-          {/* 引き継いだ業務の自立確認。下位段階は「補助ありでも可」なので、ここで一人称を確認する */}
-          {selfChecks.length > 0 && (
-            <>
-              <p className="mt-1 px-0.5 text-[9.5px] font-semibold text-violet-700">
-                {ko
-                  ? `인계한 업무의 자립 확인 (${selfChecks.length})`
-                  : `引き継いだ業務の自立確認（${selfChecks.length}）`}
-              </p>
-              <p className="px-0.5 text-[9px] leading-relaxed text-violet-500">
-                {ko
-                  ? '아래 단계는 "보조가 있으면 가능"으로 체크할 수 있으므로, 여기서 혼자 할 수 있게 되었는지 확인합니다.'
-                  : '下の段階は「補助があればできる」でチェックできるため、ここで支援なしでできるようになったかを確認します。'}
-              </p>
-            </>
-          )}
-          {selfChecks.map((a) => actionRow(a, { isSelfCheck: true }))}
-
           {/* その段階固有のアクション (チェック対象)。上位段階では NEW として強調 */}
           {own.length > 0 && ownIsNew && (
             <p className="mt-1 px-0.5 text-[9.5px] font-semibold text-amber-700">
               {ko ? `이 단계에서 추가 (${own.length})` : `この段階で追加（${own.length}）`}
             </p>
           )}
-          {own.map((a) => actionRow(a, { isNew: ownIsNew }))}
+          {showSolo && own.length > 0 && levelHeader()}
+          {own.map((a) => actionRow(a, { isNew: ownIsNew, showSolo }))}
         </div>
       </div>
     );
@@ -390,7 +429,7 @@ const CraftView: React.FC<CraftViewProps> = ({
   // カテゴリチップ (閉じた段階)
   // ---------------------------------------------------------------------
   const categoryChip = (cat: Category) => {
-    const st = stat(cat.categoryId);
+    const st = stat(cat.categoryId, levelOfStage(cat.stage));
     return (
       <button
         key={cat.categoryId}
@@ -421,6 +460,36 @@ const CraftView: React.FC<CraftViewProps> = ({
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden">
+      {/*
+        ルート (区分 × 分類) の選択。**ロードマップ自身が持つ状態**で、
+        旧「階段ビュー」の目標役割には依存しない。選択肢は roles から導かれる。
+
+        ⚠️ カテゴリはまだルートで絞り込めない (`categories.csv` に区分の軸が無い)。
+        そのため **roles.csv に他区分の役割を足すと、このセレクタだけが現れて
+        カテゴリは変わらない**という中途半端な状態になる。他区分を入れる前に
+        必ず `categories.csv`・`certs.csv` の軸を先に足すこと (HANDOFF §4b)。
+        ルートが1つのうちは押す意味が無いので出さない。
+      */}
+      {routes.length > 1 && (
+        <div className="flex shrink-0 flex-wrap items-center gap-1.5 px-3 pt-3 md:px-5 md:pt-4">
+          <span className="text-[10px] font-semibold text-gray-400">{ko ? '직종' : '区分'}</span>
+          {routes.map((r) => (
+            <button
+              key={r.key}
+              type="button"
+              onClick={() => onRouteChange(r.key)}
+              className={`rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition-colors ${
+                r.key === activeRouteKey
+                  ? 'border-cyan-500 bg-cyan-50 text-cyan-800'
+                  : 'border-gray-200 bg-white text-gray-600 hover:border-cyan-300'
+              }`}
+            >
+              {TRACK_LABELS[r.track]} &gt; {r.subtrack}
+            </button>
+          ))}
+        </div>
+      )}
+
       <div className="flex shrink-0 flex-col gap-1.5 px-3 pt-3 md:flex-row md:items-start md:justify-between md:gap-4 md:px-5 md:pt-4">
         <p className="text-[11px] leading-relaxed text-gray-500">{s.roadmapLegend}</p>
         {/* 2回目以降の面談: 残っているものだけを見る (アサリさん FB) */}

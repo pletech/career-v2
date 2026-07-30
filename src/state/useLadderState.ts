@@ -10,7 +10,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { ActionCheckMap, EvidenceCheckMap, ManagerConfirmMap } from '../domain/types';
+import type { ActionCheckMap, EvidenceCheckMap, ManagerConfirmMap, CheckLevel } from '../domain/types';
 import { KO_UI_ENABLED } from '../domain/i18n';
 import type { Lang } from '../domain/i18n';
 
@@ -18,6 +18,18 @@ const CHECKS_KEY = 'career-ladder-evidence-checks:v2';
 const CONFIRMS_KEY = 'career-ladder-manager-confirms:v2';
 // キー文字列は v2.7 (旧 atom 呼称) 当時のまま維持 — 変更すると公開サイトの既存チェック状態が失われる
 const ACTION_CHECKS_KEY = 'career-ladder-atom-checks:v1';
+/**
+ * 「1人称 (支援なし) でできる」水準のチェック (v2.9 — 外部レビュー 大場さん提案)。
+ *
+ * 段階ごとの目安で最下段は「補助・確認してくれる人がいればできる」としたため、
+ * 最下段のクリアは「ひとりでできる」を意味しない。上位段階が同じカテゴリを
+ * 引き継ぐときは 1 人称で問い直す必要があるが、チェックが項目 ID ごとに 1 つしか
+ * 無いと再確認が起きない。そこで水準を 2 段に分ける。
+ *
+ * **既存キー (ACTION_CHECKS_KEY) は「補助あり」水準として そのまま使う。**
+ * これで既存の保存データは意味が変わらずに引き継がれ、移行処理が要らない。
+ */
+const ACTION_SOLO_CHECKS_KEY = 'career-ladder-action-solo-checks:v1';
 const LANG_KEY = 'career-ladder-lang:v1';
 
 /** 既定は日本語 (共有時の事故防止 — 確定 #21)。韓国語は作業用 */
@@ -96,6 +108,9 @@ export function useLadderState() {
   const [actionChecks, setActionChecks] = useState<ActionCheckMap>(() =>
     loadBooleanMap(ACTION_CHECKS_KEY),
   );
+  const [actionSoloChecks, setActionSoloChecks] = useState<ActionCheckMap>(() =>
+    loadBooleanMap(ACTION_SOLO_CHECKS_KEY),
+  );
   const [lang, setLangRaw] = useState<Lang>(loadLang);
 
   const setLang = useCallback((next: Lang) => {
@@ -132,6 +147,14 @@ export function useLadderState() {
     }
   }, [actionChecks]);
 
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(ACTION_SOLO_CHECKS_KEY, JSON.stringify(actionSoloChecks));
+    } catch {
+      /* 同上 */
+    }
+  }, [actionSoloChecks]);
+
   const setTargetRoleId = useCallback((roleId: string) => {
     setTargetRoleIdRaw(roleId);
     setSelectedAbilityId(null);
@@ -154,14 +177,29 @@ export function useLadderState() {
     });
   }, []);
 
-  /** アクションのチェックを反転 (v2.7) */
-  const toggleAction = useCallback((actionId: string) => {
-    setActionChecks((prev) => {
+  /**
+   * アクションのチェックを反転 (v2.9: 水準を指定する)。
+   *
+   * `assisted` = 補助・確認してくれる人がいればできる / `solo` = ひとりでできる。
+   * 「ひとりでできる」を付けたら「補助あり」も自動的に満たす (逆は成り立たない)。
+   * 外して困るのは上位の判定だけなので、solo を外しても assisted は残す。
+   */
+  const toggleAction = useCallback((actionId: string, level: CheckLevel = 'assisted') => {
+    const flip = (prev: ActionCheckMap) => {
       const next = { ...prev };
       if (next[actionId]) delete next[actionId];
       else next[actionId] = true;
       return next;
-    });
+    };
+    if (level === 'solo') {
+      setActionSoloChecks((prev) => {
+        const turningOn = !prev[actionId];
+        if (turningOn) setActionChecks((a) => (a[actionId] ? a : { ...a, [actionId]: true }));
+        return flip(prev);
+      });
+      return;
+    }
+    setActionChecks(flip);
   }, []);
 
   /** 上長の「面談で確認した」トグル (能力単位) */
@@ -245,6 +283,7 @@ export function useLadderState() {
       managerConfirms,
       toggleManagerConfirm,
       actionChecks,
+      actionSoloChecks,
       toggleAction,
       selectedAbilityId,
       setSelectedAbilityId,
@@ -262,6 +301,7 @@ export function useLadderState() {
       managerConfirms,
       toggleManagerConfirm,
       actionChecks,
+      actionSoloChecks,
       toggleAction,
       selectedAbilityId,
       setSelectedAbilityId,

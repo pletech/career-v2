@@ -234,6 +234,13 @@ export interface Weapon {
 /** actionId -> チェック済みか (アクション単位のチェック — v2.7) */
 export type ActionCheckMap = Record<string, boolean>;
 
+/**
+ * チェックの水準 (v2.9)。
+ * `assisted` = 補助・確認してくれる人がいればできる / `solo` = ひとりでできる。
+ * 下位段階の目安は assisted 止まりなので、上位段階が引き継ぐときは solo で問い直す。
+ */
+export type CheckLevel = 'assisted' | 'solo';
+
 // ---------------------------------------------------------------------------
 // dependencies: 前提関係
 // ---------------------------------------------------------------------------
