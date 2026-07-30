@@ -202,6 +202,17 @@ const CraftView: React.FC<CraftViewProps> = ({
   const certsOfStage = (stage: number): Cert[] =>
     certs.filter((c) => c.stage === stage).sort((a, b) => a.sortOrder - b.sortOrder);
 
+  /**
+   * ⚠️ 段階に対する役割は **先に見つかった1件が勝つ**。
+   *
+   * 現在の `roles` は呼び出し側で track/subtrack まで絞られているが、`pathType`
+   * (specialist / management) では絞られていない。同じサブトラック内に
+   * `infra-server-sp-5` と `infra-server-mg-5` が並んだ瞬間、CSV の行順が早い方だけが
+   * ヘッダーに出て、もう一方のレーンは**エラーも出さずに消える**。
+   *
+   * マネジメントレーンの役割を roles.csv に入れる前に、ルートキーを
+   * track/subtrack/**pathType** の3軸に広げること (HANDOFF §4b)。
+   */
   const roleOfStage = (stage: number): Role | undefined =>
     roles.find((r) => r.stageOrder === stage && r.status !== 'hidden');
 

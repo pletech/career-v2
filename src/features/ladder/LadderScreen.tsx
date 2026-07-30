@@ -111,6 +111,9 @@ const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps' }) => {
     data.roles
       .filter((r) => r.status !== 'hidden')
       .forEach((r) => {
+        // ⚠️ キーは今 **2軸**。`pathType` を含めていないため、同じサブトラックに
+        // スペシャリストとマネジメントが並ぶと1ルートに潰れる (HANDOFF §4b)。
+        // 現状は roles.csv 6行が全て サーバー・specialist なので衝突していないだけ。
         const key = `${r.track}/${r.category}`;
         if (!seen.has(key)) seen.set(key, { key, track: r.track, subtrack: r.category });
       });
