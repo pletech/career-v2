@@ -240,7 +240,11 @@ const CraftView: React.FC<CraftViewProps> = ({
   // ---------------------------------------------------------------------
   // 達成バッジ
   // ---------------------------------------------------------------------
-  const statusBadge = (st: CatStat, size: 'sm' | 'md' = 'md') => {
+  /**
+   * @param pendingNote 未クリアのとき「あと何個」ではなく **何をすればよいか**を出す。
+   *   数だけでは足りない場面 (下の段階でクリア済みなのに引き継ぎ先で 0 に見える等) に使う。
+   */
+  const statusBadge = (st: CatStat, size: 'sm' | 'md' = 'md', pendingNote?: string) => {
     const need = Math.max(0, Math.ceil(st.total * CLEAR) - st.done);
     const pad = size === 'md' ? 'px-2 py-0.5 text-[11px]' : 'px-1.5 py-0.5 text-[10px]';
     return (
@@ -252,9 +256,14 @@ const CraftView: React.FC<CraftViewProps> = ({
           <span className={`rounded bg-emerald-500 font-bold text-white shadow-sm ${pad}`}>
             {ko ? '✓ 클리어' : '✓ クリア'}
           </span>
-        ) : st.blockedByChild ? (
+        ) : pendingNote ? (
           <span className={`rounded bg-amber-100 font-bold text-amber-700 ${pad}`}>
-            {ko ? '하위 카테고리 미클리어' : '下位カテゴリ未クリア'}
+            {pendingNote}
+          </span>
+        ) : st.blockedByChild ? (
+          // 何が足りないかを言う。「下位カテゴリ未クリア」では次の行動が分からない
+          <span className={`rounded bg-amber-100 font-bold text-amber-700 ${pad}`}>
+            下の段階を1人称で
           </span>
         ) : (
           <span className={`rounded bg-amber-100 font-bold text-amber-700 ${pad}`}>
@@ -351,6 +360,13 @@ const CraftView: React.FC<CraftViewProps> = ({
     const child = catById.get(childId);
     if (!child) return null;
     const cst = stat(childId, INHERITED_LEVEL);
+    /**
+     * その段階「自身」の判定。下の段階の目安が補助を許すので、**自分の段階では
+     * クリア済みなのに引き継ぎ先では 0 から見える**ことが起きる (AC-12.25 の想定どおり)。
+     * そのまま「クリアまであと4」だけ出すと、積み上げが消えたようにしか読めないので、
+     * 「ここでは 1人称 で問い直している」と分かる文言に差し替える。
+     */
+    const clearedAtOwnStage = !cst.cleared && stat(childId, levelOfStage(child.stage)).cleared;
     const key = `${parentKey}>${childId}`;
     const expanded = expandedRollups.has(key);
     return (
@@ -386,7 +402,12 @@ const CraftView: React.FC<CraftViewProps> = ({
               {loc(lang, child.labelJa, child.labelKo)}
             </span>
           </span>
-          {statusBadge(cst, 'sm')}
+          {/*
+            「STEP1クリア済 → 1人称で再確認」まで入れると 150px 取り、3列表示 (1300px) で
+            カテゴリ名が5件切れた (最大14px不足)。どの段階から来たかは左の STEP バッジ、
+            なぜ問い直すのかは見出しが言っているので、ここは行動だけを短く出す。
+          */}
+          {statusBadge(cst, 'sm', clearedAtOwnStage ? '1人称で再確認' : undefined)}
         </button>
         {expanded && (
           <div className="ml-2.5 mt-1 flex flex-col gap-1 border-l-2 border-gray-100 pl-2">
@@ -462,10 +483,12 @@ const CraftView: React.FC<CraftViewProps> = ({
             **中身があることを見出しで明示する**。
           */}
           {cat.includes.length > 0 && (
-            <p className="px-0.5 text-[9.5px] font-semibold text-gray-400">
+            <p className="px-0.5 text-[9.5px] font-semibold leading-relaxed text-gray-400">
               {ko ? '아래 단계에서 인계' : '下の段階から引き継ぎ'}
               <span className="ml-1 font-normal text-gray-400">
-                {ko ? '（누르면 항목이 열립니다）' : '（押すと項目が開きます）'}
+                {ko
+                  ? '（누르면 항목이 열립니다）'
+                  : '— ここでは「1人称」でできるかを問い直します（押すと項目が開きます）'}
               </span>
             </p>
           )}
