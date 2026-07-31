@@ -276,6 +276,30 @@ const App: React.FC = () => {
         <LadderScreen mode={viewMode === 'roadmap' ? 'roadmap' : 'steps'} />
       ) : (
         <>
+      {/*
+        全体マップは v2.7 以前からの補助画面で、区分によっては中身が
+        プレースホルダ (段階5・6 が施錠表示) のまま並ぶ。
+        既定が「開発」区分なので、初見だと**未完成の別区分が用意されている**ように読める。
+        業務ロードマップが本編であることを、開いた時点で明示する。
+      */}
+      <div className="shrink-0 border-b border-amber-200 bg-amber-50 px-3 py-2 md:px-5">
+        <p className="text-[11px] leading-relaxed text-amber-900">
+          <span className="mr-1.5 rounded bg-amber-200 px-1.5 py-0.5 text-[10px] font-bold text-amber-900">
+            参考用・整備中
+          </span>
+          この画面は全体像を見るための参考です。区分によってはまだ内容が入っていません。
+          チェックは
+          <button
+            type="button"
+            onClick={openRoadmap}
+            className="mx-1 font-bold text-cyan-700 underline underline-offset-2 hover:text-cyan-900"
+          >
+            業務ロードマップ
+          </button>
+          で行ってください。
+        </p>
+      </div>
+
       {inlineErrorBanner}
 
 
