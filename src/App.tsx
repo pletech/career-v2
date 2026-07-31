@@ -20,6 +20,16 @@ import LadderScreen from './features/ladder/LadderScreen';
  */
 type ViewMode = 'ladder' | 'roadmap' | 'map';
 
+/**
+ * 使い方マニュアル (Notion) の URL。
+ *
+ * **リンクを受け取ったらここだけ差し替える。** 空のあいだはボタンが「準備中」表示になり、
+ * 押しても外部へ飛ばず案内だけ出す (リンク切れを社員に見せないため)。
+ * 本文は career-v2-docs の `user-manual-ja.md`。Notion 側はそれを貼ったもの。
+ */
+const MANUAL_URL =
+  'https://app.notion.com/p/3aea6c29321e8076a684f94d91e19649?v=5bda6c29321e835dabc388ce78f7319b&source=copy_link';
+
 const App: React.FC = () => {
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
     try {
@@ -36,6 +46,8 @@ const App: React.FC = () => {
   const [isMobileDetailOpen, setIsMobileDetailOpen] = useState(false);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [showMobileTutorial, setShowMobileTutorial] = useState(false);
+  /** マニュアルの URL 未設定時に出す案内 */
+  const [showManualPending, setShowManualPending] = useState(false);
   const hasCheckedMobileTutorialRef = useRef(false);
 
   const TUTORIAL_KEY = 'career-mobile-tutorial-seen:v4';
@@ -191,7 +203,11 @@ const App: React.FC = () => {
     <div className="h-[100dvh] flex flex-col bg-gray-50 overflow-hidden">
       <header className="flex-shrink-0 bg-white border-b border-gray-200 px-3 py-1.5 md:px-5 md:py-3">
         <div className="flex flex-col gap-1 md:gap-3">
-          <div className="flex items-center justify-between gap-3 min-w-0">
+          {/*
+            狭い幅では「見出し」と「ボタン群」を2行に分ける。
+            1行に詰めると見出しが `Car…` まで潰れる (実測: 329px で切れる)。
+          */}
+          <div className="flex min-w-0 flex-col gap-1.5 md:flex-row md:items-center md:justify-between md:gap-3">
             <div className="min-w-0">
               <h1 className="text-base md:text-xl font-bold text-gray-800 tracking-tight truncate leading-tight">Career Path</h1>
               <p className="text-[9px] md:text-[11px] text-gray-400 truncate">
@@ -202,7 +218,35 @@ const App: React.FC = () => {
                     : 'キャリアパスモデル（育成面談用）'}
               </p>
             </div>
-            <div className="inline-flex shrink-0 items-center gap-2">
+            <div className="flex shrink-0 flex-wrap items-center gap-2">
+              {/*
+                使い方マニュアル。URL が入るまでは外部へ飛ばさず「準備中」と伝える
+                (リンク切れを社員に見せない)。差し替え箇所は MANUAL_URL の1行だけ。
+              */}
+              {MANUAL_URL ? (
+                <a
+                  href={MANUAL_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1 text-[11px] md:text-xs font-medium text-gray-600 hover:border-cyan-300 hover:text-cyan-700"
+                >
+                  <span aria-hidden>🔰</span>
+                  使い方
+                </a>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setShowManualPending((v) => !v)}
+                  aria-expanded={showManualPending}
+                  className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1 text-[11px] md:text-xs font-medium text-gray-400 hover:border-gray-300"
+                >
+                  <span aria-hidden>🔰</span>
+                  使い方
+                  <span className="rounded bg-gray-100 px-1 py-px text-[9px] font-bold text-gray-500">
+                    準備中
+                  </span>
+                </button>
+              )}
               <div className="inline-flex rounded-lg border border-gray-200 bg-gray-50 p-0.5" role="tablist">
                 <button
                   type="button"
@@ -268,6 +312,13 @@ const App: React.FC = () => {
                 showLabel
               />
             </div>
+          )}
+          {!MANUAL_URL && showManualPending && (
+            <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] leading-relaxed text-amber-900">
+              使い方マニュアルは<span className="font-bold">準備中</span>です。
+              公開までは、画面上の案内（各段階の「チェックの目安」など）をご覧ください。
+              不明点は担当上長までお願いします。
+            </p>
           )}
         </div>
       </header>

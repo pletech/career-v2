@@ -127,6 +127,12 @@ const CraftView: React.FC<CraftViewProps> = ({
 
   /** 2回目以降の面談用: チェック済みを隠して残りだけ見る (アサリさん FB) */
   const [onlyUnchecked, setOnlyUnchecked] = useState(false);
+  /**
+   * 画面上部の説明 (凡例・BETA 帯) を開いているか。**狭い幅のときだけ意味を持つ。**
+   * 既定は畳む。md 以上では state に関係なく常に表示する (CSS 側で `hidden md:block`)。
+   * `window.innerWidth` で初期値を決めていない — リサイズで嘘になるため。
+   */
+  const [introOpen, setIntroOpen] = useState(false);
 
   const catById = useMemo(() => {
     const m = new Map<string, Category>();
@@ -598,10 +604,35 @@ const CraftView: React.FC<CraftViewProps> = ({
             )}
           </>
         )}
+
+        {/*
+          説明の開閉 (狭い幅のみ)。モバイルでは説明文と BETA 帯だけで画面の8割が埋まり、
+          肝心のチェックリストが最初の1画面に出てこない。
+          畳んでも **BETA チップはボタン側に残す** — ベータであることは隠さない。
+          md 以上は常に開いた状態 (AC-12.21 の「上部に表示」を満たすため、状態に関係なく出す)。
+        */}
+        <button
+          type="button"
+          onClick={() => setIntroOpen((v) => !v)}
+          aria-expanded={introOpen}
+          className="ml-auto inline-flex shrink-0 items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1 text-[10px] font-semibold text-gray-500 md:hidden"
+        >
+          {!introOpen && (
+            <span className="rounded bg-amber-100 px-1 py-px text-[9px] font-bold text-amber-700">
+              BETA
+            </span>
+          )}
+          <span aria-hidden>{introOpen ? '▾' : '▸'}</span>
+          {introOpen ? '説明を閉じる' : 'この画面の説明'}
+        </button>
       </div>
 
       <div className="flex shrink-0 flex-col gap-1.5 px-3 pt-3 md:flex-row md:items-start md:justify-between md:gap-4 md:px-5 md:pt-4">
-        <p className="text-[11px] leading-relaxed text-gray-500">{s.roadmapLegend}</p>
+        <p
+          className={`text-[11px] leading-relaxed text-gray-500 ${introOpen ? '' : 'hidden md:block'}`}
+        >
+          {s.roadmapLegend}
+        </p>
         {/* 2回目以降の面談: 残っているものだけを見る (アサリさん FB) */}
         <label className="inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2 py-1.5">
           <input
@@ -618,7 +649,11 @@ const CraftView: React.FC<CraftViewProps> = ({
 
       <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-4 pt-3 md:px-5">
         {/* 適用範囲・第1版の前提 (外部レビュー FB 2026-07-29: 粗い粒度で出す理由を明記する) */}
-        <div className="mb-3 flex flex-col gap-1 rounded-lg border border-gray-100 bg-gray-50/60 px-3 py-2 text-[10px] leading-relaxed text-gray-400">
+        <div
+          className={`mb-3 flex-col gap-1 rounded-lg border border-gray-100 bg-gray-50/60 px-3 py-2 text-[10px] leading-relaxed text-gray-400 ${
+            introOpen ? 'flex' : 'hidden md:flex'
+          }`}
+        >
           <span>
             <span className="mr-1 rounded bg-amber-100 px-1 py-0.5 text-[9px] font-bold text-amber-700">
               BETA
