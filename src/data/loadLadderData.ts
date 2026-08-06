@@ -241,14 +241,23 @@ export function parseTags(csvText: string): Tag[] {
 /** actions (v2.7d/v2.7m): アクション (1文1概念の行動項目)。カテゴリに所属 */
 export function parseActions(csvText: string): Action[] {
   const rows = csvToObjects(csvText);
-  requireHeaders(rows, ['actionId', 'categoryId', 'statement', 'sortOrder'], 'actions.csv');
+  requireHeaders(rows, ['actionId', 'categoryId', 'statement', 'sortOrder', 'kind'], 'actions.csv');
   const actions = rows.map((r) => {
     const actionId = requireValue(r, 'actionId', 'actions.csv', r.actionId || '(空)');
+    const kind = requireValue(r, 'kind', 'actions.csv', actionId);
+    // 既定値を与えない。未設定を practice に倒すと「実務でしか埋まらない」と
+    // 嘘をつくことになり、本人が案件変更を相談する根拠が狂う
+    if (kind !== 'knowledge' && kind !== 'practice') {
+      throw new LadderDataError(
+        `actions.csv: ${actionId} の kind は knowledge か practice のみです: ${kind}`,
+      );
+    }
     return {
       actionId,
       categoryId: requireValue(r, 'categoryId', 'actions.csv', actionId),
       statement: requireValue(r, 'statement', 'actions.csv', actionId),
       sortOrder: toNumber(r.sortOrder, 'sortOrder', 'actions.csv', actionId),
+      kind,
       statementKo: opt(r.statementKo ?? ''),
     } satisfies Action;
   });

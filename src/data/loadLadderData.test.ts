@@ -50,10 +50,10 @@ const tagsCsv = [
 ].join('\n');
 
 const actionsCsv = [
-  'actionId,categoryId,statement,statementKo,sortOrder',
-  'at1,c1-inquiry,問い合わせを受け付けられる,문의를 접수할 수 있다,1',
-  'at2,c1-reporting,要点を記録できる,요점을 기록할 수 있다,1',
-  'at3,c2-triage,発報内容を照合できる,발보 내용을 대조할 수 있다,1',
+  'actionId,categoryId,statement,statementKo,sortOrder,kind',
+  'at1,c1-inquiry,問い合わせを受け付けられる,문의를 접수할 수 있다,1,practice',
+  'at2,c1-reporting,要点を記録できる,요점을 기록할 수 있다,1,practice',
+  'at3,c2-triage,発報内容を照合できる,발보 내용을 대조할 수 있다,1,knowledge',
 ].join('\n');
 
 const weaponsCsv = [

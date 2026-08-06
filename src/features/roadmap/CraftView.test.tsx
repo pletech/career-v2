@@ -55,10 +55,10 @@ const categories: Category[] = [
 ];
 
 const actions: Action[] = [
-  { actionId: 'a1', categoryId: 'c1', statement: '手順書どおりに作業できる', sortOrder: 1 },
-  { actionId: 'a2', categoryId: 'c1', statement: '作業証跡を残せる', sortOrder: 2 },
-  { actionId: 'b1', categoryId: 'c2', statement: '初動対応を実施できる', sortOrder: 1 },
-  { actionId: 'b2', categoryId: 'c2', statement: '対応期限を確認できる', sortOrder: 2 },
+  { actionId: 'a1', categoryId: 'c1', statement: '手順書どおりに作業できる', sortOrder: 1, kind: 'practice' },
+  { actionId: 'a2', categoryId: 'c1', statement: '作業証跡を残せる', sortOrder: 2, kind: 'practice' },
+  { actionId: 'b1', categoryId: 'c2', statement: '初動対応を実施できる', sortOrder: 1, kind: 'practice' },
+  { actionId: 'b2', categoryId: 'c2', statement: '対応期限を確認できる', sortOrder: 2, kind: 'practice' },
 ];
 
 const certs: Cert[] = [];

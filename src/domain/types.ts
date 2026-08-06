@@ -195,6 +195,18 @@ export interface Cert {
 }
 
 /**
+ * 項目の満たし方 (v2.13 — 関口さん 2026-08-05)。
+ *
+ * `knowledge` = **その業務を扱う案件に配属されなくても**、資格取得や自己学習で満たせる
+ * `practice`   = その業務を実際に担当しないと満たせない
+ *
+ * 判定はこの一点だけで行う。「知識か技能か」ではない —
+ * 自分のPCで練習できる操作は `knowledge` に入る。
+ * 目的は「今の場所でまだやれることが残っているか」を本人が判断できるようにすること。
+ */
+export type ActionKind = 'knowledge' | 'practice';
+
+/**
  * アクション（行動項目）。1文1概念・再利用可能な最小単位。チェックの単位はこのアクション。
  * 「最初に登場するカテゴリ」に所属し、そのカテゴリの段階が登場段階になる。
  */
@@ -203,6 +215,8 @@ export interface Action {
   categoryId: string;
   statement: string;
   sortOrder: number;
+  /** 自己学習で満たせるか (v2.13)。段階ごとの「知識100% / 実務70%」判定に使う */
+  kind: ActionKind;
   statementKo?: string;
 }
 
