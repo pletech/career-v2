@@ -181,25 +181,45 @@ export function useLadderState() {
    * アクションのチェックを反転 (v2.9: 水準を指定する)。
    *
    * `assisted` = 補助・確認してくれる人がいればできる / `solo` = ひとりでできる。
-   * 「ひとりでできる」を付けたら「補助あり」も自動的に満たす (逆は成り立たない)。
-   * 外して困るのは上位の判定だけなので、solo を外しても assisted は残す。
+   * **solo ⊃ assisted** — ひとりでできるなら補助ありでも当然できる。
+   * この包含を両方向で保つ:
+   *
+   *   - solo を付ける  → assisted も付ける
+   *   - assisted を外す → solo も外す   (2026-08-06 指摘)
+   *
+   * 下向きを繋がないと「補助ありでは無理だが、ひとりならできる」という
+   * ありえない状態が残る。しかも判定は solo を見るので、見た目は外れているのに
+   * 上位段階の引き継ぎと知識はクリアのまま — 直前に直した
+   * 「押しても数字が動かない」と区別が付かない見え方になる。
+   *
+   * setter を入れ子で呼ぶが、add/drop はキー単位の冪等操作なので
+   * StrictMode の二重実行でも結果は変わらない。
    */
   const toggleAction = useCallback((actionId: string, level: CheckLevel = 'assisted') => {
-    const flip = (prev: ActionCheckMap) => {
+    const drop = (prev: ActionCheckMap): ActionCheckMap => {
+      if (!prev[actionId]) return prev;
       const next = { ...prev };
-      if (next[actionId]) delete next[actionId];
-      else next[actionId] = true;
+      delete next[actionId];
       return next;
     };
+    const add = (prev: ActionCheckMap): ActionCheckMap =>
+      prev[actionId] ? prev : { ...prev, [actionId]: true };
+
     if (level === 'solo') {
       setActionSoloChecks((prev) => {
-        const turningOn = !prev[actionId];
-        if (turningOn) setActionChecks((a) => (a[actionId] ? a : { ...a, [actionId]: true }));
-        return flip(prev);
+        if (prev[actionId]) return drop(prev);
+        setActionChecks(add);
+        return add(prev);
       });
       return;
     }
-    setActionChecks(flip);
+    setActionChecks((prev) => {
+      if (prev[actionId]) {
+        setActionSoloChecks(drop);
+        return drop(prev);
+      }
+      return add(prev);
+    });
   }, []);
 
   /** 上長の「面談で確認した」トグル (能力単位) */
