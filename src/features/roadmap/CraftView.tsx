@@ -3,6 +3,7 @@ import { STRINGS, loc, type Lang } from '../../domain/i18n';
 import type {
   Action,
   ActionCheckMap,
+  ActionKind,
   Category,
   Cert,
   CheckLevel,
@@ -91,12 +92,21 @@ interface CraftViewProps {
 }
 
 interface CatStat {
+  /** 固有アクションのチェック数 (引き継ぎは含めない) */
   done: number;
+  /** 固有アクション数 (引き継ぎは含めない) */
   total: number;
-  ratio: number;
+  knowledgeDone: number;
+  knowledgeTotal: number;
+  practiceDone: number;
+  practiceTotal: number;
+  /** クリアまでに足りない件数 = 知識の残り + 実務が7割に届くまでの残り */
+  need: number;
   cleared: boolean;
-  /** 達成率は基準を満たしているが、包含した下位カテゴリが未クリアで待たされている状態 */
+  /** 知識・実務は満たしたが、包含した下位カテゴリが未クリアで待たされている状態 */
   blockedByChild: boolean;
+  /** 実務は7割に達したが、知識が100%に届いていない状態 */
+  blockedByKnowledge: boolean;
 }
 
 const CraftView: React.FC<CraftViewProps> = ({
@@ -167,24 +177,55 @@ const CraftView: React.FC<CraftViewProps> = ({
 
   const stat = (catId: string, level: CheckLevel): CatStat => {
     const cat = catById.get(catId);
-    if (!cat) return { done: 0, total: 0, ratio: 0, cleared: false, blockedByChild: false };
+    if (!cat) {
+      return {
+        done: 0,
+        total: 0,
+        knowledgeDone: 0,
+        knowledgeTotal: 0,
+        practiceDone: 0,
+        practiceTotal: 0,
+        need: 0,
+        cleared: false,
+        blockedByChild: false,
+        blockedByKnowledge: false,
+      };
+    }
     const own = directActions(catId);
     const marks = marksOf(level);
-    const ownDone = own.filter((a) => marks[a.actionId] === true).length;
+    const isDone = (a: Action) => marks[a.actionId] === true;
+
+    const knowledge = own.filter((a) => a.kind === 'knowledge');
+    const practice = own.filter((a) => a.kind === 'practice');
+    const knowledgeDone = knowledge.filter(isDone).length;
+    const practiceDone = practice.filter(isDone).length;
+
     // 引き継いだ下位カテゴリは、その段階の目安ではなく **1人称** で問い直す
     const childStats = cat.includes.map((id) => stat(id, INHERITED_LEVEL));
-    const childDone = childStats.filter((s) => s.cleared).length;
     const allChildrenCleared = childStats.every((s) => s.cleared);
-    const total = own.length + cat.includes.length;
-    const done = ownDone + childDone;
-    const ratio = total === 0 ? 0 : done / total;
-    const ratioMet = total > 0 && ratio >= CLEAR;
+
+    // 知識は 100%、実務は 7割。**引き継ぎは比率に入れず前提条件としてのみ効く**
+    // (分母・分子の両方に入れると、引き継ぎが多いほど自分の項目が楽になる — §0-E.1m)
+    const knowledgeMet = knowledgeDone === knowledge.length;
+    const practiceMet = practice.length === 0 || practiceDone / practice.length >= CLEAR;
+    const hasContent = own.length > 0 || cat.includes.length > 0;
+
+    const needKnowledge = knowledge.length - knowledgeDone;
+    const needPractice = Math.max(0, Math.ceil(practice.length * CLEAR) - practiceDone);
+
     return {
-      done,
-      total,
-      ratio,
-      cleared: ratioMet && allChildrenCleared,
-      blockedByChild: ratioMet && !allChildrenCleared,
+      done: knowledgeDone + practiceDone,
+      total: own.length,
+      knowledgeDone,
+      knowledgeTotal: knowledge.length,
+      practiceDone,
+      practiceTotal: practice.length,
+      need: needKnowledge + needPractice,
+      cleared: hasContent && knowledgeMet && practiceMet && allChildrenCleared,
+      blockedByChild: hasContent && knowledgeMet && practiceMet && !allChildrenCleared,
+      // 実務は足りているのに知識が残っている状態。ここを黙って「未クリア」にすると
+      // 「数は満たしたのに何故?」となり **バグに見える** (2026-08-05 指摘)
+      blockedByKnowledge: hasContent && practiceMet && !knowledgeMet,
     };
   };
 
@@ -250,8 +291,21 @@ const CraftView: React.FC<CraftViewProps> = ({
    * @param pendingNote 未クリアのとき「あと何個」ではなく **何をすればよいか**を出す。
    *   数だけでは足りない場面 (下の段階でクリア済みなのに引き継ぎ先で 0 に見える等) に使う。
    */
+  /**
+   * 達成率バーの割合。**実務の達成率**を出す — 70% の基準線は実務にしか掛からないので、
+   * 知識を混ぜると線の意味が消える。知識の残りはバッジ側 (blockedByKnowledge) が言う。
+   * 実務が0件のカテゴリ (知識だけ) は知識の達成率を出す。
+   */
+  const barPct = (st: CatStat): number => {
+    const [done, total] =
+      st.practiceTotal > 0
+        ? [st.practiceDone, st.practiceTotal]
+        : [st.knowledgeDone, st.knowledgeTotal];
+    return total === 0 ? 0 : Math.min(100, Math.round((done / total) * 100));
+  };
+
   const statusBadge = (st: CatStat, size: 'sm' | 'md' = 'md', pendingNote?: string) => {
-    const need = Math.max(0, Math.ceil(st.total * CLEAR) - st.done);
+    const need = st.need;
     const pad = size === 'md' ? 'px-2 py-0.5 text-[11px]' : 'px-1.5 py-0.5 text-[10px]';
     return (
       <span className="flex items-center gap-1">
@@ -270,6 +324,11 @@ const CraftView: React.FC<CraftViewProps> = ({
           // 何が足りないかを言う。「下位カテゴリ未クリア」では次の行動が分からない
           <span className={`rounded bg-amber-100 font-bold text-amber-700 ${pad}`}>
             下の段階を1人称で
+          </span>
+        ) : st.blockedByKnowledge ? (
+          // 実務は足りているのにクリアにならない状態。理由を言わないとバグに見える
+          <span className={`rounded bg-indigo-100 font-bold text-indigo-700 ${pad}`}>
+            {ko ? `지식 앞으로 ${st.knowledgeTotal - st.knowledgeDone}` : `知識をあと${st.knowledgeTotal - st.knowledgeDone}件`}
           </span>
         ) : (
           <span className={`rounded bg-amber-100 font-bold text-amber-700 ${pad}`}>
@@ -299,8 +358,13 @@ const CraftView: React.FC<CraftViewProps> = ({
   const actionRow = (a: Action, opts: { isNew?: boolean; level: CheckLevel }) => {
     const assisted = actionChecks[a.actionId] === true;
     const solo = actionSoloChecks[a.actionId] === true;
-    /** 目安が補助を許す段階は2つ出す。それ以外は 1人称 の1つだけ */
-    const twoLevel = opts.level === 'assisted';
+    /**
+     * 2つ出すのは「目安が補助を許す段階」の **実務** だけ。
+     *
+     * 知識は「サポートありで説明できる」に意味が無い (説明できるか否かしかない) ので、
+     * 段階に関わらず 1人称 の1つだけにする (2026-08-05 指摘)。
+     */
+    const twoLevel = opts.level === 'assisted' && a.kind === 'practice';
     // 「未チェックのみ」: その行で出している水準が全部埋まっていれば隠す
     if (onlyUnchecked && (twoLevel ? assisted && solo : solo)) return null;
 
@@ -342,12 +406,23 @@ const CraftView: React.FC<CraftViewProps> = ({
               NEW
             </span>
           )}
+          {/*
+            知識/実務 のバッジはここに置かない。上下2グループに分けて見出しで示している
+            (actionGroups)。行ごとのバッジだと少数側にしか付かず、
+            「付いていない行=実務」という規約を覚えてもらう必要があった。
+          */}
         </span>
       </div>
     );
   };
 
-  /** 2段チェックの列見出し (カテゴリごとに一度だけ) */
+  /**
+   * 2段チェックの凡例 (カテゴリごとに一度)。
+   *
+   * 段階の「チェックの目安」帯にもまとめてあるが、**帯は読まれない**という指摘があり
+   * (2026-08-05)、チェックボックスのすぐ上にも残す。ここは色と左右の対応だけで、
+   * 説明文は帯に置いてある。
+   */
   const levelHeader = () => (
     <p className="px-0.5 pt-0.5 text-[9px] leading-relaxed text-gray-400">
       {ko ? '왼쪽 ' : '左 '}
@@ -358,6 +433,52 @@ const CraftView: React.FC<CraftViewProps> = ({
       {ko ? ' — 각각 대응 가능한지를 기록합니다' : ' — それぞれ対応できるかを記録します'}
     </p>
   );
+
+  /**
+   * アクションを **知識 → 実務 の順に2グループへ分けて**描く。
+   *
+   * 項目ごとにバッジを付ける方式をやめた理由: 実務が 229 件中 187 件あり、
+   * バッジは少数側にしか付かないので「どちらでもない行」が実務という**規約を覚える**
+   * 必要があった。上下に分ければ見出しがそのまま答えになる (2026-08-05 指摘)。
+   * 件数も見出しが持つので、内訳行も要らなくなった。
+   *
+   * 知識を先に置く: 「今の案件のままで埋められるもの」から手を付けられるようにするため
+   * (①知識100% → ②実務70% の順に効くのと同じ並び)。
+   */
+  const actionGroups = (own: Action[], level: CheckLevel, isNew: boolean) => {
+    const marks = marksOf(level);
+    const groups: { kind: ActionKind; label: string; cls: string; items: Action[] }[] = [
+      {
+        kind: 'knowledge',
+        label: ko ? '지식' : '知識',
+        cls: 'text-indigo-700',
+        items: own.filter((a) => a.kind === 'knowledge'),
+      },
+      {
+        kind: 'practice',
+        label: ko ? '실무' : '実務',
+        cls: 'text-gray-600',
+        items: own.filter((a) => a.kind === 'practice'),
+      },
+    ];
+    return groups
+      .filter((g) => g.items.length > 0)
+      .map((g) => {
+        const done = g.items.filter((a) => marks[a.actionId] === true).length;
+        // 凡例はチェックが2つ並ぶ実務グループにだけ付ける。
+        // 知識は1人称の1つだけなので「左/右」の説明が要らない
+        const showLevelHint = g.kind === 'practice' && level === 'assisted';
+        return (
+          <div key={g.kind} className="flex flex-col gap-1">
+            <p className={`mt-0.5 px-0.5 text-[9.5px] font-bold ${g.cls}`}>
+              {g.label} {done}/{g.items.length}
+            </p>
+            {showLevelHint && levelHeader()}
+            {g.items.map((a) => actionRow(a, { isNew, level }))}
+          </div>
+        );
+      });
+  };
 
   // ---------------------------------------------------------------------
   // 包含カテゴリのロールアップ 1行 — 押すとその場で展開 (再帰)。段階の移動はしない
@@ -419,10 +540,7 @@ const CraftView: React.FC<CraftViewProps> = ({
           <div className="ml-2.5 mt-1 flex flex-col gap-1 border-l-2 border-gray-100 pl-2">
             {child.includes.map((id) => childRollup(id, key))}
             {/* 展開先でも、その段階の目安に応じて2段チェックを出す */}
-            {levelOfStage(child.stage) === 'assisted' && levelHeader()}
-            {directActions(childId).map((a) =>
-              actionRow(a, { level: levelOfStage(child.stage) }),
-            )}
+            {actionGroups(directActions(childId), levelOfStage(child.stage), false)}
           </div>
         )}
       </div>
@@ -470,13 +588,20 @@ const CraftView: React.FC<CraftViewProps> = ({
           )}
         </div>
 
-        {/* 達成率バー (70% にクリア基準線) */}
+        {/*
+          達成率バーは **実務** の達成率 (70% にクリア基準線)。
+          70% は実務にしか掛からない基準なので、知識を混ぜると線の意味が消える。
+          知識の残りはバッジ側が言う (blockedByKnowledge)。
+          実務が0件のカテゴリ (知識だけ) では知識の達成率を出し、基準線は隠す。
+        */}
         <div className="relative h-1.5 w-full bg-gray-100" aria-hidden>
           <div
             className={`h-full transition-all ${st.cleared ? 'bg-emerald-500' : 'bg-cyan-400'}`}
-            style={{ width: `${Math.min(100, Math.round(st.ratio * 100))}%` }}
+            style={{ width: `${barPct(st)}%` }}
           />
-          <span className="absolute top-0 h-full w-px bg-gray-400/80" style={{ left: '70%' }} />
+          {st.practiceTotal > 0 && (
+            <span className="absolute top-0 h-full w-px bg-gray-400/80" style={{ left: '70%' }} />
+          )}
         </div>
 
         <div className={`flex flex-col gap-1 p-2 ${st.cleared ? 'bg-emerald-50/40' : ''}`}>
@@ -506,8 +631,7 @@ const CraftView: React.FC<CraftViewProps> = ({
               {ko ? `이 단계에서 추가 (${own.length})` : `この段階で追加（${own.length}）`}
             </p>
           )}
-          {level === 'assisted' && own.length > 0 && levelHeader()}
-          {own.map((a) => actionRow(a, { isNew: ownIsNew, level }))}
+          {actionGroups(own, level, ownIsNew)}
         </div>
       </div>
     );
@@ -736,6 +860,20 @@ const CraftView: React.FC<CraftViewProps> = ({
                           {ko ? '체크 기준' : 'チェックの目安'}:{' '}
                         </span>
                         {loc(lang, STAGE_AUTONOMY[stage].ja, STAGE_AUTONOMY[stage].ko)}
+                        {/*
+                          知識/実務 の意味はここで一度だけ説明する。
+                          件数とグループ分け自体はカテゴリ側の見出しが持つ (actionGroups)。
+                        */}
+                        <span className="ml-1">
+                          <span className="font-bold text-indigo-800">{ko ? '지식' : '知識'}</span>
+                          {ko
+                            ? '은 지금 안건 그대로 채울 수 있는 항목, '
+                            : ' は今の案件のままでも埋められる項目、'}
+                          <span className="font-bold">{ko ? '실무' : '実務'}</span>
+                          {ko
+                            ? '는 안건에서 경험해야 채워지는 항목입니다.'
+                            : ' は案件で経験しないと埋まらない項目です。'}
+                        </span>
                       </p>
                     )}
 

@@ -58,7 +58,8 @@ const actions: Action[] = [
   { actionId: 'a1', categoryId: 'c1', statement: '手順書どおりに作業できる', sortOrder: 1, kind: 'practice' },
   { actionId: 'a2', categoryId: 'c1', statement: '作業証跡を残せる', sortOrder: 2, kind: 'practice' },
   { actionId: 'b1', categoryId: 'c2', statement: '初動対応を実施できる', sortOrder: 1, kind: 'practice' },
-  { actionId: 'b2', categoryId: 'c2', statement: '対応期限を確認できる', sortOrder: 2, kind: 'practice' },
+  // 知識バッジと内訳の検証用に1件だけ knowledge を混ぜる
+  { actionId: 'b2', categoryId: 'c2', statement: '対応手順の全体像を説明できる', sortOrder: 2, kind: 'knowledge' },
 ];
 
 const certs: Cert[] = [];
@@ -126,6 +127,15 @@ const rollupRow = (label: string): HTMLElement => {
   return row;
 };
 
+/**
+ * カードの見出し (件数バッジがある行)。
+ *
+ * 件数を `getByText('1/2')` でカード全体から探すと、**知識/実務の内訳行**にも
+ * 同じ数字が出るため複数マッチで落ちる。見出しに絞ってから探す。
+ */
+const cardHeader = (stage: number, label: string): HTMLElement =>
+  cardOf(stage, label).firstElementChild as HTMLElement;
+
 const boxFor = (statement: string, level: 'サポートあり' | '1人称') =>
   screen.getByRole('checkbox', { name: new RegExp(`${statement} — ${level}で対応できる`) });
 
@@ -167,19 +177,68 @@ describe('達成数が水準に対応している (v2.11 の回帰テスト)', (
   it('STEP2 は solo のチェックを数える', () => {
     setup({ actionSoloChecks: { b1: true } });
     openStage(2);
-    // 分母 = 固有2 + 引き継ぎ1 = 3
-    expect(within(cardOf(2, '初動対応の実施')).getByText('1/3')).toBeTruthy();
+    // 分母は **固有のみ**。引き継ぎは比率に入れず前提条件として効く (AC-12.39)
+    expect(within(cardHeader(2, '初動対応の実施')).getByText('1/2')).toBeTruthy();
   });
 
   it('STEP2 は assisted だけのチェックを数えない — これが動かなかったバグ', () => {
     setup({ actionChecks: { b1: true, b2: true } });
     openStage(2);
-    expect(within(cardOf(2, '初動対応の実施')).getByText('0/3')).toBeTruthy();
+    expect(within(cardHeader(2, '初動対応の実施')).getByText('0/2')).toBeTruthy();
   });
 
   it('STEP1 は assisted のチェックを数える', () => {
     setup({ actionChecks: { a1: true } });
-    expect(within(cardOf(1, '手順書・定型作業')).getByText('1/2')).toBeTruthy();
+    expect(within(cardHeader(1, '手順書・定型作業')).getByText('1/2')).toBeTruthy();
+  });
+});
+
+describe('知識100% / 実務70% (AC-12.37 — 2026-08-05)', () => {
+  // c2 = 固有2件 (b1 実務 / b2 知識) + 引き継ぎ c1。
+  // c1 を 1人称 まで満たして前提を外しておく。
+  const c1Cleared = { a1: true, a2: true };
+
+  it('実務が7割に達しても、知識が残っていればクリアにならない', () => {
+    setup({
+      actionChecks: c1Cleared,
+      actionSoloChecks: { ...c1Cleared, b1: true }, // 実務 1/1 = 100%、知識 0/1
+    });
+    openStage(2);
+    const header = cardHeader(2, '初動対応の実施');
+    expect(header.textContent).not.toContain('クリア');
+  });
+
+  it('その状態では「あと何件」ではなく、知識が足りないと言う', () => {
+    setup({
+      actionChecks: c1Cleared,
+      actionSoloChecks: { ...c1Cleared, b1: true },
+    });
+    openStage(2);
+    // 数字だけ出すと「実務は満たしたのに何故?」= バグに見える (2026-08-05 指摘)
+    expect(cardHeader(2, '初動対応の実施').textContent).toContain('知識をあと1件');
+  });
+
+  it('知識を100%にするとクリアになる', () => {
+    setup({
+      actionChecks: c1Cleared,
+      actionSoloChecks: { ...c1Cleared, b1: true, b2: true },
+    });
+    openStage(2);
+    expect(cardHeader(2, '初動対応の実施').textContent).toContain('クリア');
+  });
+
+  it('知識だけ満たしても、実務が7割に届かなければクリアにならない', () => {
+    setup({
+      actionChecks: c1Cleared,
+      actionSoloChecks: { ...c1Cleared, b2: true }, // 知識 1/1、実務 0/1
+    });
+    openStage(2);
+    const header = cardHeader(2, '初動対応の実施');
+    // 「クリアまであと1」も 'クリア' を含むので、達成バッジは件数付きで見る
+    expect(header.textContent).not.toMatch(/\d+\/\d+ クリア/);
+    expect(header.textContent).toContain('クリアまであと');
+    // 足りないのは実務なので、知識のメッセージは出さない
+    expect(header.textContent).not.toContain('知識をあと');
   });
 });
 
