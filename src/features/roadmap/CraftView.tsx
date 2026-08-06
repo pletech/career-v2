@@ -38,6 +38,19 @@ const CLEAR = 0.7; // クリア閾値 (7割)
 const INHERITED_LEVEL: CheckLevel = 'solo';
 
 /**
+ * その項目を **どの水準で描き、どの水準で数えるか**。
+ *
+ * 知識は「サポートありで説明できる」に意味が無いので、段階の目安に関わらず 1人称だけを
+ * 出す (2026-08-05 指摘)。**数える側もこれに従わせる**のがこの関数の役目。
+ *
+ * ⚠️ 描画と集計でここが分かれると「押しても数字が動かない」になる。同じ取り違えを
+ * 2 回踏んだ (STEP2・3 の実務 / STEP1 の知識) ので、水準の決定はこの 1 箇所に集約する。
+ * `stat()` と `actionRow()` の両方から必ず呼ぶこと。
+ */
+export const levelOfAction = (kind: Action['kind'], stageLevel: CheckLevel): CheckLevel =>
+  kind === 'knowledge' ? 'solo' : stageLevel;
+
+/**
  * 段階ごとの「どの水準でチェックするか」の目安 (v2.9 — 2水準化に合わせて改訂)。
  *
  * 未経験者が大半のため、全項目を 1人称で求めるとチェックが長期間つかず目安として機能しない
@@ -192,8 +205,10 @@ const CraftView: React.FC<CraftViewProps> = ({
       };
     }
     const own = directActions(catId);
-    const marks = marksOf(level);
-    const isDone = (a: Action) => marks[a.actionId] === true;
+    // 水準は項目ごとに決まる。段階の目安をそのまま全項目に当てると、
+    // 1人称だけで描いている知識を assisted 側で数えてしまう
+    const isDone = (a: Action) =>
+      marksOf(levelOfAction(a.kind, level))[a.actionId] === true;
 
     const knowledge = own.filter((a) => a.kind === 'knowledge');
     const practice = own.filter((a) => a.kind === 'practice');
@@ -364,7 +379,7 @@ const CraftView: React.FC<CraftViewProps> = ({
      * 知識は「サポートありで説明できる」に意味が無い (説明できるか否かしかない) ので、
      * 段階に関わらず 1人称 の1つだけにする (2026-08-05 指摘)。
      */
-    const twoLevel = opts.level === 'assisted' && a.kind === 'practice';
+    const twoLevel = levelOfAction(a.kind, opts.level) === 'assisted';
     // 「未チェックのみ」: その行で出している水準が全部埋まっていれば隠す
     if (onlyUnchecked && (twoLevel ? assisted && solo : solo)) return null;
 
@@ -446,7 +461,6 @@ const CraftView: React.FC<CraftViewProps> = ({
    * (①知識100% → ②実務70% の順に効くのと同じ並び)。
    */
   const actionGroups = (own: Action[], level: CheckLevel, isNew: boolean) => {
-    const marks = marksOf(level);
     const groups: { kind: ActionKind; label: string; cls: string; items: Action[] }[] = [
       {
         kind: 'knowledge',
@@ -464,10 +478,13 @@ const CraftView: React.FC<CraftViewProps> = ({
     return groups
       .filter((g) => g.items.length > 0)
       .map((g) => {
+        // 見出しの達成数も `stat()` と同じ水準で数える (知識は常に 1人称)
+        const groupLevel = levelOfAction(g.kind, level);
+        const marks = marksOf(groupLevel);
         const done = g.items.filter((a) => marks[a.actionId] === true).length;
         // 凡例はチェックが2つ並ぶ実務グループにだけ付ける。
         // 知識は1人称の1つだけなので「左/右」の説明が要らない
-        const showLevelHint = g.kind === 'practice' && level === 'assisted';
+        const showLevelHint = groupLevel === 'assisted';
         return (
           <div key={g.kind} className="flex flex-col gap-1">
             <p className={`mt-0.5 px-0.5 text-[9.5px] font-bold ${g.cls}`}>

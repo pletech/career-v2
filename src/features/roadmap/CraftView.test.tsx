@@ -52,6 +52,8 @@ const roles: Role[] = [
 const categories: Category[] = [
   { categoryId: 'c1', stage: 1, labelJa: '手順書・定型作業', includes: [], sortOrder: 1 },
   { categoryId: 'c2', stage: 2, labelJa: '初動対応の実施', includes: ['c1'], sortOrder: 1 },
+  // 知識を含む STEP1 カテゴリ。c1 に混ぜると既存の件数アサーションが全部ずれるので別に置く
+  { categoryId: 'c3', stage: 1, labelJa: '現場理解・体制', includes: [], sortOrder: 2 },
 ];
 
 const actions: Action[] = [
@@ -60,6 +62,10 @@ const actions: Action[] = [
   { actionId: 'b1', categoryId: 'c2', statement: '初動対応を実施できる', sortOrder: 1, kind: 'practice' },
   // 知識バッジと内訳の検証用に1件だけ knowledge を混ぜる
   { actionId: 'b2', categoryId: 'c2', statement: '対応手順の全体像を説明できる', sortOrder: 2, kind: 'knowledge' },
+  // STEP1 (目安=assisted) の知識。知識は段階に関わらず 1人称だけで描くので、
+  // 数える側も 1人称でないと押しても動かない
+  { actionId: 'k1', categoryId: 'c3', statement: '体制図を説明できる', sortOrder: 1, kind: 'knowledge' },
+  { actionId: 'k2', categoryId: 'c3', statement: '朝会に参加できる', sortOrder: 2, kind: 'practice' },
 ];
 
 const certs: Cert[] = [];
@@ -190,6 +196,40 @@ describe('達成数が水準に対応している (v2.11 の回帰テスト)', (
   it('STEP1 は assisted のチェックを数える', () => {
     setup({ actionChecks: { a1: true } });
     expect(within(cardHeader(1, '手順書・定型作業')).getByText('1/2')).toBeTruthy();
+  });
+
+  // 同じ「書き込む先と数える先のずれ」を知識で踏んだ (2026-08-06)。
+  // 知識は段階の目安に関わらず 1人称の1つだけを描くのに、集計は段階の目安
+  // (STEP1 = assisted) で数えていたため、押しても外しても 0/1 のまま動かなかった。
+  it('STEP1 の知識は 1人称 の1つだけを出す', () => {
+    setup();
+    expect(boxFor('体制図を説明できる', '1人称')).toBeTruthy();
+    expect(
+      screen.queryByRole('checkbox', { name: /体制図を説明できる — サポートありで対応できる/ }),
+    ).toBeNull();
+    // 同じカードの実務は2つのまま
+    expect(boxFor('朝会に参加できる', 'サポートあり')).toBeTruthy();
+  });
+
+  it('STEP1 の知識は solo のチェックを数える — 押しても数字が動かなかったバグ', () => {
+    setup({ actionSoloChecks: { k1: true } });
+    const card = cardOf(1, '現場理解・体制');
+    expect(within(card).getByText('知識 1/1')).toBeTruthy();
+    expect(within(cardHeader(1, '現場理解・体制')).getByText('1/2')).toBeTruthy();
+  });
+
+  it('STEP1 の知識は assisted のチェックを数えない (描いていない水準)', () => {
+    setup({ actionChecks: { k1: true } });
+    const card = cardOf(1, '現場理解・体制');
+    expect(within(card).getByText('知識 0/1')).toBeTruthy();
+    expect(within(cardHeader(1, '現場理解・体制')).getByText('0/2')).toBeTruthy();
+  });
+
+  it('STEP1 の実務は従来どおり assisted で数える (知識と混ざっていない)', () => {
+    setup({ actionChecks: { k2: true } });
+    const card = cardOf(1, '現場理解・体制');
+    expect(within(card).getByText('実務 1/1')).toBeTruthy();
+    expect(within(card).getByText('知識 0/1')).toBeTruthy();
   });
 });
 
