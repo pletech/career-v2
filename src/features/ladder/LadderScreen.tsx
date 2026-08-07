@@ -300,6 +300,8 @@ const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps' }) => {
           actionChecks={actionChecks}
           actionSoloChecks={actionSoloChecks}
           onToggleAction={toggleAction}
+          onExport={exportJson}
+          onImport={importJson}
           lang={lang}
         />
       </div>

@@ -11,6 +11,7 @@ import type {
   TrackId,
 } from '../../domain/types';
 import { TRACK_LABELS } from '../../types/career';
+import PrintSheet from './PrintSheet';
 
 /**
  * 業務ロードマップ v2.7d — 段階別カテゴリ + 包含モデル (アサリさん面談 2026-07-14)
@@ -81,6 +82,14 @@ const STAGE_AUTONOMY: Record<number, { ja: string; ko: string; allowsAssist?: tr
 };
 
 /** 業務ロードマップの対象範囲。区分 (track) × 分類 (subtrack) の組 */
+/**
+ * その段階が自分のクリアを判定する水準。目安が補助を許す段階だけ assisted。
+ * **印刷 (PrintSheet) も同じ関数を使う** — 紙と画面で判定がずれたら
+ * どちらが本当か分からなくなる。
+ */
+export const levelOfStage = (stage: number): CheckLevel =>
+  STAGE_AUTONOMY[stage]?.allowsAssist ? 'assisted' : 'solo';
+
 export interface RoadmapRoute {
   key: string;
   track: TrackId;
@@ -101,6 +110,10 @@ interface CraftViewProps {
   /** 「ひとりでできる」水準 (v2.9) */
   actionSoloChecks: ActionCheckMap;
   onToggleAction: (actionId: string, level: CheckLevel) => void;
+  /** チェック状態をファイルに書き出す。サーバー保存が無いので**これが唯一の退避手段** */
+  onExport: () => void;
+  /** 書き出したファイルを読み戻す。成否メッセージを返す */
+  onImport: (file: File) => Promise<{ ok: boolean; message: string }>;
   lang: Lang;
 }
 
@@ -135,8 +148,12 @@ const CraftView: React.FC<CraftViewProps> = ({
   actionChecks,
   actionSoloChecks,
   onToggleAction,
+  onExport,
+  onImport,
   lang,
 }) => {
+  const fileRef = React.useRef<HTMLInputElement>(null);
+  const [ioMessage, setIoMessage] = useState<{ ok: boolean; text: string } | null>(null);
   const s = STRINGS[lang];
   const ko = lang === 'ko';
 
@@ -301,9 +318,6 @@ const CraftView: React.FC<CraftViewProps> = ({
 
   const toggle = (stage: number) => setOpenStage((cur) => (cur === stage ? null : stage));
 
-  /** その段階が自分のクリアを判定する水準。目安が補助を許す段階だけ assisted */
-  const levelOfStage = (stage: number): CheckLevel =>
-    STAGE_AUTONOMY[stage]?.allowsAssist ? 'assisted' : 'solo';
 
   // ---------------------------------------------------------------------
   // 達成バッジ
@@ -840,7 +854,88 @@ const CraftView: React.FC<CraftViewProps> = ({
             {ko ? '미체크만 표시' : '未チェックのみ表示'}
           </span>
         </label>
+        {/*
+          面談に持っていく紙。チェックは localStorage にしか無く、ログインもサーバー保存も
+          意図的に持っていないので、**面談の席で別端末から本人の状態を開けない**。
+          JSON エクスポートは端末間の持ち運び用で、その場では読めない。
+        */}
+        <button
+          type="button"
+          onClick={() => window.print()}
+          className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-[10.5px] font-medium text-gray-600 hover:border-cyan-300 hover:text-cyan-700"
+        >
+          <span aria-hidden>🖨</span>
+          {ko ? '인쇄' : '印刷'}
+        </button>
+        {/*
+          チェックは localStorage にしか無い。**サーバー保存もログインも意図的に持っていない**ので、
+          ブラウザのデータを消す・端末を替える・別のPCで開く、のどれでも消える。
+          退避手段がここにしか無いのだから、ロードマップの画面から出せないと意味が無い
+          (v2 までは全体マップ側にしか置いておらず、しかも中身にロードマップのチェックが
+          入っていなかった)。
+        */}
+        <button
+          type="button"
+          onClick={onExport}
+          className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-[10.5px] font-medium text-gray-600 hover:border-cyan-300 hover:text-cyan-700"
+          title={ko
+            ? '체크 상태를 파일로 저장합니다 (이 브라우저에만 남아 있으므로 백업용)'
+            : 'チェック状態をファイルに保存します（このブラウザにしか残らないため）'}
+        >
+          <span aria-hidden>⬇</span>
+          {ko ? '내보내기' : '書き出し'}
+        </button>
+        <button
+          type="button"
+          onClick={() => fileRef.current?.click()}
+          className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-[10.5px] font-medium text-gray-600 hover:border-cyan-300 hover:text-cyan-700"
+          title={ko ? '저장해 둔 파일을 읽어옵니다' : '書き出したファイルを読み込みます'}
+        >
+          <span aria-hidden>⬆</span>
+          {ko ? '읽어오기' : '読み込み'}
+        </button>
+        <input
+          ref={fileRef}
+          type="file"
+          accept="application/json,.json"
+          className="hidden"
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            e.target.value = '';          // 同じファイルを続けて選んでも onChange が出るように
+            if (!f) return;
+            void onImport(f).then((r) => {
+              setIoMessage({ ok: r.ok, text: r.message });
+              window.setTimeout(() => setIoMessage(null), 6000);
+            });
+          }}
+        />
       </div>
+      {ioMessage && (
+        <p
+          role="status"
+          className={`mx-3 mb-1 rounded px-2 py-1 text-[10.5px] ${
+            ioMessage.ok ? 'bg-cyan-50 text-cyan-800' : 'bg-red-50 text-red-700'
+          }`}
+        >
+          {ioMessage.text}
+        </p>
+      )}
+
+      <PrintSheet
+        routeLabel={
+          activeRoute
+            ? `${TRACK_LABELS[activeRoute.track] ?? activeRoute.track} / ${activeRoute.subtrack}`
+            : ''
+        }
+        roles={roles}
+        categories={categories}
+        actions={actions}
+        actionChecks={actionChecks}
+        actionSoloChecks={actionSoloChecks}
+        levelOfStage={levelOfStage}
+        levelOfAction={levelOfAction}
+        printedOn={new Date().toLocaleDateString('ja-JP')}
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-4 pt-3 md:px-5">
         {/* 適用範囲・第1版の前提 (外部レビュー FB 2026-07-29: 粗い粒度で出す理由を明記する) */}

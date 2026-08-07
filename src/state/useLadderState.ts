@@ -42,7 +42,18 @@ function loadLang(): Lang {
   }
 }
 const EXPORT_FORMAT = 'career-ladder-check-states';
-const EXPORT_VERSION = 2;
+/**
+ * v3 で **業務ロードマップのチェック (`actionChecks` / `actionSoloChecks`) を含めた**。
+ *
+ * v2 までは全体マップ側の `evidenceChecks` / `managerConfirms` しか書き出しておらず、
+ * 今みんなが実際に使っているロードマップのチェックが**1件も入っていなかった**。
+ * サーバー保存もログインも意図的に持っていないので、端末が変わると全部消える。
+ *
+ * v2 のファイルも読める (無い区画は触らない)。**payload に無い区画を空で上書きしない** —
+ * 古いファイルを読んだだけでロードマップのチェックが消えるのは事故になる。
+ */
+const EXPORT_VERSION = 3;
+const EXPORT_MIN_VERSION = 2;
 
 export const DEFAULT_TARGET = 'infra-server-sp-4';
 
@@ -50,8 +61,12 @@ interface ExportPayload {
   format: string;
   version: number;
   exportedAt: string;
-  evidenceChecks: EvidenceCheckMap;
-  managerConfirms: ManagerConfirmMap;
+  evidenceChecks?: EvidenceCheckMap;
+  managerConfirms?: ManagerConfirmMap;
+  /** 業務ロードマップ: サポートあり水準 (v3〜) */
+  actionChecks?: ActionCheckMap;
+  /** 業務ロードマップ: 1人称水準 (v3〜) */
+  actionSoloChecks?: ActionCheckMap;
 }
 
 function loadBooleanMap(key: string): Record<string, boolean> {
@@ -240,6 +255,8 @@ export function useLadderState() {
       exportedAt: new Date().toISOString(),
       evidenceChecks,
       managerConfirms,
+      actionChecks,
+      actionSoloChecks,
     };
     const blob = new Blob([JSON.stringify(payload, null, 2)], {
       type: 'application/json',
@@ -252,7 +269,7 @@ export function useLadderState() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-  }, [evidenceChecks, managerConfirms]);
+  }, [evidenceChecks, managerConfirms, actionChecks, actionSoloChecks]);
 
   /**
    * JSONインポート。成否メッセージ (日本語) を返す。
@@ -270,19 +287,48 @@ export function useLadderState() {
         return { ok: false, message: 'このファイルはチェック状態のエクスポートファイルではありません。' };
       }
       const payload = parsed as ExportPayload;
-      if (payload.version !== EXPORT_VERSION) {
+      if (
+        typeof payload.version !== 'number' ||
+        payload.version < EXPORT_MIN_VERSION ||
+        payload.version > EXPORT_VERSION
+      ) {
         return {
           ok: false,
-          message: '旧形式のエクスポートファイルは読み込めません。新しい形式で再エクスポートしてください。',
+          message: '対応していない形式のファイルです。新しい形式で再エクスポートしてください。',
         };
       }
-      const checks = sanitizeBooleanMap(payload.evidenceChecks);
-      const confirms = sanitizeBooleanMap(payload.managerConfirms);
-      setEvidenceChecks(checks);
-      setManagerConfirms(confirms);
+      // **ファイルに入っている区画だけを差し替える。** 無い区画を空で上書きすると、
+      // v2 のファイルを読んだだけでロードマップのチェックが消える
+      const parts: string[] = [];
+      if (payload.evidenceChecks) {
+        const m = sanitizeBooleanMap(payload.evidenceChecks);
+        setEvidenceChecks(m);
+        parts.push(`根拠 ${Object.keys(m).length}件`);
+      }
+      if (payload.managerConfirms) {
+        const m = sanitizeBooleanMap(payload.managerConfirms);
+        setManagerConfirms(m);
+        parts.push(`確認 ${Object.keys(m).length}件`);
+      }
+      if (payload.actionChecks) {
+        const m = sanitizeBooleanMap(payload.actionChecks);
+        setActionChecks(m);
+        parts.push(`サポートあり ${Object.keys(m).length}件`);
+      }
+      if (payload.actionSoloChecks) {
+        const m = sanitizeBooleanMap(payload.actionSoloChecks);
+        setActionSoloChecks(m);
+        parts.push(`1人称 ${Object.keys(m).length}件`);
+      }
+      if (parts.length === 0) {
+        return { ok: false, message: 'ファイルにチェック状態が入っていませんでした。' };
+      }
       return {
         ok: true,
-        message: `チェック状態を読み込みました（根拠 ${Object.keys(checks).length}件・確認 ${Object.keys(confirms).length}件）。`,
+        message: `チェック状態を読み込みました（${parts.join('・')}）。`
+          + (payload.version < EXPORT_VERSION
+            ? ' ※旧形式のため、業務ロードマップのチェックはこのファイルに含まれていません。'
+            : ''),
       };
     } catch {
       return { ok: false, message: 'ファイルの読み込みに失敗しました。JSONファイルを確認してください。' };

@@ -76,9 +76,12 @@ const setup = (
   opts: {
     actionChecks?: Record<string, boolean>;
     actionSoloChecks?: Record<string, boolean>;
+    onImport?: (file: File) => Promise<{ ok: boolean; message: string }>;
   } = {},
 ) => {
   const onToggleAction = vi.fn();
+  const onExport = vi.fn();
+  const onImport = opts.onImport ?? vi.fn(async () => ({ ok: true, message: '読み込みました' }));
   render(
     <CraftView
       routes={routes}
@@ -91,10 +94,12 @@ const setup = (
       actionChecks={opts.actionChecks ?? {}}
       actionSoloChecks={opts.actionSoloChecks ?? {}}
       onToggleAction={onToggleAction}
+      onExport={onExport}
+      onImport={onImport}
       lang="ja"
     />,
   );
-  return { onToggleAction };
+  return { onToggleAction, onExport, onImport };
 };
 
 /** その段階のカードを開く (既定で開いているのは最下段だけ) */
@@ -366,5 +371,37 @@ describe('引き継ぎは 1人称 で問い直す (AC-12.25 / 12.32)', () => {
     expect(row.textContent).toContain('2/2');
     expect(row.textContent).toContain('クリア');
     expect(row.textContent).not.toContain('1人称で再確認');
+  });
+});
+
+/**
+ * チェックはこの端末の localStorage にしか無い (ログインもサーバー保存も意図的に無い)。
+ * **退避手段がここにしか無い**ので、ロードマップの画面から出せることを固定する。
+ */
+describe('チェック状態の書き出し・読み込み (2026-08-07)', () => {
+  it('書き出しボタンが onExport を呼ぶ', () => {
+    const { onExport } = setup();
+    fireEvent.click(screen.getByRole('button', { name: /書き出し/ }));
+    expect(onExport).toHaveBeenCalledTimes(1);
+  });
+
+  it('ファイルを選ぶと onImport に渡され、結果が画面に出る', async () => {
+    const onImport = vi.fn(async () => ({ ok: true, message: 'チェック状態を読み込みました（1人称 3件）。' }));
+    setup({ onImport });
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const file = new File(['{}'], 'checks.json', { type: 'application/json' });
+    fireEvent.change(input, { target: { files: [file] } });
+    expect(onImport).toHaveBeenCalledWith(file);
+    expect((await screen.findByRole('status')).textContent).toContain('1人称 3件');
+  });
+
+  it('読み込みに失敗したら、そう言う (黙って握りつぶさない)', async () => {
+    const onImport = vi.fn(async () => ({ ok: false, message: '対応していない形式のファイルです。' }));
+    setup({ onImport });
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+    fireEvent.change(input, {
+      target: { files: [new File(['x'], 'a.json', { type: 'application/json' })] },
+    });
+    expect((await screen.findByRole('status')).textContent).toContain('対応していない形式');
   });
 });
