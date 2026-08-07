@@ -306,24 +306,35 @@ describe('知識100% / 実務70% (AC-12.37 — 2026-08-05)', () => {
   });
 });
 
-describe('実務の達成率を出す (AC-12.38 — 2026-08-07)', () => {
-  // 端数で 70% ちょうどには着地しない。それでよく、**今が何%か**が見えればいい
-  it('実務グループの見出しに達成率と 70% の基準を出す', () => {
-    setup({ actionChecks: { a1: true } });   // c1 は実務2件、1件チェック
-    const card = cardOf(1, '手順書・定型作業');
-    expect(within(card).getByText(/50%/)).toBeTruthy();
-    expect(within(card).getByText(/・50%（70%以上でクリア）/)).toBeTruthy();
+/** カードの達成率バー (知識 / 実務 で1本ずつ) */
+const bars = (card: HTMLElement) =>
+  Array.from(card.querySelectorAll('span[title]'))
+    .filter((el) => /^(知識|実務) \d+\/\d+$/.test(el.getAttribute('title') ?? ''))
+    .map((el) => ({ title: el.getAttribute('title') ?? '', text: el.textContent ?? '' }));
+
+/** カード内の 知識/実務 グループ見出し */
+const groupHead = (card: HTMLElement, kind: '知識' | '実務') =>
+  Array.from(card.querySelectorAll('p')).find((el) => el.textContent?.startsWith(`${kind} `));
+
+describe('達成率バーは知識と実務で分ける (AC-12.38 — 2026-08-07)', () => {
+  // 合格ラインが違う (知識100% / 実務70%) ものを1本にまとめると、
+  // そのバーがどこまで行けばよいのかが読めなくなる
+  it('持っている種別のぶんだけバーを出す', () => {
+    setup({ actionChecks: { a1: true } });          // c1 は実務2件 (知識なし)、1件チェック
+    const b1 = bars(cardOf(1, '手順書・定型作業'));
+    expect(b1.map((x) => x.title)).toEqual(['実務 1/2']);
+    expect(b1[0].text).toContain('50%');
+
+    const b3 = bars(cardOf(1, '現場理解・体制'));    // 知識1件 / 実務1件 → 2本
+    expect(b3.map((x) => x.title)).toEqual(['知識 0/1', '実務 0/1']);
   });
 
-  it('知識の見出しには達成率を出さない (70% の線が掛からないので意味が無い)', () => {
+  it('見出しには合格ラインを書く — 知識100% / 実務70%', () => {
     setup();
-    const card = cardOf(1, '現場理解・体制');
-    const heads = Array.from(card.querySelectorAll('p'))
-      .filter((el) => /^(知識|実務) \d+\/\d+/.test(el.textContent ?? ''));
-    const know = heads.find((el) => el.textContent?.startsWith('知識'));
-    const prac = heads.find((el) => el.textContent?.startsWith('実務'));
-    expect(know?.textContent).not.toContain('%');
-    expect(prac?.textContent).toContain('70%以上でクリア');
+    expect(groupHead(cardOf(1, '現場理解・体制'), '知識')?.textContent)
+      .toContain('100%でクリア');
+    expect(groupHead(cardOf(1, '手順書・定型作業'), '実務')?.textContent)
+      .toContain('70%以上でクリア');
   });
 });
 

@@ -313,16 +313,43 @@ const CraftView: React.FC<CraftViewProps> = ({
    *   数だけでは足りない場面 (下の段階でクリア済みなのに引き継ぎ先で 0 に見える等) に使う。
    */
   /**
-   * 達成率バーの割合。**実務の達成率**を出す — 70% の基準線は実務にしか掛からないので、
-   * 知識を混ぜると線の意味が消える。知識の残りはバッジ側 (blockedByKnowledge) が言う。
-   * 実務が0件のカテゴリ (知識だけ) は知識の達成率を出す。
+   * 達成率バーを1本描く。**知識と実務でバーを分ける** (2026-08-07 사용자 제안)。
+   *
+   * 合格ラインが違う (知識 100% / 実務 70%) ので、1本にまとめると
+   * 「このバーはどこまで行けば良いのか」が読めない。バーごとに基準線を持たせる。
+   *
+   * @param target 満たすべき割合。1 (=100%) のときは基準線を引かない — バーの端が基準だから
    */
-  const barPct = (st: CatStat): number => {
-    const [done, total] =
-      st.practiceTotal > 0
-        ? [st.practiceDone, st.practiceTotal]
-        : [st.knowledgeDone, st.knowledgeTotal];
-    return total === 0 ? 0 : Math.min(100, Math.round((done / total) * 100));
+  const progressBar = (
+    label: string, done: number, total: number, target: number, cleared: boolean,
+  ) => {
+    const pct = total === 0 ? 0 : Math.min(100, Math.round((done / total) * 100));
+    const met = done >= Math.ceil(total * target);
+    return (
+      <span className="flex items-center gap-1" title={`${label} ${done}/${total}`}>
+        <span className="w-5 shrink-0 text-[8px] font-bold leading-none text-gray-500">
+          {label}
+        </span>
+        <span className="relative h-1.5 flex-1 bg-gray-100">
+          <span
+            className={`block h-full transition-all ${
+              cleared || met ? 'bg-emerald-500' : label === '知識' || label === '지식'
+                ? 'bg-indigo-400' : 'bg-cyan-400'
+            }`}
+            style={{ width: `${pct}%` }}
+          />
+          {target < 1 && (
+            <span
+              className="absolute top-0 h-full w-px bg-gray-400/80"
+              style={{ left: `${target * 100}%` }}
+            />
+          )}
+        </span>
+        <span className="w-7 shrink-0 text-right text-[8px] leading-none text-gray-400">
+          {pct}%
+        </span>
+      </span>
+    );
   };
 
   const statusBadge = (st: CatStat, size: 'sm' | 'md' = 'md', pendingNote?: string) => {
@@ -510,16 +537,15 @@ const CraftView: React.FC<CraftViewProps> = ({
             <p className={`mt-0.5 px-0.5 text-[9.5px] font-bold ${g.cls}`}>
               {g.label} {done}/{g.items.length}
               {/*
-                実務だけ % を添える。7割の基準線が掛かるのは実務だけなので、
-                「今が何%か」が分かれば端数で 70% ちょうどに着地しなくても読める。
+                **合格ラインを見出しに書く**。知識と実務で違う (100% / 70%) ことが
+                ここに出ていないと、2本のバーがなぜ長さ違いで緑になるのか読めない。
+                今が何%かはバー側が出すので、ここでは繰り返さない。
               */}
-              {g.kind === 'practice' && (
-                <span className="ml-1 font-normal text-gray-500">
-                  {/* 区切りを入れないと `0/8` と `0%` が続いて「0/80%」に読める */}
-                  ・{Math.round((done / g.items.length) * 100)}%
-                  {ko ? '（70% 이상으로 클리어）' : '（70%以上でクリア）'}
-                </span>
-              )}
+              <span className="ml-1 font-normal text-gray-500">
+                {g.kind === 'knowledge'
+                  ? (ko ? '（100%로 클리어）' : '（100%でクリア）')
+                  : (ko ? '（70% 이상으로 클리어）' : '（70%以上でクリア）')}
+              </span>
             </p>
             {showLevelHint && levelHeader()}
             {g.items.map((a) => actionRow(a, { isNew, level }))}
@@ -637,19 +663,16 @@ const CraftView: React.FC<CraftViewProps> = ({
         </div>
 
         {/*
-          達成率バーは **実務** の達成率 (70% にクリア基準線)。
-          70% は実務にしか掛からない基準なので、知識を混ぜると線の意味が消える。
-          知識の残りはバッジ側が言う (blockedByKnowledge)。
-          実務が0件のカテゴリ (知識だけ) では知識の達成率を出し、基準線は隠す。
+          バーは2本。**合格ラインが違うものを1本に混ぜない** —
+          知識は端まで (100%)、実務は 70% の線まで行けばよい。
+          1本だったころは「70% の線」が知識にも掛かって見えていた。
+          持たない側は描かない (実務0件のカテゴリに 70% 線を出すと嘘になる)。
         */}
-        <div className="relative h-1.5 w-full bg-gray-100" aria-hidden>
-          <div
-            className={`h-full transition-all ${st.cleared ? 'bg-emerald-500' : 'bg-cyan-400'}`}
-            style={{ width: `${barPct(st)}%` }}
-          />
-          {st.practiceTotal > 0 && (
-            <span className="absolute top-0 h-full w-px bg-gray-400/80" style={{ left: '70%' }} />
-          )}
+        <div className="flex flex-col gap-px px-2 py-1" aria-hidden>
+          {st.knowledgeTotal > 0 &&
+            progressBar(ko ? '지식' : '知識', st.knowledgeDone, st.knowledgeTotal, 1, st.cleared)}
+          {st.practiceTotal > 0 &&
+            progressBar(ko ? '실무' : '実務', st.practiceDone, st.practiceTotal, CLEAR, st.cleared)}
         </div>
 
         <div className={`flex flex-col gap-1 p-2 ${st.cleared ? 'bg-emerald-50/40' : ''}`}>
