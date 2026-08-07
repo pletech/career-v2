@@ -68,3 +68,35 @@ describe('toggleAction の水準の包含 (AC-12.45)', () => {
     expect(JSON.parse(window.localStorage.getItem(SOLO_KEY) ?? '{}')).toEqual({});
   });
 });
+
+/**
+ * リセットは4つのマップ全部を消す。ロードマップ側 (assisted / solo) を
+ * 消し忘れると、リセットボタンを繋いだときに「押しても消えない」になる。
+ */
+describe('resetStates', () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+  });
+
+  it('業務ロードマップのチェックも消える', () => {
+    const { result } = renderHook(() => useLadderState());
+    act(() => result.current.toggleAction('a1', 'solo'));
+    act(() => result.current.toggleEvidence('e1'));
+    act(() => result.current.toggleManagerConfirm('ab1'));
+
+    act(() => result.current.resetStates());
+
+    expect(result.current.actionChecks).toEqual({});
+    expect(result.current.actionSoloChecks).toEqual({});
+    expect(result.current.evidenceChecks).toEqual({});
+    expect(result.current.managerConfirms).toEqual({});
+  });
+
+  it('localStorage からも消える', () => {
+    const { result } = renderHook(() => useLadderState());
+    act(() => result.current.toggleAction('a1', 'solo'));
+    act(() => result.current.resetStates());
+    expect(JSON.parse(window.localStorage.getItem(ASSISTED_KEY) ?? '{}')).toEqual({});
+    expect(JSON.parse(window.localStorage.getItem(SOLO_KEY) ?? '{}')).toEqual({});
+  });
+});

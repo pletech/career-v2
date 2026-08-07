@@ -335,9 +335,23 @@ export function useLadderState() {
     }
   }, []);
 
+  /**
+   * チェック状態を全消去する。
+   *
+   * **4つのマップすべてを消す。** 以前は全体マップ側 (`evidenceChecks` /
+   * `managerConfirms`) だけを消しており、今みんなが実際に使っている
+   * 業務ロードマップのチェックが残ったままだった。呼び出し元がまだ無いので
+   * 表には出ていないが、リセットボタンを繋いだ瞬間「押しても消えない」になる。
+   * エクスポートで同じ取りこぼしをしたのと同じ原因 (v3 で修正済み)。
+   *
+   * チェックのマップを増やすときは **ここと exportJson / importJson の3か所**を
+   * 併せて直すこと。
+   */
   const resetStates = useCallback(() => {
     setEvidenceChecks({});
     setManagerConfirms({});
+    setActionChecks({});
+    setActionSoloChecks({});
   }, []);
 
   return useMemo(
