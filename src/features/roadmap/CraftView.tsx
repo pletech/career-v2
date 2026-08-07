@@ -11,7 +11,6 @@ import type {
   TrackId,
 } from '../../domain/types';
 import { TRACK_LABELS } from '../../types/career';
-import PrintSheet from './PrintSheet';
 
 /**
  * 業務ロードマップ v2.7d — 段階別カテゴリ + 包含モデル (アサリさん面談 2026-07-14)
@@ -82,11 +81,7 @@ const STAGE_AUTONOMY: Record<number, { ja: string; ko: string; allowsAssist?: tr
 };
 
 /** 業務ロードマップの対象範囲。区分 (track) × 分類 (subtrack) の組 */
-/**
- * その段階が自分のクリアを判定する水準。目安が補助を許す段階だけ assisted。
- * **印刷 (PrintSheet) も同じ関数を使う** — 紙と画面で判定がずれたら
- * どちらが本当か分からなくなる。
- */
+/** その段階が自分のクリアを判定する水準。目安が補助を許す段階だけ assisted */
 export const levelOfStage = (stage: number): CheckLevel =>
   STAGE_AUTONOMY[stage]?.allowsAssist ? 'assisted' : 'solo';
 
@@ -855,19 +850,6 @@ const CraftView: React.FC<CraftViewProps> = ({
           </span>
         </label>
         {/*
-          面談に持っていく紙。チェックは localStorage にしか無く、ログインもサーバー保存も
-          意図的に持っていないので、**面談の席で別端末から本人の状態を開けない**。
-          JSON エクスポートは端末間の持ち運び用で、その場では読めない。
-        */}
-        <button
-          type="button"
-          onClick={() => window.print()}
-          className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-[10.5px] font-medium text-gray-600 hover:border-cyan-300 hover:text-cyan-700"
-        >
-          <span aria-hidden>🖨</span>
-          {ko ? '인쇄' : '印刷'}
-        </button>
-        {/*
           チェックは localStorage にしか無い。**サーバー保存もログインも意図的に持っていない**ので、
           ブラウザのデータを消す・端末を替える・別のPCで開く、のどれでも消える。
           退避手段がここにしか無いのだから、ロードマップの画面から出せないと意味が無い
@@ -921,21 +903,6 @@ const CraftView: React.FC<CraftViewProps> = ({
         </p>
       )}
 
-      <PrintSheet
-        routeLabel={
-          activeRoute
-            ? `${TRACK_LABELS[activeRoute.track] ?? activeRoute.track} / ${activeRoute.subtrack}`
-            : ''
-        }
-        roles={roles}
-        categories={categories}
-        actions={actions}
-        actionChecks={actionChecks}
-        actionSoloChecks={actionSoloChecks}
-        levelOfStage={levelOfStage}
-        levelOfAction={levelOfAction}
-        printedOn={new Date().toLocaleDateString('ja-JP')}
-      />
 
       <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-4 pt-3 md:px-5">
         {/* 適用範囲・第1版の前提 (外部レビュー FB 2026-07-29: 粗い粒度で出す理由を明記する) */}
