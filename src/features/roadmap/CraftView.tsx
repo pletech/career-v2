@@ -262,6 +262,58 @@ const CraftView: React.FC<CraftViewProps> = ({
     };
   };
 
+  /**
+   * **段階単位**の集計 (AC-12.38 / 2026-08-07)。
+   *
+   * カテゴリ単位の判定は「どこに残っているか」を示すもので、
+   * 「次の段階へ行けるか」には答えていない。それを知るには
+   * カテゴリを全部開いて自分で足す必要があった。ここで段階として足す。
+   *
+   * **その段階の固有カテゴリだけ**を合算する。引き継ぎカテゴリは下の段階に属するので、
+   * 足すと二重計上になる (同じ理由でカテゴリの比率からも外してある — AC-12.39)。
+   */
+  const stageStat = (stage: number) => {
+    const cats = catsOfStage(stage);
+    const level = levelOfStage(stage);
+    const rows = cats.map((c) => {
+      const own = directActions(c.categoryId);
+      const rest = (kind: ActionKind) =>
+        own.filter((a) => a.kind === kind && marksOf(levelOfAction(kind, level))[a.actionId] !== true);
+      return {
+        categoryId: c.categoryId,
+        label: loc(lang, c.labelJa, c.labelKo),
+        knowledgeTotal: own.filter((a) => a.kind === 'knowledge').length,
+        practiceTotal: own.filter((a) => a.kind === 'practice').length,
+        knowledgeLeft: rest('knowledge').length,
+        practiceLeft: rest('practice').length,
+      };
+    });
+    const sum = (f: (r: (typeof rows)[number]) => number) => rows.reduce((a, r) => a + f(r), 0);
+    const knowledgeTotal = sum((r) => r.knowledgeTotal);
+    const practiceTotal = sum((r) => r.practiceTotal);
+    const knowledgeDone = knowledgeTotal - sum((r) => r.knowledgeLeft);
+    const practiceDone = practiceTotal - sum((r) => r.practiceLeft);
+    const where = (key: 'knowledgeLeft' | 'practiceLeft') =>
+      rows.filter((r) => r[key] > 0).map((r) => ({ ...r, count: r[key] }));
+    return {
+      stage,
+      knowledgeDone,
+      knowledgeTotal,
+      practiceDone,
+      practiceTotal,
+      practicePct: practiceTotal === 0 ? 100 : Math.round((practiceDone / practiceTotal) * 100),
+      knowledgeMet: knowledgeDone === knowledgeTotal,
+      practiceMet: practiceTotal === 0 || practiceDone >= Math.ceil(practiceTotal * CLEAR),
+      /** 知識は全部必要 */
+      knowledgeNeed: knowledgeTotal - knowledgeDone,
+      /** 実務は7割に届くまで。**どれを埋めてもよい** */
+      practiceNeed: Math.max(0, Math.ceil(practiceTotal * CLEAR) - practiceDone),
+      knowledgeWhere: where('knowledgeLeft'),
+      practiceWhere: where('practiceLeft'),
+      hasContent: knowledgeTotal + practiceTotal > 0,
+    };
+  };
+
   const stagesDesc = useMemo(
     () => [...new Set(categories.map((c) => c.stage))].sort((a, b) => b - a),
     [categories],
@@ -313,6 +365,39 @@ const CraftView: React.FC<CraftViewProps> = ({
 
   const toggle = (stage: number) => setOpenStage((cur) => (cur === stage ? null : stage));
 
+  /**
+   * 段階サマリーの「残り」から、その項目があるカテゴリまで**連れていく**。
+   *
+   * これが無いと「STEP3 の知識があと12件」と出しても、利用者が
+   * 段階を開き直し → カテゴリを探し → 未チェックを目で拾う、を手でやることになる。
+   * 段階を開き、未チェックのみ表示に切り替え、そこまでスクロールする。
+   */
+  const [focusCat, setFocusCat] = useState<string | null>(null);
+  const jumpTo = (stage: number, categoryId: string) => {
+    setOpenStage(stage);
+    setOnlyUnchecked(true);
+    setFocusCat(categoryId);
+  };
+  React.useEffect(() => {
+    if (!focusCat) return;
+    // 段階を開いた直後の描画を待ってから位置を取る
+    const id = window.requestAnimationFrame(() => {
+      document.getElementById(`cat-${focusCat}`)?.scrollIntoView({ block: 'start' });
+    });
+    // 着地点が分からないと「押したのに何も起きていない」に見えるので、少しの間だけ縁を光らせる
+    const clear = window.setTimeout(() => setFocusCat(null), 2500);
+    return () => {
+      window.cancelAnimationFrame(id);
+      window.clearTimeout(clear);
+    };
+  }, [focusCat]);
+
+  /** 直上の段階。**項目を持つ段階**が対象 (roles にあっても中身が無ければ次ではない) */
+  const nextStageOf = (stage: number): number | null => {
+    const above = [...stagesDesc].reverse().filter((s) => s > stage);
+    return above.length > 0 ? above[0] : null;
+  };
+
 
   // ---------------------------------------------------------------------
   // 達成バッジ
@@ -339,7 +424,7 @@ const CraftView: React.FC<CraftViewProps> = ({
         <span className="w-5 shrink-0 text-[8px] font-bold leading-none text-gray-500">
           {label}
         </span>
-        <span className="relative h-1.5 flex-1 bg-gray-100">
+        <span className="relative hidden h-1.5 flex-1 bg-gray-100 md:block">
           <span
             className={`block h-full transition-all ${
               cleared || met ? 'bg-emerald-500' : label === '知識' || label === '지식'
@@ -354,10 +439,167 @@ const CraftView: React.FC<CraftViewProps> = ({
             />
           )}
         </span>
-        <span className="w-7 shrink-0 text-right text-[8px] leading-none text-gray-400">
+        <span className="w-7 shrink-0 text-right text-[8px] leading-none text-gray-400 md:w-7">
           {pct}%
         </span>
+        {/* バーを畳んだぶん、狭い画面では % を右端へ寄せる */}
+        <span className="flex-1 md:hidden" />
       </span>
+    );
+  };
+
+  /**
+   * 段階サマリー — 「今どこにいて、次へ行くには何が残っているか」に1画面で答える。
+   *
+   * 関口さんの言う 70% は**段階単位**の話で、カテゴリ単位の 70% ではない。
+   * カテゴリは項目が4〜15件しかなく、端数で 71〜83% に着地するので段階の基準には使えない。
+   *
+   * 2段構え (2026-08-07 사용자 정의):
+   *   ① その段階の目標           … 実務 70%
+   *   ② 次の段階へ挑戦できる地点 … ① ＋ この段階の知識 100% ＋ 次の段階の知識 100%
+   */
+  const stageSummary = (stage: number) => {
+    const cur = stageStat(stage);
+    if (!cur.hasContent) return null;
+    const nextStage = nextStageOf(stage);
+    const next = nextStage === null ? null : stageStat(nextStage);
+    const nextRole = nextStage === null ? undefined : roleOfStage(nextStage);
+    /** roles には居るが項目がまだ無い段階 (STEP4 は 8〜9月に追加予定) */
+    const plannedNext = roles.find((r) => r.stageOrder === stage + 1 && r.status !== 'hidden');
+
+    const line = (
+      label: string, done: number, total: number, target: number, met: boolean, note: string,
+    ) => (
+      <div className="flex items-center gap-2">
+        <span className="flex-1 text-[10.5px] leading-tight text-gray-600 md:w-[7.5rem] md:flex-none">
+          {label}
+        </span>
+        <span className="w-14 shrink-0 text-right text-[10.5px] font-bold tabular-nums text-gray-800">
+          {done}/{total}
+        </span>
+        {/* 狭い画面ではバーを出さない。23px の帯に 70% 線を引いても読めない */}
+        <span className="relative hidden h-1.5 flex-1 bg-gray-200 md:block">
+          <span
+            className={`block h-full ${met ? 'bg-emerald-500' : 'bg-cyan-400'}`}
+            style={{ width: `${total === 0 ? 0 : Math.min(100, Math.round((done / total) * 100))}%` }}
+          />
+          {target < 1 && (
+            <span className="absolute top-0 h-full w-px bg-gray-500/70" style={{ left: `${target * 100}%` }} />
+          )}
+        </span>
+        <span
+          className={`w-24 shrink-0 text-right text-[10px] font-bold ${
+            met ? 'text-emerald-600' : 'text-amber-700'
+          }`}
+        >
+          {met ? (ko ? '달성' : '達成') : note}
+        </span>
+      </div>
+    );
+
+    /** 「どこに残っているか」— 押すとその場所まで連れていく */
+    const where = (
+      title: string,
+      rows: { categoryId: string; label: string; count: number }[],
+      target: number,
+    ) =>
+      rows.length === 0 ? null : (
+        <div className="flex flex-col gap-0.5">
+          <p className="text-[9.5px] font-semibold text-gray-500">{title}</p>
+          <div className="flex flex-wrap gap-1">
+            {rows.map((r) => (
+              <button
+                key={r.categoryId}
+                type="button"
+                onClick={() => jumpTo(target, r.categoryId)}
+                className="rounded-full border border-gray-300 bg-white px-2 py-0.5 text-[10px] text-gray-700 hover:border-cyan-400 hover:bg-cyan-50 hover:text-cyan-800"
+              >
+                {r.label} {r.count}
+                <span aria-hidden> →</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      );
+
+    const restJa = (n: number) => (ko ? `앞으로 ${n}건` : `あと${n}件`);
+
+    return (
+      <div className="flex flex-col gap-2.5 border-t border-cyan-100 bg-cyan-50/40 px-3 py-2.5">
+        <div className="flex flex-col gap-1">
+          <p className="text-[10.5px] font-bold text-gray-700">
+            {ko ? '■ 이 단계의 목표' : '■ この段階の目標'}
+          </p>
+          {line(
+            ko ? '실무 70%' : '実務 70%',
+            cur.practiceDone, cur.practiceTotal, CLEAR, cur.practiceMet, restJa(cur.practiceNeed),
+          )}
+          {!cur.practiceMet &&
+            where(
+              ko ? '남은 실무는 여기에 있습니다 (어느 것이든 괜찮습니다)'
+                 : '残りの実務はここにあります（どれを埋めても構いません）',
+              cur.practiceWhere, stage,
+            )}
+        </div>
+
+        <div className="flex flex-col gap-1 border-t border-cyan-100 pt-2">
+          <p className="text-[10.5px] font-bold text-gray-700">
+            {next && nextStage !== null
+              ? ko
+                ? `■ 다음 단계(STEP${nextStage})에 도전할 수 있는 조건`
+                : `■ 次の段階（STEP${nextStage}${nextRole ? ' ' + loc(lang, nextRole.shortLabel, nextRole.shortLabelKo) : ''}）へ挑戦できる条件`
+              : ko
+                ? '■ 다음 단계에 도전할 수 있는 조건'
+                : '■ 次の段階へ挑戦できる条件'}
+          </p>
+          {line(
+            ko ? '실무 70%' : '実務 70%',
+            cur.practiceDone, cur.practiceTotal, CLEAR, cur.practiceMet, restJa(cur.practiceNeed),
+          )}
+          {line(
+            ko ? '이 단계의 지식 100%' : 'この段階の知識 100%',
+            cur.knowledgeDone, cur.knowledgeTotal, 1, cur.knowledgeMet, restJa(cur.knowledgeNeed),
+          )}
+          {next && nextStage !== null ? (
+            line(
+              ko ? `STEP${nextStage} 지식 100%` : `STEP${nextStage} の知識 100%`,
+              next.knowledgeDone, next.knowledgeTotal, 1, next.knowledgeMet, restJa(next.knowledgeNeed),
+            )
+          ) : (
+            // 項目がまだ無い段階を「達成」と出すと嘘になる。準備中と言う
+            <p className="text-[10px] leading-relaxed text-gray-500">
+              {plannedNext
+                ? ko
+                  ? `STEP${stage + 1}（${loc(lang, plannedNext.shortLabel, plannedNext.shortLabelKo)}）의 항목은 준비 중입니다.`
+                  : `STEP${stage + 1}（${loc(lang, plannedNext.shortLabel, plannedNext.shortLabelKo)}）の項目は準備中です。`
+                : ko
+                  ? '다음 단계는 아직 준비 중입니다.'
+                  : '次の段階はまだ準備中です。'}
+            </p>
+          )}
+          {!cur.knowledgeMet &&
+            where(
+              ko ? '남은 지식은 여기에 있습니다 (전부 필요합니다)'
+                 : '残りの知識はここにあります（すべて必要です）',
+              cur.knowledgeWhere, stage,
+            )}
+          {next && nextStage !== null && !next.knowledgeMet &&
+            where(
+              ko ? `STEP${nextStage}에서 남은 지식` : `STEP${nextStage} で残っている知識`,
+              next.knowledgeWhere, nextStage,
+            )}
+        </div>
+
+        {/*
+          カテゴリカードの「クリア」と、ここの「達成」は**測っているものが違う**。
+          書いておかないと「段階は達成なのにカードは未クリア」で矛盾に見える。
+        */}
+        <p className="text-[9.5px] leading-relaxed text-gray-500">
+          {ko
+            ? '위 수치는 이 단계 전체의 집계입니다. 카드별 「클리어」는 어느 카테고리에 남았는지를 나타냅니다.'
+            : '上の数字はこの段階全体の集計です。カードごとの「クリア」は、どのカテゴリに残っているかを示すものです。'}
+        </p>
+      </div>
     );
   };
 
@@ -644,9 +886,14 @@ const CraftView: React.FC<CraftViewProps> = ({
     return (
       <div
         key={cat.categoryId}
-        className={`flex flex-col overflow-hidden rounded-xl border-2 ${
-          st.cleared ? 'border-emerald-400' : 'border-gray-200'
-        } bg-white`}
+        id={`cat-${cat.categoryId}`}
+        className={`flex flex-col overflow-hidden rounded-xl border-2 bg-white ${
+          focusCat === cat.categoryId
+            ? 'border-cyan-500 ring-2 ring-cyan-200'
+            : st.cleared
+              ? 'border-emerald-400'
+              : 'border-gray-200'
+        }`}
       >
         {/* クリアしたカテゴリはヘッダーを反転して一目で分かるように */}
         <div
@@ -986,6 +1233,13 @@ const CraftView: React.FC<CraftViewProps> = ({
 
                 {open ? (
                   <>
+                    {/*
+                      「今どこにいて、次へ行くには何が残っているか」。
+                      カテゴリカードより**先**に置く — 後ろに置くと、
+                      結局カードを全部読んでから辿り着くことになる。
+                    */}
+                    {stageSummary(stage)}
+
                     {/* この段階でチェックしてよい「自立度」の目安 (v2.8 — 判定要件ではない) */}
                     {STAGE_AUTONOMY[stage] && (
                       <p className="border-t border-amber-100 bg-amber-50/60 px-3 py-2 text-[10.5px] leading-relaxed text-amber-900">

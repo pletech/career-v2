@@ -405,3 +405,114 @@ describe('チェック状態の書き出し・読み込み (2026-08-07)', () => 
     expect((await screen.findByRole('status')).textContent).toContain('対応していない形式');
   });
 });
+
+/**
+ * 段階サマリー (AC-12.38 / 12.40 — 2026-08-07)。
+ *
+ * カテゴリ単位の判定は「どこに残っているか」しか答えず、
+ * 「次の段階へ行くには何が残っているか」を知るには全カテゴリを開いて自分で足す必要があった。
+ *
+ * フィクスチャ: STEP1 = 実務3件 (c1 2件 + c3 1件) / 知識1件 (c3)
+ *               STEP2 = 実務1件 / 知識1件
+ */
+const summaryOf = (stage: number): HTMLElement => {
+  // 既定で開いているのは最下段だけ。上位段階は開かないとサマリーも描かれない
+  const closed = screen.getAllByRole('button').find(
+    (b) => b.textContent?.includes(`STEP ${stage}`) && b.textContent?.includes('チェックリストを開く'),
+  );
+  if (closed) fireEvent.click(closed);
+  const section = Array.from(document.querySelectorAll('section')).find((el) =>
+    el.textContent?.includes(`STEP ${stage}`) && el.textContent?.includes('この段階の目標'),
+  );
+  if (!section) throw new Error(`STEP ${stage} の段階サマリーが無い`);
+  return section as HTMLElement;
+};
+
+/** 「残りはここにあります」のひとかたまり。同じカテゴリ名が実務側と知識側の両方に出る */
+const whereGroup = (el: HTMLElement, title: RegExp): HTMLElement => {
+  const head = Array.from(el.querySelectorAll('p')).find((p) => title.test(p.textContent ?? ''));
+  if (!head) throw new Error(`「${title}」の見出しが無い`);
+  return head.parentElement as HTMLElement;
+};
+/** サマリー内の「◯◯ n/m 状態」の行 */
+const summaryLines = (el: HTMLElement) =>
+  Array.from(el.querySelectorAll('div.flex.items-center.gap-2'))
+    .map((d) => (d as HTMLElement).textContent ?? '')
+    .filter((t) => /\d+\/\d+/.test(t));
+
+describe('段階サマリー (AC-12.38 / 12.40)', () => {
+  it('段階単位で集計する — カテゴリをまたいで足す', () => {
+    setup();
+    const lines = summaryLines(summaryOf(1));
+    // STEP1 の実務は c1 の2件 + c3 の1件 = 3件。カードを見ても出てこない数
+    expect(lines.some((t) => t.includes('0/3'))).toBe(true);
+    // 知識は c3 の1件だけ
+    expect(lines.some((t) => t.includes('0/1'))).toBe(true);
+  });
+
+  it('引き継ぎカテゴリを二重に数えない', () => {
+    setup();
+    // c2 は c1 を includes するが、c1 は STEP1 の所属。STEP2 の実務は自分の1件だけ
+    const lines = summaryLines(summaryOf(2));
+    expect(lines.some((t) => t.includes('0/1'))).toBe(true);
+    expect(lines.some((t) => t.includes('0/3'))).toBe(false);
+  });
+
+  it('次の段階の知識を条件に入れる', () => {
+    setup();
+    expect(summaryOf(1).textContent).toContain('STEP2 の知識 100%');
+  });
+
+  it('項目が無い段階を「達成」と言わず、準備中と言う', () => {
+    setup();
+    // フィクスチャに STEP3 は無い。roles にも無いので汎用の文言になる
+    expect(summaryOf(2).textContent).toMatch(/準備中/);
+    expect(summaryOf(2).textContent).not.toContain('STEP3 の知識');
+  });
+
+  it('達成すると「達成」に変わる', () => {
+    setup({ actionSoloChecks: { k1: true } });   // STEP1 の知識は k1 の1件だけ
+    const el = summaryOf(1);
+    expect(summaryLines(el).find((t) => t.includes('1/1'))).toContain('達成');
+  });
+
+  it('残っている場所をカテゴリ名と件数で出す', () => {
+    setup();
+    const g = whereGroup(summaryOf(1), /残りの実務はここに/);
+    // 実務は c1 に2件、c3 に1件
+    expect(within(g).getByRole('button', { name: /手順書・定型作業 2/ })).toBeTruthy();
+    expect(within(g).getByRole('button', { name: /現場理解・体制 1/ })).toBeTruthy();
+  });
+
+  it('実務と知識で「残っている場所」を分けて出す', () => {
+    setup();
+    const el = summaryOf(1);
+    // c1 は実務だけ、c3 は両方持つ。知識側に c1 が出てはいけない
+    const k = whereGroup(el, /残りの知識はここに/);
+    expect(within(k).queryByRole('button', { name: /手順書・定型作業/ })).toBeNull();
+    expect(within(k).getByRole('button', { name: /現場理解・体制 1/ })).toBeTruthy();
+  });
+});
+
+describe('残りの場所へジャンプする', () => {
+  it('押すと段階が開き、未チェックのみ表示になり、そのカテゴリへ飛ぶ', () => {
+    const scrolled: string[] = [];
+    // jsdom には scrollIntoView が無い
+    Element.prototype.scrollIntoView = function (this: Element) {
+      scrolled.push(this.id);
+    };
+    setup();
+    // STEP1 のサマリーから STEP2 の知識 (別の段階) へ飛ぶ
+    fireEvent.click(within(summaryOf(1)).getByRole('button', { name: /初動対応の実施 1/ }));
+
+    // 段階が STEP2 に切り替わる
+    const st2 = screen.getAllByRole('button')
+      .find((b) => b.textContent?.includes('STEP 2') && b.textContent?.includes('閉じる'));
+    expect(st2).toBeTruthy();
+    // 未チェックのみ表示が入る (残りだけを見せるため)
+    expect(
+      (screen.getByRole('checkbox', { name: /未チェックのみ表示/ }) as HTMLInputElement).checked,
+    ).toBe(true);
+    expect(document.getElementById('cat-c2')).toBeTruthy();
+  });
+});
