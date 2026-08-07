@@ -120,6 +120,8 @@ interface CatStat {
   blockedByChild: boolean;
   /** 実務は7割に達したが、知識が100%に届いていない状態 */
   blockedByKnowledge: boolean;
+  /** 知識は埋め切ったが実務が7割に届いていない = **勉強では埋まらない分だけが残った** */
+  blockedByPractice: boolean;
 }
 
 const CraftView: React.FC<CraftViewProps> = ({
@@ -202,6 +204,7 @@ const CraftView: React.FC<CraftViewProps> = ({
         cleared: false,
         blockedByChild: false,
         blockedByKnowledge: false,
+        blockedByPractice: false,
       };
     }
     const own = directActions(catId);
@@ -241,6 +244,9 @@ const CraftView: React.FC<CraftViewProps> = ({
       // 実務は足りているのに知識が残っている状態。ここを黙って「未クリア」にすると
       // 「数は満たしたのに何故?」となり **バグに見える** (2026-08-05 指摘)
       blockedByKnowledge: hasContent && practiceMet && !knowledgeMet,
+      // 知識は埋め切ったが実務が届かない = 関口さん FB の着地点。
+      // ここで「あと N」とだけ出すと、**何をすれば N が減るのか**が分からない (AC-12.40)
+      blockedByPractice: hasContent && knowledgeMet && !practiceMet,
     };
   };
 
@@ -344,6 +350,20 @@ const CraftView: React.FC<CraftViewProps> = ({
           // 実務は足りているのにクリアにならない状態。理由を言わないとバグに見える
           <span className={`rounded bg-indigo-100 font-bold text-indigo-700 ${pad}`}>
             {ko ? `지식 앞으로 ${st.knowledgeTotal - st.knowledgeDone}` : `知識をあと${st.knowledgeTotal - st.knowledgeDone}件`}
+          </span>
+        ) : st.blockedByPractice ? (
+          // 知識は埋め切った = **勉強では埋まらない分だけが残っている**。
+          // 「案件での経験が要る」と言い切るのがこの機能の目的 (関口さん 2026-08-05)。
+          // バッジは短く、理由は title に置く (長い文字列を狭い行に入れると名前が切れる)
+          <span
+            className={`rounded bg-amber-100 font-bold text-amber-700 ${pad}`}
+            title={ko
+              ? '지식은 다 채웠습니다. 남은 것은 안건에서 경험해야 채워집니다'
+              : '知識は埋め切りました。残りは案件で経験しないと埋まりません'}
+          >
+            {ko
+              ? `실무 앞으로 ${Math.max(0, Math.ceil(st.practiceTotal * CLEAR) - st.practiceDone)}`
+              : `実務をあと${Math.max(0, Math.ceil(st.practiceTotal * CLEAR) - st.practiceDone)}件`}
           </span>
         ) : (
           <span className={`rounded bg-amber-100 font-bold text-amber-700 ${pad}`}>
@@ -489,6 +509,17 @@ const CraftView: React.FC<CraftViewProps> = ({
           <div key={g.kind} className="flex flex-col gap-1">
             <p className={`mt-0.5 px-0.5 text-[9.5px] font-bold ${g.cls}`}>
               {g.label} {done}/{g.items.length}
+              {/*
+                実務だけ % を添える。7割の基準線が掛かるのは実務だけなので、
+                「今が何%か」が分かれば端数で 70% ちょうどに着地しなくても読める。
+              */}
+              {g.kind === 'practice' && (
+                <span className="ml-1 font-normal text-gray-500">
+                  {/* 区切りを入れないと `0/8` と `0%` が続いて「0/80%」に読める */}
+                  ・{Math.round((done / g.items.length) * 100)}%
+                  {ko ? '（70% 이상으로 클리어）' : '（70%以上でクリア）'}
+                </span>
+              )}
             </p>
             {showLevelHint && levelHeader()}
             {g.items.map((a) => actionRow(a, { isNew, level }))}

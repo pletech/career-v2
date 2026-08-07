@@ -276,9 +276,54 @@ describe('知識100% / 実務70% (AC-12.37 — 2026-08-05)', () => {
     const header = cardHeader(2, '初動対応の実施');
     // 「クリアまであと1」も 'クリア' を含むので、達成バッジは件数付きで見る
     expect(header.textContent).not.toMatch(/\d+\/\d+ クリア/);
-    expect(header.textContent).toContain('クリアまであと');
     // 足りないのは実務なので、知識のメッセージは出さない
     expect(header.textContent).not.toContain('知識をあと');
+  });
+
+  // AC-12.40: 知識を埋め切った先で「あと1」とだけ出すと、何をすれば減るのか分からない。
+  // 勉強では埋まらない分だけが残った状態なので、そう言い切る
+  it('知識を埋め切って実務だけ残ったら、案件での経験が要ると言う', () => {
+    setup({
+      actionChecks: c1Cleared,
+      actionSoloChecks: { ...c1Cleared, b2: true }, // 知識 1/1、実務 0/1
+    });
+    openStage(2);
+    const header = cardHeader(2, '初動対応の実施');
+    expect(header.textContent).toContain('実務をあと1件');
+    expect(header.textContent).not.toContain('クリアまであと');
+    expect(within(header).getByTitle(/案件で経験しないと埋まりません/)).toBeTruthy();
+  });
+
+  it('知識が残っている間は実務のメッセージを出さない (どちらか一方だけ)', () => {
+    setup({
+      actionChecks: c1Cleared,
+      actionSoloChecks: { ...c1Cleared, b1: true }, // 実務 1/1、知識 0/1
+    });
+    openStage(2);
+    const header = cardHeader(2, '初動対応の実施');
+    expect(header.textContent).toContain('知識をあと1件');
+    expect(header.textContent).not.toContain('実務をあと');
+  });
+});
+
+describe('実務の達成率を出す (AC-12.38 — 2026-08-07)', () => {
+  // 端数で 70% ちょうどには着地しない。それでよく、**今が何%か**が見えればいい
+  it('実務グループの見出しに達成率と 70% の基準を出す', () => {
+    setup({ actionChecks: { a1: true } });   // c1 は実務2件、1件チェック
+    const card = cardOf(1, '手順書・定型作業');
+    expect(within(card).getByText(/50%/)).toBeTruthy();
+    expect(within(card).getByText(/・50%（70%以上でクリア）/)).toBeTruthy();
+  });
+
+  it('知識の見出しには達成率を出さない (70% の線が掛からないので意味が無い)', () => {
+    setup();
+    const card = cardOf(1, '現場理解・体制');
+    const heads = Array.from(card.querySelectorAll('p'))
+      .filter((el) => /^(知識|実務) \d+\/\d+/.test(el.textContent ?? ''));
+    const know = heads.find((el) => el.textContent?.startsWith('知識'));
+    const prac = heads.find((el) => el.textContent?.startsWith('実務'));
+    expect(know?.textContent).not.toContain('%');
+    expect(prac?.textContent).toContain('70%以上でクリア');
   });
 });
 
