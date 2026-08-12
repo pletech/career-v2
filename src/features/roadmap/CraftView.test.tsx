@@ -495,7 +495,7 @@ describe('段階サマリー (AC-12.38 / 12.40)', () => {
 });
 
 describe('残りの場所へジャンプする', () => {
-  it('押すと段階が開き、未チェックのみ表示になり、そのカテゴリへ飛ぶ', () => {
+  it('押すと段階が開き、そのカテゴリへ飛ぶ', async () => {
     const scrolled: string[] = [];
     // jsdom には scrollIntoView が無い
     Element.prototype.scrollIntoView = function (this: Element) {
@@ -509,10 +509,20 @@ describe('残りの場所へジャンプする', () => {
     const st2 = screen.getAllByRole('button')
       .find((b) => b.textContent?.includes('STEP 2') && b.textContent?.includes('閉じる'));
     expect(st2).toBeTruthy();
-    // 未チェックのみ表示が入る (残りだけを見せるため)
-    expect(
-      (screen.getByRole('checkbox', { name: /未チェックのみ表示/ }) as HTMLInputElement).checked,
-    ).toBe(true);
     expect(document.getElementById('cat-c2')).toBeTruthy();
+    // スクロールは requestAnimationFrame の中 (段階を開いた描画を待つため)
+    await new Promise((r) => window.requestAnimationFrame(() => r(null)));
+    expect(scrolled).toContain('cat-c2');
+  });
+
+  // 勝手に ON にしていたころ、自分で OFF にしても押すたびに戻るので
+  // 「解除できない」ように見えた
+  it('「未チェックのみ表示」を勝手に切り替えない', () => {
+    Element.prototype.scrollIntoView = function () {};
+    setup();
+    const filter = screen.getByRole('checkbox', { name: /未チェックのみ表示/ }) as HTMLInputElement;
+    expect(filter.checked).toBe(false);
+    fireEvent.click(within(summaryOf(1)).getByRole('button', { name: /手順書・定型作業 2/ }));
+    expect(filter.checked).toBe(false);
   });
 });

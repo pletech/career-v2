@@ -369,13 +369,15 @@ const CraftView: React.FC<CraftViewProps> = ({
    * 段階サマリーの「残り」から、その項目があるカテゴリまで**連れていく**。
    *
    * これが無いと「STEP3 の知識があと12件」と出しても、利用者が
-   * 段階を開き直し → カテゴリを探し → 未チェックを目で拾う、を手でやることになる。
-   * 段階を開き、未チェックのみ表示に切り替え、そこまでスクロールする。
+   * 段階を開き直し → カテゴリを探し、を手でやることになる。
+   *
+   * ⚠️ **「未チェックのみ表示」には触らない。** 一度これを勝手に ON にしていたが、
+   * 利用者が自分で OFF にした直後でも押すたびに戻るため、
+   * 「解除できない」ように見えた (2026-08-07 指摘)。明示的な操作を上書きしない。
    */
   const [focusCat, setFocusCat] = useState<string | null>(null);
   const jumpTo = (stage: number, categoryId: string) => {
     setOpenStage(stage);
-    setOnlyUnchecked(true);
     setFocusCat(categoryId);
   };
   React.useEffect(() => {
