@@ -7,6 +7,8 @@ import type { TrackId } from '../../domain/types';
 import { DEFAULT_TARGET, useLadderState } from '../../state/useLadderState';
 import InterviewPanel from '../interview/InterviewPanel';
 import CraftView from '../roadmap/CraftView';
+import MyPageView from '../roadmap/MyPageView';
+import { TRACK_LABELS } from '../../types/career';
 import TargetSelector from '../selector/TargetSelector';
 import LadderView from './LadderView';
 
@@ -26,10 +28,20 @@ interface LadderScreenProps {
    * データロード・チェック状態・言語を両ビューで共有するため、同じ画面が両モードを描画する。
    * ロードマップの能力タップはビューを遷移せず、その場でチェックリストを開く (v2.6i)。
    */
-  mode?: 'steps' | 'roadmap';
+  mode?: 'steps' | 'roadmap' | 'mypage';
+  /** マイページの「→」から業務ロードマップへ切り替えてもらう */
+  onNavigate?: (mode: 'roadmap') => void;
 }
 
-const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps' }) => {
+const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps', onNavigate }) => {
+  /**
+   * マイページ → 業務ロードマップ の受け渡し。
+   * この画面は両モードで**同じインスタンスのまま**描き分けているので、
+   * タブを切り替えても state が残る (App 側で別コンポーネントにすると消える)。
+   */
+  const [focusRequest, setFocusRequest] = React.useState<
+    { stage: number; categoryId: string } | null
+  >(null);
   const {
     targetRoleId,
     setTargetRoleId,
@@ -280,13 +292,38 @@ const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps' }) => {
   // ===================== 業務ロードマップ (v2.7 — 素材→武器モデル) =====================
   // セル = タグ (区分)。タップでビューは遷移せず、その場で素材チェックリストが開く
   // (ドロワーは CraftView が自前で持つ)
-  if (mode === 'roadmap') {
+  if (mode === 'roadmap' || mode === 'mypage') {
     // ルート内の役割だけを渡す。旧ビューの targetRole は参照しない
     const routeRoles = activeRoute
       ? data.roles.filter(
           (r) => r.track === activeRoute.track && r.category === activeRoute.subtrack,
         )
       : [];
+    if (mode === 'mypage') {
+      return (
+        <div className="relative flex flex-1 overflow-hidden bg-gray-50">
+          <MyPageView
+            routeLabel={
+              activeRoute
+                ? `${TRACK_LABELS[activeRoute.track] ?? activeRoute.track} / ${activeRoute.subtrack}`
+                : ''
+            }
+            roles={routeRoles}
+            categories={data.categories}
+            actions={data.actions}
+            certs={data.certs}
+            actionChecks={actionChecks}
+            actionSoloChecks={actionSoloChecks}
+            onJump={(stage, categoryId) => {
+              setFocusRequest({ stage, categoryId });
+              onNavigate?.('roadmap');
+            }}
+            lang={lang}
+          />
+        </div>
+      );
+    }
+
     return (
       <div className="relative flex flex-1 overflow-hidden bg-gray-50">
         <CraftView
@@ -302,6 +339,8 @@ const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps' }) => {
           onToggleAction={toggleAction}
           onExport={exportJson}
           onImport={importJson}
+          focusRequest={focusRequest}
+          onFocusHandled={() => setFocusRequest(null)}
           lang={lang}
         />
       </div>

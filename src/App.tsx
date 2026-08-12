@@ -18,7 +18,12 @@ import LadderScreen from './features/ladder/LadderScreen';
  * (STEP3〜4 コンテンツの移行元・ゲート判定の再利用余地のため — 物理削除は移行完了後)。
  * ?view=ladder で必要時に呼び出せる。
  */
-type ViewMode = 'ladder' | 'roadmap' | 'map';
+/**
+ * mypage = 「今どこにいて、次に何をすればよいか」を読む画面 (2026-08-07)。
+ * 業務ロードマップは 11 カテゴリ全開で 8 画面ぶんあり、そこに要約を足すと読めなくなった。
+ * **読む画面と書く画面を分ける**。既定はマイページ — 多くの人は読むだけで用が足りる。
+ */
+type ViewMode = 'ladder' | 'roadmap' | 'map' | 'mypage';
 
 /**
  * 使い方マニュアル (Notion) の URL。
@@ -213,9 +218,11 @@ const App: React.FC = () => {
               <p className="text-[9px] md:text-[11px] text-gray-400 truncate">
                 {viewMode === 'ladder'
                   ? '階段型キャリアパス（旧ビュー）'
-                  : viewMode === 'roadmap'
-                    ? '業務ロードマップ（業務×段階の成長マップ）'
-                    : 'キャリアパスモデル（育成面談用）'}
+                  : viewMode === 'mypage'
+                    ? 'マイページ（今の到達点と次にやること）'
+                    : viewMode === 'roadmap'
+                      ? '業務ロードマップ（業務×段階の成長マップ）'
+                      : 'キャリアパスモデル（育成面談用）'}
               </p>
             </div>
             <div className="flex shrink-0 flex-wrap items-center gap-2">
@@ -248,6 +255,17 @@ const App: React.FC = () => {
                 </button>
               )}
               <div className="inline-flex rounded-lg border border-gray-200 bg-gray-50 p-0.5" role="tablist">
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={viewMode === 'mypage'}
+                  onClick={() => setViewMode('mypage')}
+                  className={`rounded-md px-2.5 py-1 text-[11px] md:text-xs font-medium transition-colors ${
+                    viewMode === 'mypage' ? 'bg-white text-cyan-700 shadow-sm' : 'text-gray-500'
+                  }`}
+                >
+                  マイページ
+                </button>
                 <button
                   type="button"
                   role="tab"
@@ -323,8 +341,11 @@ const App: React.FC = () => {
         </div>
       </header>
 
-      {viewMode === 'ladder' || viewMode === 'roadmap' ? (
-        <LadderScreen mode={viewMode === 'roadmap' ? 'roadmap' : 'steps'} />
+      {viewMode === 'ladder' || viewMode === 'roadmap' || viewMode === 'mypage' ? (
+        <LadderScreen
+          mode={viewMode === 'ladder' ? 'steps' : viewMode}
+          onNavigate={setViewMode}
+        />
       ) : (
         <>
       {/*

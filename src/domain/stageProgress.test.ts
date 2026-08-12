@@ -1,0 +1,113 @@
+import { describe, expect, it } from 'vitest';
+
+import { currentStageOf, readyForNext, stageProgress } from './stageProgress';
+import type { Action, Category, CheckLevel, ActionKind } from './types';
+
+const categories: Category[] = [
+  { categoryId: 'c1', stage: 1, labelJa: '手順書', includes: [], sortOrder: 1 },
+  { categoryId: 'c1b', stage: 1, labelJa: '現場理解', includes: [], sortOrder: 2 },
+  // 上位は下位を includes する。**足してはいけない**のがこの構造
+  { categoryId: 'c2', stage: 2, labelJa: '初動対応', includes: ['c1', 'c1b'], sortOrder: 1 },
+];
+
+const act = (id: string, cat: string, kind: ActionKind): Action => ({
+  actionId: id, categoryId: cat, statement: id, sortOrder: 1, kind,
+});
+
+// STEP1: 知識2 (k1,k2) / 実務3 (p1,p2,p3)   STEP2: 知識1 (k3) / 実務2 (p4,p5)
+const actions: Action[] = [
+  act('p1', 'c1', 'practice'), act('p2', 'c1', 'practice'), act('k1', 'c1', 'knowledge'),
+  act('p3', 'c1b', 'practice'), act('k2', 'c1b', 'knowledge'),
+  act('p4', 'c2', 'practice'), act('p5', 'c2', 'practice'), act('k3', 'c2', 'knowledge'),
+];
+
+// STEP1 は補助あり、STEP2 以上は 1人称。知識は段階に関わらず 1人称
+const levelOfStage = (s: number): CheckLevel => (s === 1 ? 'assisted' : 'solo');
+const levelOfAction = (kind: ActionKind, stageLevel: CheckLevel): CheckLevel =>
+  kind === 'knowledge' ? 'solo' : stageLevel;
+
+const run = (stage: number, assisted: string[] = [], solo: string[] = []) =>
+  stageProgress({
+    stage, categories, actions,
+    actionChecks: Object.fromEntries(assisted.map((k) => [k, true])),
+    actionSoloChecks: Object.fromEntries(solo.map((k) => [k, true])),
+    levelOfStage, levelOfAction,
+  });
+
+describe('stageProgress', () => {
+  it('段階の固有カテゴリをまたいで足す', () => {
+    const s = run(1);
+    // c1 の実務2 + c1b の実務1
+    expect(s.practiceTotal).toBe(3);
+    expect(s.knowledgeTotal).toBe(2);
+  });
+
+  it('引き継ぎカテゴリを二重に数えない', () => {
+    // c2 は c1・c1b を includes するが、それらは STEP1 の所属
+    const s = run(2);
+    expect(s.practiceTotal).toBe(2);
+    expect(s.knowledgeTotal).toBe(1);
+  });
+
+  it('実務は段階の水準で、知識は常に 1人称で数える', () => {
+    // STEP1 の実務は assisted で数える。知識を assisted に書いても数えない
+    expect(run(1, ['p1', 'k1']).practiceDone).toBe(1);
+    expect(run(1, ['p1', 'k1']).knowledgeDone).toBe(0);
+    expect(run(1, [], ['k1']).knowledgeDone).toBe(1);
+  });
+
+  it('実務は7割、知識は全部で達成になる', () => {
+    // 実務3件 → 7割は ceil(2.1) = 3件。端数で 100% になるのは想定どおり
+    expect(run(1, ['p1', 'p2']).practiceMet).toBe(false);
+    expect(run(1, ['p1', 'p2', 'p3']).practiceMet).toBe(true);
+    expect(run(1, [], ['k1']).knowledgeMet).toBe(false);
+    expect(run(1, [], ['k1', 'k2']).knowledgeMet).toBe(true);
+  });
+
+  it('残りをカテゴリ別に返す', () => {
+    const s = run(1, ['p1']);
+    expect(s.practiceWhere).toEqual([{ categoryId: 'c1', count: 1 }, { categoryId: 'c1b', count: 1 }]);
+    expect(s.knowledgeWhere).toEqual([{ categoryId: 'c1', count: 1 }, { categoryId: 'c1b', count: 1 }]);
+  });
+
+  it('項目が無い段階は hasContent が false', () => {
+    expect(run(9).hasContent).toBe(false);
+  });
+});
+
+describe('readyForNext', () => {
+  const done1 = run(1, ['p1', 'p2', 'p3'], ['k1', 'k2']);
+
+  it('現段階だけ満たしても、次の段階の知識が残っていれば false', () => {
+    expect(readyForNext(done1, run(2))).toBe(false);
+  });
+
+  it('次の段階の知識まで満たすと true', () => {
+    expect(readyForNext(done1, run(2, [], ['k3']))).toBe(true);
+  });
+
+  it('次の段階の項目がまだ無いとき、満たしたことにしない', () => {
+    // 0件を100%と数えると「準備中の段階をクリアした」ことになる
+    expect(readyForNext(done1, null)).toBe(false);
+  });
+
+  it('現段階の知識が残っていれば false', () => {
+    expect(readyForNext(run(1, ['p1', 'p2', 'p3'], ['k1']), run(2, [], ['k3']))).toBe(false);
+  });
+});
+
+describe('currentStageOf', () => {
+  it('何もしていなければ最下段', () => {
+    expect(currentStageOf([1, 2], (s) => run(s))).toBe(1);
+  });
+
+  it('STEP1 の条件を満たすと STEP2 に移る', () => {
+    const p = (s: number) => run(s, ['p1', 'p2', 'p3'], ['k1', 'k2', 'k3']);
+    expect(currentStageOf([1, 2], p)).toBe(2);
+  });
+
+  it('全部満たしていれば最上段に留まる (行き先が無い)', () => {
+    const p = (s: number) => run(s, ['p1', 'p2', 'p3', 'p4', 'p5'], ['k1', 'k2', 'k3']);
+    expect(currentStageOf([1, 2], p)).toBe(2);
+  });
+});
