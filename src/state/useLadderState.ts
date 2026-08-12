@@ -30,6 +30,14 @@ const ACTION_CHECKS_KEY = 'career-ladder-atom-checks:v1';
  * これで既存の保存データは意味が変わらずに引き継がれ、移行処理が要らない。
  */
 const ACTION_SOLO_CHECKS_KEY = 'career-ladder-action-solo-checks:v1';
+/**
+ * 推奨資格のチェック (2026-08-07)。
+ *
+ * 資格は **参考であって判定要件ではない** (AC-12.27 の周辺)。
+ * `stageProgress` にも `stat()` にも入れない — 入れた瞬間「資格を取らないと上がれない」
+ * という制度になってしまう。持っているものを記録できるだけ。
+ */
+const CERT_CHECKS_KEY = 'career-ladder-cert-checks:v1';
 const LANG_KEY = 'career-ladder-lang:v1';
 
 /** 既定は日本語 (共有時の事故防止 — 確定 #21)。韓国語は作業用 */
@@ -52,7 +60,7 @@ const EXPORT_FORMAT = 'career-ladder-check-states';
  * v2 のファイルも読める (無い区画は触らない)。**payload に無い区画を空で上書きしない** —
  * 古いファイルを読んだだけでロードマップのチェックが消えるのは事故になる。
  */
-const EXPORT_VERSION = 3;
+const EXPORT_VERSION = 4;
 const EXPORT_MIN_VERSION = 2;
 
 export const DEFAULT_TARGET = 'infra-server-sp-4';
@@ -67,6 +75,8 @@ interface ExportPayload {
   actionChecks?: ActionCheckMap;
   /** 業務ロードマップ: 1人称水準 (v3〜) */
   actionSoloChecks?: ActionCheckMap;
+  /** 取得済みの推奨資格 (v4〜)。参考情報で、判定には使わない */
+  certChecks?: ActionCheckMap;
 }
 
 function loadBooleanMap(key: string): Record<string, boolean> {
@@ -126,6 +136,9 @@ export function useLadderState() {
   const [actionSoloChecks, setActionSoloChecks] = useState<ActionCheckMap>(() =>
     loadBooleanMap(ACTION_SOLO_CHECKS_KEY),
   );
+  const [certChecks, setCertChecks] = useState<ActionCheckMap>(() =>
+    loadBooleanMap(CERT_CHECKS_KEY),
+  );
   const [lang, setLangRaw] = useState<Lang>(loadLang);
 
   const setLang = useCallback((next: Lang) => {
@@ -169,6 +182,14 @@ export function useLadderState() {
       /* 同上 */
     }
   }, [actionSoloChecks]);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(CERT_CHECKS_KEY, JSON.stringify(certChecks));
+    } catch {
+      /* 同上 */
+    }
+  }, [certChecks]);
 
   const setTargetRoleId = useCallback((roleId: string) => {
     setTargetRoleIdRaw(roleId);
@@ -237,6 +258,16 @@ export function useLadderState() {
     });
   }, []);
 
+  /** 取得済みの資格を記録する。**判定には一切使わない** */
+  const toggleCert = useCallback((certId: string) => {
+    setCertChecks((prev) => {
+      const next = { ...prev };
+      if (next[certId]) delete next[certId];
+      else next[certId] = true;
+      return next;
+    });
+  }, []);
+
   /** 上長の「面談で確認した」トグル (能力単位) */
   const toggleManagerConfirm = useCallback((abilityId: string) => {
     setManagerConfirms((prev) => {
@@ -257,6 +288,7 @@ export function useLadderState() {
       managerConfirms,
       actionChecks,
       actionSoloChecks,
+      certChecks,
     };
     const blob = new Blob([JSON.stringify(payload, null, 2)], {
       type: 'application/json',
@@ -269,7 +301,7 @@ export function useLadderState() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-  }, [evidenceChecks, managerConfirms, actionChecks, actionSoloChecks]);
+  }, [evidenceChecks, managerConfirms, actionChecks, actionSoloChecks, certChecks]);
 
   /**
    * JSONインポート。成否メッセージ (日本語) を返す。
@@ -320,6 +352,11 @@ export function useLadderState() {
         setActionSoloChecks(m);
         parts.push(`1人称 ${Object.keys(m).length}件`);
       }
+      if (payload.certChecks) {
+        const m = sanitizeBooleanMap(payload.certChecks);
+        setCertChecks(m);
+        parts.push(`資格 ${Object.keys(m).length}件`);
+      }
       if (parts.length === 0) {
         return { ok: false, message: 'ファイルにチェック状態が入っていませんでした。' };
       }
@@ -352,6 +389,7 @@ export function useLadderState() {
     setManagerConfirms({});
     setActionChecks({});
     setActionSoloChecks({});
+    setCertChecks({});
   }, []);
 
   return useMemo(
@@ -365,6 +403,8 @@ export function useLadderState() {
       actionChecks,
       actionSoloChecks,
       toggleAction,
+      certChecks,
+      toggleCert,
       selectedAbilityId,
       setSelectedAbilityId,
       lang,
@@ -383,6 +423,8 @@ export function useLadderState() {
       actionChecks,
       actionSoloChecks,
       toggleAction,
+      certChecks,
+      toggleCert,
       selectedAbilityId,
       setSelectedAbilityId,
       lang,

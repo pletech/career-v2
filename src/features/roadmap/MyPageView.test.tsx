@@ -8,7 +8,7 @@
  * の3点。
  */
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, within } from '@testing-library/react';
 
 import MyPageView from './MyPageView';
 import type { Action, Category, Cert, Role } from '../../domain/types';
@@ -40,10 +40,15 @@ const actions: Action[] = [
   { actionId: 'k3', categoryId: 'c2', statement: '手順を説明できる', sortOrder: 3, kind: 'knowledge' },
 ];
 
-const certs: Cert[] = [];
+const certs: Cert[] = [
+  { certId: 'ce1', stage: 1, nameJa: 'ITパスポート試験', note: 'IT全般の基礎', sortOrder: 1 },
+  { certId: 'ce2', stage: 1, nameJa: '基本情報技術者試験', sortOrder: 2 },
+  { certId: 'ce9', stage: 2, nameJa: 'LPIC-1', sortOrder: 1 },
+];
 
-const setup = (assisted: string[] = [], solo: string[] = []) => {
+const setup = (assisted: string[] = [], solo: string[] = [], certsChecked: string[] = []) => {
   const onJump = vi.fn();
+  const onToggleCert = vi.fn();
   render(
     <MyPageView
       routeLabel="インフラ / サーバー"
@@ -54,10 +59,12 @@ const setup = (assisted: string[] = [], solo: string[] = []) => {
       actionChecks={Object.fromEntries(assisted.map((k) => [k, true]))}
       actionSoloChecks={Object.fromEntries(solo.map((k) => [k, true]))}
       onJump={onJump}
+      certChecks={Object.fromEntries(certsChecked.map((k) => [k, true]))}
+      onToggleCert={onToggleCert}
       lang="ja"
     />,
   );
-  return { onJump };
+  return { onJump, onToggleCert };
 };
 
 /** 「この段階の目標」「…へ挑戦できる条件」などのカード */
@@ -151,5 +158,38 @@ describe('これまでの積み上げ', () => {
     expect(el.textContent).toContain('STEP 1');
     expect(el.textContent).toContain('STEP 2');
     expect(el.textContent).toContain('知識 2/2');
+  });
+});
+
+/**
+ * 資格は**参考であって判定要件ではない**。
+ * チェックできるが、達成率にも「次へ挑戦できる条件」にも影響してはいけない。
+ */
+describe('推奨資格', () => {
+  it('その段階の資格だけを出す', () => {
+    setup();
+    const el = block(/この段階の推奨資格/);
+    expect(el.textContent).toContain('ITパスポート試験');
+    expect(el.textContent).toContain('基本情報技術者試験');
+    expect(el.textContent).not.toContain('LPIC-1');   // STEP2 の資格
+  });
+
+  it('チェックできる', () => {
+    const { onToggleCert } = setup();
+    fireEvent.click(within(block(/この段階の推奨資格/)).getByRole('checkbox', { name: /ITパスポート/ }));
+    expect(onToggleCert).toHaveBeenCalledWith('ce1');
+  });
+
+  it('判定要件ではないと明記する', () => {
+    setup();
+    expect(block(/この段階の推奨資格/).textContent)
+      .toContain('チェックしても達成率や次の段階の条件には影響しません');
+  });
+
+  it('資格をチェックしても達成率は動かない', () => {
+    setup([], [], ['ce1', 'ce2']);
+    // STEP1 の実務は 0/3 のまま
+    expect(block(/この段階の目標/).textContent).toContain('0/3');
+    expect(block(/へ挑戦できる条件/).textContent).toContain('0/2');   // 知識 0/2
   });
 });

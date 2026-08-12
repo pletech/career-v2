@@ -33,12 +33,15 @@ interface MyPageViewProps {
   actionSoloChecks: ActionCheckMap;
   /** 業務ロードマップの該当カテゴリへ送り出す */
   onJump: (stage: number, categoryId: string) => void;
+  /** 取得済みの資格。**判定には使わない** — 記録できるだけ */
+  certChecks: ActionCheckMap;
+  onToggleCert: (certId: string) => void;
   lang: Lang;
 }
 
 const MyPageView: React.FC<MyPageViewProps> = ({
   routeLabel, roles, categories, actions, certs,
-  actionChecks, actionSoloChecks, onJump, lang,
+  actionChecks, actionSoloChecks, onJump, certChecks, onToggleCert, lang,
 }) => {
   const ko = lang === 'ko';
   const stages = [...new Set(categories.map((c) => c.stage))].sort((a, b) => a - b);
@@ -132,8 +135,15 @@ const MyPageView: React.FC<MyPageViewProps> = ({
 
   return (
     <div className="flex-1 overflow-y-auto bg-gray-50 px-3 py-3 md:px-5">
-      <div className="mx-auto flex w-full max-w-3xl flex-col gap-3">
+      {/*
+        広い画面では2列。1列のままだと PC で縦に伸びるだけで、
+        「一目で分かる」という目的から遠ざかる。
+        左 = 現在地と目標 (読む順)、右 = 次の行動と積み上げ。
+      */}
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-3 md:max-w-5xl">
         <p className="text-[11px] text-gray-500">{routeLabel}</p>
+        <div className="grid grid-cols-1 items-start gap-3 md:grid-cols-2">
+        <div className="flex flex-col gap-3">
 
         {/* 今どこにいるか — 段階の並びの中で現在地を示す */}
         <div className="flex flex-col gap-1.5 rounded-xl border border-gray-200 bg-white p-3">
@@ -244,6 +254,9 @@ const MyPageView: React.FC<MyPageViewProps> = ({
           )}
         </div>
 
+        </div>
+        <div className="flex flex-col gap-3">
+
         {/* 次にやること — 「勉強で埋まる分」を先に出す */}
         {!ready && (
           <div className="flex flex-col gap-2 rounded-xl border border-indigo-200 bg-indigo-50/50 p-3">
@@ -299,20 +312,54 @@ const MyPageView: React.FC<MyPageViewProps> = ({
           </div>
         </div>
 
-        {/* 資格は参考。判定要件ではないので目立たせない */}
+        {/*
+          資格は**参考であって判定要件ではない**。持っているものを記録できるだけで、
+          チェックしても達成率にも「次へ挑戦できる条件」にも影響しない。
+          そう書いておかないと「資格を取らないと上がれない」制度に読める。
+        */}
         {certs.filter((c) => c.stage === current).length > 0 && (
-          <div className="flex flex-col gap-1 rounded-xl border border-gray-200 bg-white p-3">
+          <div className="flex flex-col gap-1.5 rounded-xl border border-gray-200 bg-white p-3">
             <p className="text-[11px] font-bold text-gray-500">
-              🎓 {ko ? '이 단계의 추천 자격증 (참고)' : 'この段階の推奨資格（参考）'}
+              🎓 {ko ? '이 단계의 추천 자격증' : 'この段階の推奨資格'}
             </p>
-            <p className="text-[11px] leading-relaxed text-gray-600">
+            <p className="text-[10px] leading-relaxed text-gray-400">
+              {ko
+                ? '참고 정보입니다. 체크해도 달성률이나 다음 단계 조건에는 영향을 주지 않습니다.'
+                : '参考情報です。チェックしても達成率や次の段階の条件には影響しません。'}
+            </p>
+            <div className="flex flex-col gap-0.5">
               {certs
                 .filter((c) => c.stage === current)
-                .map((c) => loc(lang, c.nameJa, c.nameKo))
-                .join(' ／ ')}
-            </p>
+                .sort((a, b) => a.sortOrder - b.sortOrder)
+                .map((c) => (
+                  <label
+                    key={c.certId}
+                    className="flex cursor-pointer items-start gap-2 rounded px-1 py-1 hover:bg-gray-50"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={certChecks[c.certId] === true}
+                      onChange={() => onToggleCert(c.certId)}
+                      className="mt-0.5 h-3.5 w-3.5 shrink-0 accent-indigo-600"
+                    />
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[11.5px] leading-snug text-gray-700">
+                        {loc(lang, c.nameJa, c.nameKo)}
+                      </span>
+                      {(c.note || c.noteKo) && (
+                        <span className="block text-[10px] leading-snug text-gray-400">
+                          {loc(lang, c.note ?? '', c.noteKo)}
+                        </span>
+                      )}
+                    </span>
+                  </label>
+                ))}
+            </div>
           </div>
         )}
+
+        </div>
+        </div>
 
         <p className="px-1 pb-2 text-[10px] leading-relaxed text-gray-400">
           {ko

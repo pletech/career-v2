@@ -341,10 +341,15 @@ const CraftView: React.FC<CraftViewProps> = ({
     if (!focusCat) return;
     // 段階を開いた直後の描画を待ってから位置を取る
     const id = window.requestAnimationFrame(() => {
-      document.getElementById(`cat-${focusCat}`)?.scrollIntoView({ block: 'start' });
+      // **動いて見える**ことが手掛かりになるので smooth。
+      // 静かに位置が変わるだけだと、どこへ来たのか分からない
+      document.getElementById(`cat-${focusCat}`)?.scrollIntoView({
+        block: 'start', behavior: 'smooth',
+      });
     });
-    // 着地点が分からないと「押したのに何も起きていない」に見えるので、少しの間だけ縁を光らせる
-    const clear = window.setTimeout(() => setFocusCat(null), 2500);
+    // 着地点が分からないと「押したのに何も起きていない」に見えるので明滅させる
+    // (アニメーションは 1.6s × 2回。余韻を見てから消す)
+    const clear = window.setTimeout(() => setFocusCat(null), 3400);
     return () => {
       window.cancelAnimationFrame(id);
       window.clearTimeout(clear);
@@ -686,7 +691,7 @@ const CraftView: React.FC<CraftViewProps> = ({
         id={`cat-${cat.categoryId}`}
         className={`flex flex-col overflow-hidden rounded-xl border-2 bg-white ${
           focusCat === cat.categoryId
-            ? 'border-cyan-500 ring-2 ring-cyan-200'
+            ? 'jump-flash border-cyan-500'
             : st.cleared
               ? 'border-emerald-400'
               : 'border-gray-200'
