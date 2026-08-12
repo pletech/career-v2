@@ -95,30 +95,69 @@ export function stageProgress(input: StageProgressInput): StageProgress {
 }
 
 /**
- * 次の段階へ挑戦してよいと判断できる地点 (2026-08-07 사용자 정의)。
+ * その段階の目標を満たしたか (2026-08-07 사용자 재정의)。
  *
- *   現段階の実務 70% ＋ 現段階の知識 100% ＋ 次の段階の知識 100%
+ *   この段階の 知識 100% ＋ 実務 70%
+ *
+ * ⚠️ 当初は「目標 = 実務 70% のみ」としていたが、**知識も目標に含める**形に変えた。
+ * 「今やるべきことは1つ」と言えるほうが行動に移しやすい、という判断
+ * (この関門を越えると「次の段階に挑戦できる」)。
+ */
+export function stageGoalMet(cur: StageProgress): boolean {
+  return cur.knowledgeMet && cur.practiceMet;
+}
+
+/**
+ * 次の段階の**案件**に挑戦してよいと判断できる地点。
+ *
+ *   この段階の目標 ＋ 次の段階の知識 100%
  *
  * 次の段階の項目がまだ無いとき (`next` が null) は、その条件を**満たしたことにしない**。
  * 0件を 100% と数えると「準備中の段階を全部クリアした」ことになってしまう。
  */
 export function readyForNext(cur: StageProgress, next: StageProgress | null): boolean {
-  return cur.practiceMet && cur.knowledgeMet && next !== null && next.knowledgeMet;
+  return stageGoalMet(cur) && next !== null && next.knowledgeMet;
 }
 
 /**
- * 「今どこにいるか」。ログインが無いので本人に選ばせず、チェックから推定する。
+ * 「今なにを目標にすればよいか」の3段階 (2026-08-07 사용자 지시)。
  *
- * まだ次へ行ける状態になっていない**いちばん下の段階**。全部満たしていれば最上段。
+ * 一度に出す目標を**1つに絞る**ための区分。同時に3つ並べると
+ * どれから手を付けるのか分からない。
+ *
+ *   goal        … この段階の 知識100% + 実務70% を目指す
+ *   next-study  … それを満たした。次の段階の実務は案件に入らないと埋まらないので、
+ *                 まず**次の段階の知識**を目指す
+ *   ready       … 次の段階の知識まで満たした。**次の段階の案件**に挑戦できる
+ *   next-absent … 目標は満たしたが、次の段階の項目がまだ無い (STEP4 は準備中)
+ */
+export type NextGoal = 'goal' | 'next-study' | 'ready' | 'next-absent';
+
+export function nextGoalOf(cur: StageProgress, next: StageProgress | null): NextGoal {
+  if (!stageGoalMet(cur)) return 'goal';
+  if (next === null) return 'next-absent';
+  return next.knowledgeMet ? 'ready' : 'next-study';
+}
+
+/**
+ * 「今いる段階」= **その段階の案件に入ったことがある、いちばん上の段階**。
+ * 実務のチェックが1件でも入っていることを「入った」の証拠とする。
+ * 1件も無ければ最下段 (入口)。ログインが無いので本人に選ばせず、チェックから推定する。
+ *
+ * ⚠️ 当初は「まだ次へ行けていない、いちばん下の段階」としていた。
+ * これだと**目標を満たした瞬間に次の段階へ繰り上がってしまい**、
+ * 「次の段階に挑戦できます」「次の段階の案件に挑戦できます」の2状態が
+ * **一度も表示されない**(`nextGoalOf` が常に 'goal' を返す)。
+ *
+ * 実務は案件に入らないと埋まらない。だから「実務のチェックがある = その案件を経験した」
+ * であり、目標を満たしても**案件が変わるまでは今の段階に留まる**のが実態に合う。
  */
 export function currentStageOf(
   stages: number[],
   progressOf: (stage: number) => StageProgress,
 ): number | null {
   const asc = [...stages].sort((a, b) => a - b);
-  for (const s of asc) {
-    const next = asc.find((x) => x > s);
-    if (!readyForNext(progressOf(s), next === undefined ? null : progressOf(next))) return s;
-  }
-  return asc.length > 0 ? asc[asc.length - 1] : null;
+  if (asc.length === 0) return null;
+  const placed = asc.filter((s) => progressOf(s).practiceDone > 0);
+  return placed.length > 0 ? placed[placed.length - 1] : asc[0];
 }

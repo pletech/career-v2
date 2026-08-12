@@ -11,6 +11,7 @@ import type {
   TrackId,
 } from '../../domain/types';
 import { TRACK_LABELS } from '../../types/career';
+import { currentStageOf, stageProgress } from '../../domain/stageProgress';
 
 /**
  * 業務ロードマップ v2.7d — 段階別カテゴリ + 包含モデル (アサリさん面談 2026-07-14)
@@ -292,9 +293,24 @@ const CraftView: React.FC<CraftViewProps> = ({
   /** 役割としては存在する段階の上限。roles.csv は STEP6 まで持つので「どこまで伸びるか」が出る */
   const ladderMax = roles.length > 0 ? Math.max(...roles.map((r) => r.stageOrder)) : coveredMax;
 
-  const [openStage, setOpenStage] = useState<number | null>(
-    () => (categories.length > 0 ? Math.min(...categories.map((c) => c.stage)) : 1),
-  );
+  /**
+   * 既定で開く段階は **「今いる段階」** (2026-08-07 사용자 지시)。
+   *
+   * 最下段を固定で開いていたので、STEP1 をクリアして STEP2 を進めている人でも
+   * 毎回 STEP1 が開き、自分の段階まで手で開き直すことになっていた。
+   *
+   * 判定はマイページと**同じ関数**を使う (`currentStageOf`) — 別に導くと
+   * 「マイページは STEP2 と言うのにロードマップは STEP1 が開く」がすぐ起きる。
+   */
+  const [openStage, setOpenStage] = useState<number | null>(() => {
+    const stages = [...new Set(categories.map((c) => c.stage))];
+    if (stages.length === 0) return 1;
+    return currentStageOf(stages, (stage) =>
+      stageProgress({
+        stage, categories, actions, actionChecks, actionSoloChecks, levelOfStage, levelOfAction,
+      }),
+    );
+  });
 
   const catsOfStage = (stage: number): Category[] =>
     categories.filter((c) => c.stage === stage).sort((a, b) => a.sortOrder - b.sortOrder);
@@ -1071,8 +1087,8 @@ const CraftView: React.FC<CraftViewProps> = ({
                         {/* 会社の支援制度 (外部レビュー FB: 「会社は何をしてくれるのか」に答える) */}
                         <span className="text-[9.5px] leading-relaxed text-indigo-500">
                           {ko
-                            ? '참고서·온라인 강좌·수험료 보조와 자격 수당 제도가 있습니다. 사내 스터디(아카데미)와 담당 상사(카운셀러)에게 상담할 수 있습니다.'
-                            : '参考書・オンライン講座・受験費用の補助と資格手当の制度があります。社内勉強会（アカデミー）や担当上長（カウンセラー）に相談できます。'}
+                            ? '참고서·온라인 강좌·수험료 보조와 자격 수당 제도가 있습니다. 사내 스터디(아카데미)나 상사에게 상담할 수 있습니다.'
+                            : '参考書・オンライン講座・受験費用の補助と資格手当の制度があります。社内勉強会（アカデミー）や上長に相談できます。'}
                         </span>
                         <div className="flex flex-wrap gap-1.5">
                           {stageCerts.map((cert) => (

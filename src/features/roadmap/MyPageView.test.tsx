@@ -19,7 +19,8 @@ const roles: Role[] = [
   { roleId: 'r1', track: 'infrastructure', category: 'サーバー', stageOrder: 1,
     pathType: 'common', titleJa: '運用監視補助', shortLabel: '運用監視補助', summary: '', status: 'published' },
   { roleId: 'r2', track: 'infrastructure', category: 'サーバー', stageOrder: 2,
-    pathType: 'specialist', titleJa: '運用監視', shortLabel: '運用監視', summary: '', status: 'published' },
+    pathType: 'specialist', titleJa: '運用監視', shortLabel: '運用監視',
+    summary: '手順に沿って一次対応とエスカレーションを行う役割', status: 'published' },
 ];
 
 const categories: Category[] = [
@@ -67,9 +68,25 @@ const setup = (assisted: string[] = [], solo: string[] = [], certsChecked: strin
   return { onJump, onToggleCert };
 };
 
-/** 「この段階の目標」「…へ挑戦できる条件」などのカード */
+/**
+ * 最上部の帯 (「今なにを目標にすればよいか」)。
+ * 帯と下の詳細で同じ文言が出るので、**必ずどちらかに絞ってから**探す。
+ */
+const banner = (): HTMLElement => {
+  const el = document.querySelector('div.border-2');
+  if (!el) throw new Error('帯が無い');
+  return el as HTMLElement;
+};
+
+/** 帯の中の3行。畳んでいる行も含む */
+const bannerSteps = () =>
+  Array.from(banner().children).map((c) => (c as HTMLElement).textContent ?? '');
+
+/** 下の詳細側のカード。帯の外から探す */
 const block = (title: RegExp): HTMLElement => {
-  const p = Array.from(document.querySelectorAll('p')).find((el) => title.test(el.textContent ?? ''));
+  const p = Array.from(document.querySelectorAll('p'))
+    .filter((el) => !banner().contains(el))
+    .find((el) => title.test(el.textContent ?? ''));
   if (!p) throw new Error(`「${title}」のブロックが無い`);
   return p.parentElement as HTMLElement;
 };
@@ -78,56 +95,83 @@ describe('今どこにいるか', () => {
   it('何もしていなければ最下段が「今ここ」', () => {
     setup();
     expect(block(/今の段階/).textContent).toContain('今ここ');
-    expect(block(/この段階の目標/).textContent).toContain('STEP1');
+    expect(bannerSteps()[0]).toContain('STEP1');
   });
 
-  it('条件を満たすと次の段階へ移る', () => {
-    // STEP1 の実務3件 + 知識2件 + STEP2 の知識1件
+  /**
+   * 「今いる段階」は**実務のチェックがある いちばん上の段階**。
+   * 目標を満たしただけでは繰り上がらない — 実務は案件に入らないと埋まらないので、
+   * 案件が変わるまでは今の段階に留まるのが実態に合う。
+   */
+  it('目標を満たしても、次の段階の実務が無いうちは繰り上がらない', () => {
     setup(['p1', 'p2', 'p3'], ['k1', 'k2', 'k3']);
-    expect(block(/この段階の目標/).textContent).toContain('STEP2');
+    expect(bannerSteps()[0]).toContain('STEP1');
+  });
+
+  it('次の段階の実務にチェックが入ると、そこへ移る', () => {
+    setup(['p1'], ['p4']);   // STEP2 の実務を1件
+    expect(bannerSteps()[0]).toContain('STEP2');
   });
 });
 
 describe('目標と条件', () => {
-  it('目標は実務70%だけを出す', () => {
+  it('目標は知識100% と 実務70% の両方', () => {
     setup();
-    const el = block(/この段階の目標/);
-    expect(el.textContent).toContain('実務経験 70%');
-    // 知識100% は「次へ挑戦できる条件」側。目標に混ぜない
-    expect(el.textContent).not.toContain('知識 100%');
+    const s1 = bannerSteps()[0];
+    expect(s1).toContain('知識 100%');
+    expect(s1).toContain('実務 70%');
   });
 
-  it('挑戦できる条件は3つ出す', () => {
-    setup();
-    const el = block(/へ挑戦できる条件/);
-    expect(el.textContent).toContain('この段階の実務 70%');
-    expect(el.textContent).toContain('この段階の知識 100%');
-    expect(el.textContent).toContain('STEP2 の知識 100%');
-  });
-
-  it('段階をまたいで足す — カードには出てこない数', () => {
+  it('段階をまたいで足す — ロードマップのカードには出てこない数', () => {
     setup();
     // STEP1 の実務は c1 の2件 + c1b の1件
-    expect(block(/この段階の目標/).textContent).toContain('0/3');
+    expect(bannerSteps()[0]).toContain('0/3');
   });
 
-  it('全部そろうと、面談で相談するよう促す', () => {
-    setup(['p1', 'p2', 'p3'], ['k1', 'k2', 'k3']);
-    // STEP2 が現在地になり、その先 (STEP3) は無いので「準備中」
-    expect(block(/へ挑戦できる条件/).textContent).toMatch(/準備中/);
+  it('次の段階の項目が無ければ「準備中」と言う', () => {
+    // STEP2 の実務を入れて現在地を STEP2 にする。その先 (STEP3) は無い
+    setup(['p1', 'p2', 'p3'], ['k1', 'k2', 'k3', 'p4', 'p5']);
+    expect(bannerSteps()[1]).toMatch(/準備中/);
+  });
+
+  /**
+   * 帯と詳細で同じものを2度出さない (2026-08-07 지적)。
+   * 帯 = 進捗 (数字とバー) / 詳細「次にやること」= 残りがどこにあるか (チップ)。
+   */
+  it('残りのチップは「次にやること」だけに出す', () => {
+    setup();
+    expect(within(banner()).queryAllByRole('button')).toHaveLength(0);
+    expect(within(block(/次にやること/)).getAllByRole('button').length).toBeGreaterThan(0);
+  });
+
+  // 「勉強で埋まる / 案件が要る」は 知識・実務 の見出しが既に言っている。
+  // 文章で足すと帯と同じことの繰り返しになるので置かない
+  it('詳細に説明文を並べない — 残りの場所だけを出す', () => {
+    setup();
+    const el = block(/次にやること/);
+    expect(el.textContent).not.toContain('自己学習や資格取得で埋められます');
+    expect(el.textContent).not.toContain('受験費用の補助');
+    expect(el.textContent).toContain('この段階の残りの知識');
   });
 });
 
 describe('残りの場所', () => {
-  it('実務と知識を分けて出す', () => {
+  it('知識が残っているうちは知識の残りを出す', () => {
     setup(['p1']);
-    expect(block(/この段階の目標/).textContent).toContain('残りの実務');
-    expect(block(/次にやること/).textContent).toContain('残りの知識');
+    const el = block(/次にやること/);
+    expect(el.textContent).toContain('この段階の残りの知識');
+    // 知識が残っている間は実務の残りを並べない (先にやることが2つになる)
+    expect(el.textContent).not.toContain('この段階の残りの実務');
+  });
+
+  it('知識を埋め切ったら実務の残りを出す', () => {
+    setup([], ['k1', 'k2']);
+    expect(block(/次にやること/).textContent).toContain('この段階の残りの実務');
   });
 
   it('押すと業務ロードマップの該当カテゴリへ送り出す', () => {
     const { onJump } = setup();
-    const chip = within(block(/この段階の目標/)).getByRole('button', { name: /手順書・定型作業 2/ });
+    const chip = within(block(/次にやること/)).getByRole('button', { name: /手順書・定型作業 1/ });
     fireEvent.click(chip);
     expect(onJump).toHaveBeenCalledWith(1, 'c1');
   });
@@ -138,16 +182,6 @@ describe('残りの場所', () => {
       within(block(/次にやること/)).getByRole('button', { name: /初動対応の実施 1/ }),
     );
     expect(onJump).toHaveBeenCalledWith(2, 'c2');
-  });
-
-  it('知識が残っている間は「勉強で埋められる」と言う', () => {
-    setup();
-    expect(block(/次にやること/).textContent).toContain('自己学習や資格取得で埋められます');
-  });
-
-  it('知識を埋め切ったら「案件で経験しないと埋まらない」と言う', () => {
-    setup([], ['k1', 'k2', 'k3']);
-    expect(block(/次にやること/).textContent).toContain('案件で経験しないと埋まりません');
   });
 });
 
@@ -188,8 +222,66 @@ describe('推奨資格', () => {
 
   it('資格をチェックしても達成率は動かない', () => {
     setup([], [], ['ce1', 'ce2']);
-    // STEP1 の実務は 0/3 のまま
-    expect(block(/この段階の目標/).textContent).toContain('0/3');
-    expect(block(/へ挑戦できる条件/).textContent).toContain('0/2');   // 知識 0/2
+    const s1 = bannerSteps()[0];
+    expect(s1).toContain('0/3');   // 実務
+    expect(s1).toContain('0/2');   // 知識
+  });
+});
+
+/**
+ * 最上部の帯 — 「今なにを目標にすればよいか」を **1つだけ** 出す (2026-08-07)。
+ *
+ * 3つの条件を同時に並べても、どれから手を付けるのか分からない。
+ * 関門を3つに区切り、今いる段だけを開く。
+ */
+describe('目標の帯 (3段階)', () => {
+  it('① 何もしていなければ「この段階の目標」を開き、知識と実務の両方を出す', () => {
+    setup();
+    const [s1, s2, s3] = bannerSteps();
+    expect(s1).toContain('この段階の目標');
+    expect(s1).toContain('知識 100%');
+    expect(s1).toContain('実務 70%');
+    // 先の段は畳んで見出しだけ
+    expect(s2).toContain('次の段階に挑戦できます');
+    expect(s2).not.toContain('次の目標');
+    expect(s3).not.toContain('次にやること');
+  });
+
+  // 帯は状態・基準・進捗まで。残りの場所と「どう埋めるか」は下の詳細が持つ
+  it('① 進捗はバーつきで帯が持ち、残りは下へ送る', () => {
+    setup();
+    const s1 = bannerSteps()[0];
+    expect(s1).toContain('次にやること');   // 下への誘導
+    expect(within(banner()).queryAllByRole('button')).toHaveLength(0);
+  });
+
+  it('② 目標を満たすと、次の目標が「次の段階の知識」に切り替わる', () => {
+    setup(['p1', 'p2', 'p3'], ['k1', 'k2']);
+    const [s1, s2, s3] = bannerSteps();
+    expect(s2).toContain('次の目標');
+    expect(s2).toContain('STEP2 の知識 100%');
+    // 次の段階がどんな役割かを一行で出す (roles.csv の summary)
+    expect(s2).toContain('一次対応');
+    // 実務は案件に入らないと埋まらないことを言う
+    expect(s1).not.toContain('知識 100%');   // ①は畳まれる
+    expect(s3).not.toContain('次にやること');
+  });
+
+  it('③ 次の段階の知識まで満たすと「案件に挑戦できる」と、誰と何をするかを出す', () => {
+    setup(['p1', 'p2', 'p3'], ['k1', 'k2', 'k3']);
+    const s3 = bannerSteps()[2];
+    expect(s3).toContain('STEP2 の案件に挑戦できます');
+    expect(s3).toContain('上長に面談を申し込む');
+    expect(s3).toContain('次に何を経験するか');
+    expect(s3).toContain('判定ではありません');
+  });
+
+  it('次の段階の項目が無ければ、②で「準備中」と言い ③へ進めない', () => {
+    // STEP2 が現在地になり、その先 (STEP3) は無い。
+    // STEP2 の実務は 1人称 で数えるので solo 側に置く
+    setup(['p1', 'p2', 'p3'], ['k1', 'k2', 'k3', 'p4', 'p5']);
+    const [, s2, s3] = bannerSteps();
+    expect(s2).toMatch(/準備中/);
+    expect(s3).not.toContain('次にやること');
   });
 });

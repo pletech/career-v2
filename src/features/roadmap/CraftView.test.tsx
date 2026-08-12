@@ -104,13 +104,18 @@ const setup = (
   return { onToggleAction, onExport, onImport };
 };
 
-/** その段階のカードを開く (既定で開いているのは最下段だけ) */
+/**
+ * その段階のカードを開く。
+ * **既定で開くのは「今いる段階」**なので、既に開いていることがある (2026-08-07)。
+ * その場合に押すと閉じてしまうため、開いていなければ押す。
+ */
 const openStage = (stage: number) => {
   const header = screen
     .getAllByRole('button')
-    .find((b) => b.textContent?.includes(`STEP ${stage}`) && b.textContent?.includes('チェックリストを開く'));
+    .find((b) => b.textContent?.includes(`STEP ${stage}`)
+      && (b.textContent?.includes('チェックリストを開く') || b.textContent?.includes('閉じる')));
   if (!header) throw new Error(`STEP ${stage} の見出しが見つからない`);
-  fireEvent.click(header);
+  if (header.textContent?.includes('チェックリストを開く')) fireEvent.click(header);
 };
 
 /**
@@ -443,5 +448,33 @@ describe('focusRequest を受けてカードへ寄せる', () => {
     const st1 = screen.getAllByRole('button')
       .find((b) => b.textContent?.includes('STEP 1') && b.textContent?.includes('閉じる'));
     expect(st1).toBeTruthy();
+  });
+});
+
+/**
+ * 既定で開く段階は「今いる段階」= 実務のチェックがある いちばん上の段階 (2026-08-07)。
+ * 最下段を固定で開いていたので、STEP2 を進めている人でも毎回 STEP1 が開いていた。
+ * 判定はマイページと同じ `currentStageOf` を使う。
+ */
+describe('既定で開く段階', () => {
+  const openedStage = () => {
+    const b = screen.getAllByRole('button').find((x) => x.textContent?.includes('閉じる'));
+    return b?.textContent?.match(/STEP (\d)/)?.[1];
+  };
+
+  it('何もチェックしていなければ最下段 (入口)', () => {
+    setup();
+    expect(openedStage()).toBe('1');
+  });
+
+  it('上の段階の実務にチェックがあれば、その段階を開く', () => {
+    setup({ actionSoloChecks: { b1: true } });   // STEP2 の実務
+    expect(openedStage()).toBe('2');
+  });
+
+  it('下の段階の目標を満たしただけでは繰り上がらない', () => {
+    // STEP1 を満たしても、STEP2 の実務が無いうちは STEP1 のまま
+    setup({ actionChecks: { a1: true, a2: true, k2: true }, actionSoloChecks: { k1: true } });
+    expect(openedStage()).toBe('1');
   });
 });

@@ -17,6 +17,7 @@ import { loc } from '../../domain/i18n';
 import {
   CLEAR,
   currentStageOf,
+  nextGoalOf,
   readyForNext,
   stageProgress,
   type StageProgress,
@@ -91,23 +92,6 @@ const MyPageView: React.FC<MyPageViewProps> = ({
     </span>
   );
 
-  const condition = (label: string, done: number, total: number, target: number, met: boolean) => (
-    <div className="flex flex-col gap-1">
-      <div className="flex items-baseline justify-between gap-2">
-        <span className="text-[11.5px] text-gray-700">{label}</span>
-        <span className="shrink-0 text-[11px] font-bold tabular-nums text-gray-800">
-          {done}/{total}
-          <span className={`ml-1.5 ${met ? 'text-emerald-600' : 'text-amber-700'}`}>
-            {met
-              ? ko ? '달성' : '達成'
-              : ko ? `앞으로 ${Math.max(0, Math.ceil(total * target) - done)}` : `あと${Math.max(0, Math.ceil(total * target) - done)}件`}
-          </span>
-        </span>
-      </div>
-      {bar(done, total, target, met)}
-    </div>
-  );
-
   /** 残りがどこにあるか。押すと業務ロードマップの該当カテゴリへ */
   const where = (
     title: string, rows: { categoryId: string; count: number }[], stage: number,
@@ -132,6 +116,158 @@ const MyPageView: React.FC<MyPageViewProps> = ({
     );
 
   const ready = readyForNext(cur, next);
+  const phase = nextGoalOf(cur, next);
+
+  // -----------------------------------------------------------------------
+  // 「今なにを目標にすればよいか」を **1つだけ** 出す帯 (2026-08-07 사용자 지시)。
+  //
+  // 3つの条件を並べても、どれから手を付けるのか分からない。関門を3つに区切り、
+  // **今いる段の目標だけ**を開いて出す。色が変わること自体が「越えた」合図になる。
+  // -----------------------------------------------------------------------
+  const TONE = {
+    goal: { box: 'border-amber-300 bg-amber-50', chip: 'bg-amber-500' },
+    'next-study': { box: 'border-indigo-300 bg-indigo-50', chip: 'bg-indigo-600' },
+    ready: { box: 'border-emerald-400 bg-emerald-50', chip: 'bg-emerald-600' },
+    'next-absent': { box: 'border-gray-300 bg-gray-50', chip: 'bg-gray-500' },
+  }[phase];
+
+  /** 帯の中の1行。現在地は開き、それ以外は畳んで薄く出す (道のりが見えるように) */
+  const step = (
+    n: number, active: boolean, done: boolean, title: string, body?: React.ReactNode,
+  ) => (
+    <div className={`flex gap-2 ${active ? '' : 'opacity-45'}`}>
+      <span
+        className={`mt-px flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white ${
+          done ? 'bg-emerald-600' : active ? TONE.chip : 'bg-gray-400'
+        }`}
+        aria-hidden
+      >
+        {done ? '\u2713' : n}
+      </span>
+      <div className="min-w-0 flex-1">
+        <p className={`text-[12px] leading-snug ${active ? 'font-bold text-gray-800' : 'text-gray-600'}`}>
+          {title}
+        </p>
+        {active && body}
+      </div>
+    </div>
+  );
+
+  /**
+   * 帯の中の目標 1本。**進捗はここが持つ** (数字とバー)。
+   *
+   * 残りがどこにあるか (チップ) は下の「次にやること」が持つ。
+   * 両方でチップを出すと同じものを2度読ませることになる (2026-08-07 지적)。
+   */
+  const goalLine = (label: string, done: number, total: number, target: number, met: boolean) => (
+    <div className="flex flex-col gap-0.5">
+      <div className="flex items-baseline justify-between gap-2 text-[11.5px]">
+        <span className="text-gray-700">{label}</span>
+        <span className="shrink-0 tabular-nums">
+          <span className="font-bold text-gray-800">{done}/{total}</span>
+          <span className={`ml-1.5 font-bold ${met ? 'text-emerald-600' : 'text-amber-700'}`}>
+            {met
+              ? ko ? '달성' : '達成'
+              : ko
+                ? `앞으로 ${Math.max(0, Math.ceil(total * target) - done)}`
+                : `あと${Math.max(0, Math.ceil(total * target) - done)}件`}
+          </span>
+        </span>
+      </div>
+      {bar(done, total, target, met)}
+    </div>
+  );
+
+  /** 詳細への誘導。帯で残りを列挙しない代わりに、どこを見ればよいかだけ言う */
+  const seeBelow = (
+    <p className="mt-1 text-[10px] text-gray-500">
+      {ko ? '↓ 남은 항목은 아래 「다음에 할 것」에 있습니다' : '↓ 残っている項目は下の「次にやること」にあります'}
+    </p>
+  );
+
+  const nextRoleSummary = nextStage === null ? null : roleOf(nextStage)?.summary;
+
+  const banner = (
+    <div className={`flex flex-col gap-2.5 rounded-xl border-2 p-3 ${TONE.box}`}>
+      {step(
+        1,
+        phase === 'goal',
+        phase !== 'goal',
+        ko
+          ? `STEP${current} ${nameOf(current)} \u2014 이 단계의 목표`
+          : `STEP${current} ${nameOf(current)} \u2014 この段階の目標`,
+        <div className="mt-1.5 flex flex-col gap-1">
+          {goalLine(ko ? '지식 100%' : '知識 100%',
+            cur.knowledgeDone, cur.knowledgeTotal, 1, cur.knowledgeMet)}
+          {goalLine(ko ? '실무 70%' : '実務 70%',
+            cur.practiceDone, cur.practiceTotal, CLEAR, cur.practiceMet)}
+          {seeBelow}
+        </div>,
+      )}
+
+      {step(
+        2,
+        phase === 'next-study' || phase === 'next-absent',
+        phase === 'ready',
+        ko ? '다음 단계에 도전할 수 있습니다' : '次の段階に挑戦できます',
+        phase === 'next-absent' ? (
+          <p className="mt-1 text-[11px] leading-relaxed text-gray-600">
+            {plannedNext
+              ? ko
+                ? `STEP${current + 1}（${loc(lang, plannedNext.shortLabel, plannedNext.shortLabelKo)}）의 항목은 준비 중입니다.`
+                : `STEP${current + 1}（${loc(lang, plannedNext.shortLabel, plannedNext.shortLabelKo)}）の項目は準備中です。`
+              : ko ? '다음 단계는 아직 준비 중입니다.' : '次の段階はまだ準備中です。'}
+          </p>
+        ) : next && nextStage !== null ? (
+          <div className="mt-1.5 flex flex-col gap-1">
+            {goalLine(
+              ko ? `다음 목표: STEP${nextStage} 지식 100%` : `次の目標: STEP${nextStage} の知識 100%`,
+              next.knowledgeDone, next.knowledgeTotal, 1, next.knowledgeMet,
+            )}
+            {nextRoleSummary && (
+              <p className="text-[10.5px] leading-relaxed text-gray-600">
+                <span className="font-bold">STEP{nextStage} {nameOf(nextStage)}</span>
+                {' \u2014 '}{nextRoleSummary}
+              </p>
+            )}
+            {seeBelow}
+          </div>
+        ) : undefined,
+      )}
+
+      {step(
+        3,
+        phase === 'ready',
+        false,
+        nextStage === null
+          ? ko ? '다음 단계의 안건에 도전할 수 있습니다' : '次の段階の案件に挑戦できます'
+          : ko ? `STEP${nextStage}의 안건에 도전할 수 있습니다` : `STEP${nextStage} の案件に挑戦できます`,
+        <div className="mt-1.5 flex flex-col gap-1.5">
+          <p className="text-[11.5px] font-bold text-gray-800">
+            {ko ? '다음에 할 것' : '次にやること'}
+          </p>
+          <ol className="flex list-decimal flex-col gap-1 pl-4 text-[11px] leading-relaxed text-gray-700">
+            <li>{ko ? '상사에게 면담을 신청한다' : '上長に面談を申し込む'}</li>
+            <li>
+              {ko
+                ? '면담에서는 이 화면을 함께 보며, 다음 단계에서 무엇을 경험할지 정한다'
+                : '面談ではこの画面を一緒に見て、次の段階で何を経験するかを決める'}
+            </li>
+            <li>
+              {ko
+                ? '「무엇이 부족한가」가 아니라 「다음에 무엇을 경험할까」를 정하는 자리입니다'
+                : '「何が足りないか」ではなく「次に何を経験するか」を決める場です'}
+            </li>
+          </ol>
+          <p className="text-[10px] leading-relaxed text-gray-500">
+            {ko
+              ? '※ 이 화면은 판정이 아닙니다. 정식 검토는 면담에서 진행합니다.'
+              : '※ この画面は判定ではありません。正式な検討は面談で行います。'}
+          </p>
+        </div>,
+      )}
+    </div>
+  );
 
   return (
     <div className="flex-1 overflow-y-auto bg-gray-50 px-3 py-3 md:px-5">
@@ -142,8 +278,17 @@ const MyPageView: React.FC<MyPageViewProps> = ({
       */}
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-3 md:max-w-5xl">
         <p className="text-[11px] text-gray-500">{routeLabel}</p>
-        <div className="grid grid-cols-1 items-start gap-3 md:grid-cols-2">
-        <div className="flex flex-col gap-3">
+        {banner}
+        <p className="px-1 pt-1 text-[10.5px] font-bold text-gray-400">
+          {ko ? '자세한 내용' : '詳しい内容'}
+        </p>
+        {/*
+          **列に手で振り分けない。** 以前は左右に固定で分けていたが、
+          カードを2枚外した瞬間に 左150px / 右746px になった。
+          枚数が変わっても崩れないよう、カードを流し込む形にする。
+          (`columns` は要素を分割しないので、カードが列をまたいで切れることはない)
+        */}
+        <div className="gap-3 md:columns-2 [&>*]:mb-3 [&>*]:break-inside-avoid">
 
         {/* 今どこにいるか — 段階の並びの中で現在地を示す */}
         <div className="flex flex-col gap-1.5 rounded-xl border border-gray-200 bg-white p-3">
@@ -189,97 +334,28 @@ const MyPageView: React.FC<MyPageViewProps> = ({
           </div>
         </div>
 
-        {/* ① この段階の目標 */}
-        <div className="flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-3">
-          <p className="text-[12px] font-bold text-gray-800">
-            {ko ? '이 단계의 목표' : 'この段階の目標'}
-            <span className="ml-1.5 font-normal text-gray-500">
-              STEP{current} {nameOf(current)}
-            </span>
-          </p>
-          {condition(
-            ko ? '실무 경험 70%' : '実務経験 70%',
-            cur.practiceDone, cur.practiceTotal, CLEAR, cur.practiceMet,
-          )}
-          {!cur.practiceMet &&
-            where(
-              ko ? '남은 실무 (어느 것을 채워도 됩니다)' : '残りの実務（どれを埋めても構いません）',
-              cur.practiceWhere, current,
-            )}
-        </div>
-
-        {/* ② 次の段階へ挑戦できる条件 */}
-        <div
-          className={`flex flex-col gap-2.5 rounded-xl border p-3 ${
-            ready ? 'border-emerald-300 bg-emerald-50/50' : 'border-gray-200 bg-white'
-          }`}
-        >
-          <p className="text-[12px] font-bold text-gray-800">
-            {nextStage === null
-              ? ko ? '다음 단계에 도전할 수 있는 조건' : '次の段階へ挑戦できる条件'
-              : ko
-                ? `다음 단계(STEP${nextStage} ${nameOf(nextStage)})에 도전할 수 있는 조건`
-                : `次の段階（STEP${nextStage} ${nameOf(nextStage)}）へ挑戦できる条件`}
-          </p>
-          {condition(
-            ko ? '이 단계의 실무 70%' : 'この段階の実務 70%',
-            cur.practiceDone, cur.practiceTotal, CLEAR, cur.practiceMet,
-          )}
-          {condition(
-            ko ? '이 단계의 지식 100%' : 'この段階の知識 100%',
-            cur.knowledgeDone, cur.knowledgeTotal, 1, cur.knowledgeMet,
-          )}
-          {next && nextStage !== null ? (
-            condition(
-              ko ? `STEP${nextStage}의 지식 100%` : `STEP${nextStage} の知識 100%`,
-              next.knowledgeDone, next.knowledgeTotal, 1, next.knowledgeMet,
-            )
-          ) : (
-            // 0件を100%と数えると「準備中の段階をクリアした」ことになる
-            <p className="rounded bg-gray-50 px-2 py-1.5 text-[11px] leading-relaxed text-gray-500">
-              {plannedNext
-                ? ko
-                  ? `STEP${current + 1}（${loc(lang, plannedNext.shortLabel, plannedNext.shortLabelKo)}）의 항목은 준비 중입니다.`
-                  : `STEP${current + 1}（${loc(lang, plannedNext.shortLabel, plannedNext.shortLabelKo)}）の項目は準備中です。`
-                : ko ? '다음 단계는 아직 준비 중입니다.' : '次の段階はまだ準備中です。'}
-            </p>
-          )}
-
-          {ready && (
-            <p className="rounded bg-emerald-100 px-2 py-1.5 text-[11px] font-bold leading-relaxed text-emerald-800">
-              {ko
-                ? '조건을 모두 충족했습니다. 상사와의 면담에서 다음 단계를 상담해 보세요.'
-                : '条件がそろいました。上長との面談で次の段階を相談してみてください。'}
-            </p>
-          )}
-        </div>
-
-        </div>
-        <div className="flex flex-col gap-3">
-
         {/* 次にやること — 「勉強で埋まる分」を先に出す */}
         {!ready && (
           <div className="flex flex-col gap-2 rounded-xl border border-indigo-200 bg-indigo-50/50 p-3">
             <p className="text-[12px] font-bold text-indigo-900">
               {ko ? '다음에 할 것' : '次にやること'}
             </p>
-            {!cur.knowledgeMet || (next && !next.knowledgeMet) ? (
-              <p className="text-[11px] leading-relaxed text-indigo-800">
-                {ko
-                  ? '지식 항목은 지금 안건 그대로 자기 학습이나 자격 취득으로 채울 수 있습니다.'
-                  : '知識の項目は、今の案件のままでも自己学習や資格取得で埋められます。'}
-              </p>
-            ) : (
-              <p className="text-[11px] leading-relaxed text-indigo-800">
-                {ko
-                  ? '지식은 다 채웠습니다. 남은 것은 안건에서 경험해야 채워집니다 — 면담에서 상담해 보세요.'
-                  : '知識は埋め切りました。残りは案件で経験しないと埋まりません。面談で相談してみてください。'}
-              </p>
-            )}
+            {/*
+              説明文は置かない。**残りがどこにあるかだけ**を出す。
+              「勉強で埋まる / 案件が要る」の区別は 知識・実務 という見出しが既に言っており、
+              文章を足すと帯と同じことを繰り返して読みにくくなる (2026-08-07 지적)。
+            */}
             {where(
               ko ? '이 단계의 남은 지식 (전부 필요)' : 'この段階の残りの知識（すべて必要）',
               cur.knowledgeWhere, current,
             )}
+            {/* 知識を埋め切った先で実務だけが残る。ここが残りの唯一の置き場なので出す */}
+            {cur.knowledgeMet &&
+              where(
+                ko ? '이 단계의 남은 실무 (어느 것이든 괜찮습니다)'
+                   : 'この段階の残りの実務（どれを埋めても構いません）',
+                cur.practiceWhere, current,
+              )}
             {next && nextStage !== null &&
               where(
                 ko ? `STEP${nextStage}의 남은 지식` : `STEP${nextStage} の残りの知識`,
@@ -358,7 +434,6 @@ const MyPageView: React.FC<MyPageViewProps> = ({
           </div>
         )}
 
-        </div>
         </div>
 
         <p className="px-1 pb-2 text-[10px] leading-relaxed text-gray-400">

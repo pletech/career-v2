@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { currentStageOf, readyForNext, stageProgress } from './stageProgress';
+import { currentStageOf, nextGoalOf, readyForNext, stageProgress } from './stageProgress';
 import type { Action, Category, CheckLevel, ActionKind } from './types';
 
 const categories: Category[] = [
@@ -97,17 +97,48 @@ describe('readyForNext', () => {
 });
 
 describe('currentStageOf', () => {
-  it('何もしていなければ最下段', () => {
+  it('何もしていなければ最下段 (入口)', () => {
     expect(currentStageOf([1, 2], (s) => run(s))).toBe(1);
   });
 
-  it('STEP1 の条件を満たすと STEP2 に移る', () => {
-    const p = (s: number) => run(s, ['p1', 'p2', 'p3'], ['k1', 'k2', 'k3']);
+  it('実務のチェックがある いちばん上の段階', () => {
+    // STEP2 の実務 (1人称) に1件入っている
+    const p = (s: number) => run(s, ['p1'], ['p4']);
     expect(currentStageOf([1, 2], p)).toBe(2);
   });
 
-  it('全部満たしていれば最上段に留まる (行き先が無い)', () => {
-    const p = (s: number) => run(s, ['p1', 'p2', 'p3', 'p4', 'p5'], ['k1', 'k2', 'k3']);
-    expect(currentStageOf([1, 2], p)).toBe(2);
+  /**
+   * ここが以前の実装のバグ。目標を満たした瞬間に次の段階へ繰り上げていたため、
+   * 「次の段階に挑戦できます」「次の段階の案件に挑戦できます」が**一度も出なかった**。
+   * 実務は案件に入らないと埋まらないので、案件が変わるまでは今の段階に留まる。
+   */
+  it('目標を満たしても、次の段階の実務が無いうちは繰り上がらない', () => {
+    const p = (s: number) => run(s, ['p1', 'p2', 'p3'], ['k1', 'k2', 'k3']);
+    expect(currentStageOf([1, 2], p)).toBe(1);
+  });
+});
+
+describe('nextGoalOf — 3段階', () => {
+  const at = (assisted: string[], solo: string[]) => {
+    const cur = run(1, assisted, solo);
+    const next = run(2, assisted, solo);
+    return nextGoalOf(cur, next);
+  };
+
+  it('目標が残っていれば goal', () => {
+    expect(at([], [])).toBe('goal');
+    expect(at(['p1', 'p2', 'p3'], ['k1'])).toBe('goal');       // 知識が1件残り
+  });
+
+  it('目標を満たし、次の段階の知識が残っていれば next-study', () => {
+    expect(at(['p1', 'p2', 'p3'], ['k1', 'k2'])).toBe('next-study');
+  });
+
+  it('次の段階の知識まで満たせば ready', () => {
+    expect(at(['p1', 'p2', 'p3'], ['k1', 'k2', 'k3'])).toBe('ready');
+  });
+
+  it('次の段階の項目が無ければ next-absent (0件を100%と数えない)', () => {
+    expect(nextGoalOf(run(1, ['p1', 'p2', 'p3'], ['k1', 'k2']), null)).toBe('next-absent');
   });
 });
