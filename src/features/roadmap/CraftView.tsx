@@ -348,8 +348,8 @@ const CraftView: React.FC<CraftViewProps> = ({
       });
     });
     // 着地点が分からないと「押したのに何も起きていない」に見えるので明滅させる
-    // (アニメーションは 1.6s × 2回。余韻を見てから消す)
-    const clear = window.setTimeout(() => setFocusCat(null), 3400);
+    // (アニメーションは 1.1s × 2回。終わってから縁を戻す)
+    const clear = window.setTimeout(() => setFocusCat(null), 2400);
     return () => {
       window.cancelAnimationFrame(id);
       window.clearTimeout(clear);
