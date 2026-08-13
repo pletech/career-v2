@@ -186,6 +186,11 @@ const MyPageView: React.FC<MyPageViewProps> = ({
   );
 
   const nextRoleSummary = nextStage === null ? null : roleOf(nextStage)?.summary;
+  /** 「次にやること」に並べるものが1件も無い状態 */
+  const nothingLeft =
+    cur.knowledgeWhere.length === 0
+    && (!cur.knowledgeMet || cur.practiceWhere.length === 0)
+    && (next === null || next.knowledgeWhere.length === 0);
 
   const banner = (
     <div className={`flex flex-col gap-2.5 rounded-xl border-2 p-3 ${TONE.box}`}>
@@ -361,6 +366,21 @@ const MyPageView: React.FC<MyPageViewProps> = ({
                 ko ? `STEP${nextStage}의 남은 지식` : `STEP${nextStage} の残りの知識`,
                 next.knowledgeWhere, nextStage,
               )}
+            {/*
+              残りが1件も無いのに見出しだけが残ると**壊れているように見える** (2026-08-07 지적)。
+              その段階まで埋め切って次の段階の項目がまだ無い、という状態なのでそう言う。
+            */}
+            {nothingLeft && (
+              <p className="text-[11px] leading-relaxed text-indigo-800">
+                {plannedNext
+                  ? ko
+                    ? `이 단계는 다 채웠습니다. STEP${current + 1}（${loc(lang, plannedNext.shortLabel, plannedNext.shortLabelKo)}）의 항목은 준비 중이며, 추가되면 여기에 다음에 할 것이 표시됩니다.`
+                    : `この段階は埋め切りました。STEP${current + 1}（${loc(lang, plannedNext.shortLabel, plannedNext.shortLabelKo)}）の項目は準備中です。追加され次第、ここに次にやることが出ます。`
+                  : ko
+                    ? '이 단계는 다 채웠습니다. 다음 단계는 준비 중이며, 추가되면 여기에 다음에 할 것이 표시됩니다.'
+                    : 'この段階は埋め切りました。次の段階はまだ準備中です。追加され次第、ここに次にやることが出ます。'}
+              </p>
+            )}
           </div>
         )}
 

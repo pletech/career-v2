@@ -285,3 +285,23 @@ describe('目標の帯 (3段階)', () => {
     expect(s3).not.toContain('次にやること');
   });
 });
+
+/**
+ * 残りが1件も無いのに見出しだけが残ると**壊れているように見える** (2026-08-07 지적)。
+ * STEP3 を全部埋めた人は STEP4 が入るまでこの状態になる。
+ */
+describe('残りが尽きたとき', () => {
+  it('「次にやること」を空にせず、次の段階が準備中だと言う', () => {
+    // 全項目チェック → 現在地は最上段 (STEP2)、その先は無い
+    setup(['p1', 'p2', 'p3'], ['k1', 'k2', 'k3', 'p4', 'p5']);
+    const el = block(/次にやること/);
+    expect(el.textContent).toContain('この段階は埋め切りました');
+    expect(el.textContent).toMatch(/準備中/);
+    expect(el.textContent).toContain('追加され次第');
+  });
+
+  it('残りがあるときは、その案内を出さない', () => {
+    setup();
+    expect(block(/次にやること/).textContent).not.toContain('埋め切りました');
+  });
+});
