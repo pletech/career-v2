@@ -3,6 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--
+      検索エンジンに載せない。**社内向けの URL** であり (マニュアル 13章にも明記)、
+      サーバー側の認証が入るまでは URL を知られていないことだけが実質の防壁になる。
+      検索から拾われると、その防壁が無くなる。
+      robots.txt (public/robots.txt) と両方置く — robots.txt はクロールを止め、
+      こちらは**既にクロールされた場合のインデックス登録**を止める。役割が違う。
+    -->
+    <meta name="robots" content="noindex, nofollow, noarchive" />
     <title>Career Path - キャリアパスモデル</title>
   </head>
   <body>
