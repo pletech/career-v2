@@ -50,22 +50,22 @@ const roles: Role[] = [
 ];
 
 const categories: Category[] = [
-  { categoryId: 'c1', track: 'infrastructure', stage: 1, labelJa: '手順書・定型作業', includes: [], sortOrder: 1 },
-  { categoryId: 'c2', track: 'infrastructure', stage: 2, labelJa: '初動対応の実施', includes: ['c1'], sortOrder: 1 },
+  { categoryId: 'c1', track: 'infrastructure', subtrack: 'サーバー', stage: 1, labelJa: '手順書・定型作業', includes: [], sortOrder: 1 },
+  { categoryId: 'c2', track: 'infrastructure', subtrack: 'サーバー', stage: 2, labelJa: '初動対応の実施', includes: ['c1'], sortOrder: 1 },
   // 知識を含む STEP1 カテゴリ。c1 に混ぜると既存の件数アサーションが全部ずれるので別に置く
-  { categoryId: 'c3', track: 'infrastructure', stage: 1, labelJa: '現場理解・体制', includes: [], sortOrder: 2 },
+  { categoryId: 'c3', track: 'infrastructure', subtrack: 'サーバー', stage: 1, labelJa: '現場理解・体制', includes: [], sortOrder: 2 },
 ];
 
 const actions: Action[] = [
-  { actionId: 'a1', categoryId: 'c1', statement: '手順書どおりに作業できる', sortOrder: 1, kind: 'practice' },
-  { actionId: 'a2', categoryId: 'c1', statement: '作業証跡を残せる', sortOrder: 2, kind: 'practice' },
-  { actionId: 'b1', categoryId: 'c2', statement: '初動対応を実施できる', sortOrder: 1, kind: 'practice' },
+  { actionId: 'a1', categoryIds: ['c1'], statement: '手順書どおりに作業できる', sortOrder: 1, kind: 'practice' },
+  { actionId: 'a2', categoryIds: ['c1'], statement: '作業証跡を残せる', sortOrder: 2, kind: 'practice' },
+  { actionId: 'b1', categoryIds: ['c2'], statement: '初動対応を実施できる', sortOrder: 1, kind: 'practice' },
   // 知識バッジと内訳の検証用に1件だけ knowledge を混ぜる
-  { actionId: 'b2', categoryId: 'c2', statement: '対応手順の全体像を説明できる', sortOrder: 2, kind: 'knowledge' },
+  { actionId: 'b2', categoryIds: ['c2'], statement: '対応手順の全体像を説明できる', sortOrder: 2, kind: 'knowledge' },
   // STEP1 (目安=assisted) の知識。知識は段階に関わらず 1人称だけで描くので、
   // 数える側も 1人称でないと押しても動かない
-  { actionId: 'k1', categoryId: 'c3', statement: '体制図を説明できる', sortOrder: 1, kind: 'knowledge' },
-  { actionId: 'k2', categoryId: 'c3', statement: '朝会に参加できる', sortOrder: 2, kind: 'practice' },
+  { actionId: 'k1', categoryIds: ['c3'], statement: '体制図を説明できる', sortOrder: 1, kind: 'knowledge' },
+  { actionId: 'k2', categoryIds: ['c3'], statement: '朝会に参加できる', sortOrder: 2, kind: 'practice' },
 ];
 
 const certs: Cert[] = [];
@@ -97,7 +97,6 @@ const setup = (
       onToggleAction={onToggleAction}
       onExport={onExport}
       onImport={onImport}
-      needsExport={false}
       focusRequest={opts.focusRequest ?? null}
       lang="ja"
     />,
@@ -522,15 +521,14 @@ const renderIts = (cats: Category[], acts: Action[]) =>
       onToggleAction={vi.fn()}
       onExport={vi.fn()}
       onImport={vi.fn(async () => ({ ok: true, message: '' }))}
-      needsExport={false}
       focusRequest={null}
       lang="ja"
     />,
   );
 
 const emptyCats: Category[] = [
-  { categoryId: 'hd1-intake', track: 'it-support', stage: 1, labelJa: '問い合わせの受付・整理', includes: [], sortOrder: 1 },
-  { categoryId: 'hd2-assess', track: 'it-support', stage: 2, labelJa: '二次対応の受付・状況把握', includes: ['hd1-intake'], sortOrder: 1 },
+  { categoryId: 'hd1-intake', track: 'it-support', subtrack: 'ヘルプデスク系', stage: 1, labelJa: '問い合わせの受付・整理', includes: [], sortOrder: 1 },
+  { categoryId: 'hd2-assess', track: 'it-support', subtrack: 'ヘルプデスク系', stage: 2, labelJa: '二次対応の受付・状況把握', includes: ['hd1-intake'], sortOrder: 1 },
 ];
 
 const openable = () =>
@@ -581,7 +579,7 @@ describe('カテゴリだけあってアクションが無い区分', () => {
 
   it('アクションのある段階だけを描く', () => {
     renderIts(emptyCats, [
-      { actionId: 'hd1-intake-01', categoryId: 'hd1-intake', statement: '受け付けられる', sortOrder: 1, kind: 'practice' },
+      { actionId: 'hd1-intake-01', categoryIds: ['hd1-intake'], statement: '受け付けられる', sortOrder: 1, kind: 'practice' },
     ]);
     // STEP1 だけが出て、中身の無い STEP2 は出ない
     expect(openable().map((b) => b.textContent)).toHaveLength(1);

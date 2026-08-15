@@ -61,6 +61,13 @@ function requireHeaders(rows: Record<string, string>[], required: string[], file
   }
 }
 
+/** `|` 区切りの必須リスト。空を通すと**どのカテゴリにも出ない行**ができる */
+function requireList(row: Record<string, string>, key: string, file: string, id: string): string[] {
+  const list = toList(row[key] ?? '');
+  if (list.length === 0) throw new LadderDataError(`${file}: ${id} の「${key}」が空です。`);
+  return list;
+}
+
 function requireValue(row: Record<string, string>, key: string, file: string, id: string): string {
   const v = row[key];
   if (!v) throw new LadderDataError(`${file}: ${id} の「${key}」が空です。`);
@@ -241,7 +248,7 @@ export function parseTags(csvText: string): Tag[] {
 /** actions (v2.7d/v2.7m): アクション (1文1概念の行動項目)。カテゴリに所属 */
 export function parseActions(csvText: string): Action[] {
   const rows = csvToObjects(csvText);
-  requireHeaders(rows, ['actionId', 'categoryId', 'statement', 'sortOrder', 'kind'], 'actions.csv');
+  requireHeaders(rows, ['actionId', 'categoryIds', 'statement', 'sortOrder', 'kind'], 'actions.csv');
   const actions = rows.map((r) => {
     const actionId = requireValue(r, 'actionId', 'actions.csv', r.actionId || '(空)');
     const kind = requireValue(r, 'kind', 'actions.csv', actionId);
@@ -254,7 +261,7 @@ export function parseActions(csvText: string): Action[] {
     }
     return {
       actionId,
-      categoryId: requireValue(r, 'categoryId', 'actions.csv', actionId),
+      categoryIds: requireList(r, 'categoryIds', 'actions.csv', actionId),
       statement: requireValue(r, 'statement', 'actions.csv', actionId),
       sortOrder: toNumber(r.sortOrder, 'sortOrder', 'actions.csv', actionId),
       kind,
@@ -268,12 +275,13 @@ export function parseActions(csvText: string): Action[] {
 /** certs (v2.7n): 段階別の推奨資格 (参考) */
 export function parseCerts(csvText: string): Cert[] {
   const rows = csvToObjects(csvText);
-  requireHeaders(rows, ['certId', 'track', 'stage', 'nameJa', 'sortOrder'], 'certs.csv');
+  requireHeaders(rows, ['certId', 'track', 'subtrack', 'stage', 'nameJa', 'sortOrder'], 'certs.csv');
   const certs = rows.map((r) => {
     const certId = requireValue(r, 'certId', 'certs.csv', r.certId || '(空)');
     return {
       certId,
       track: requireTrack(r.track, 'certs.csv', certId),
+      subtrack: requireValue(r, 'subtrack', 'certs.csv', certId),
       stage: toNumber(r.stage, 'stage', 'certs.csv', certId),
       nameJa: requireValue(r, 'nameJa', 'certs.csv', certId),
       sortOrder: toNumber(r.sortOrder, 'sortOrder', 'certs.csv', certId),
@@ -301,12 +309,13 @@ function requireTrack(value: string | undefined, file: string, id: string): Trac
 /** categories (v2.7d): 段階別カテゴリ + 下位カテゴリ包含 */
 export function parseCategories(csvText: string): Category[] {
   const rows = csvToObjects(csvText);
-  requireHeaders(rows, ['categoryId', 'track', 'stage', 'labelJa', 'sortOrder'], 'categories.csv');
+  requireHeaders(rows, ['categoryId', 'track', 'subtrack', 'stage', 'labelJa', 'sortOrder'], 'categories.csv');
   const categories = rows.map((r) => {
     const categoryId = requireValue(r, 'categoryId', 'categories.csv', r.categoryId || '(空)');
     return {
       categoryId,
       track: requireTrack(r.track, 'categories.csv', categoryId),
+      subtrack: requireValue(r, 'subtrack', 'categories.csv', categoryId),
       stage: toNumber(r.stage, 'stage', 'categories.csv', categoryId),
       labelJa: requireValue(r, 'labelJa', 'categories.csv', categoryId),
       includes: toList(r.includes ?? ''),
@@ -340,6 +349,26 @@ export function parseWeapons(csvText: string): Weapon[] {
 
 /** 参照整合性の検証 (ability→role, evidence→ability, dependency→role, ability→growthLine) */
 export function validateReferences(data: LadderDataSet): void {
+  /*
+    ルート (職種 × 分類) は `roles.csv` から導かれる。そこに無い組み合わせを
+    カテゴリ・資格が名乗ると、**どのルートにも現れず画面から静かに消える**。
+    エラーも警告も出ないので、`ヘルプデスク系` を `ヘルプデスク` と書いただけで
+    26 カテゴリがまるごと行方不明になる。ここで落とす (v2.16)。
+  */
+  const routes = new Set(
+    data.roles.filter((r) => r.status !== 'hidden').map((r) => `${r.track}/${r.category}`),
+  );
+  const onKnownRoute = (id: string, file: string, track: string, subtrack: string) => {
+    const key = `${track}/${subtrack}`;
+    if (!routes.has(key)) {
+      throw new LadderDataError(
+        `${file}: ${id} の track/subtrack が roles.csv のどの役割とも一致しません: ${key}`,
+      );
+    }
+  };
+  for (const c of data.categories) onKnownRoute(c.categoryId, 'categories.csv', c.track, c.subtrack);
+  for (const c of data.certs) onKnownRoute(c.certId, 'certs.csv', c.track, c.subtrack);
+
   const roleIds = new Set(data.roles.map((r) => r.roleId));
   const abilityIds = new Set(data.abilities.map((a) => a.abilityId));
   const lineIds = new Set(data.growthLines.map((l) => l.lineId));
@@ -376,10 +405,12 @@ export function validateReferences(data: LadderDataSet): void {
   const actionIds = new Set(data.actions.map((a) => a.actionId));
   const categoryIds = new Set(data.categories.map((c) => c.categoryId));
   for (const a of data.actions) {
-    if (!categoryIds.has(a.categoryId)) {
-      throw new LadderDataError(
-        `actions.csv: ${a.actionId} の categoryId が categories.csv に存在しません: ${a.categoryId}`,
-      );
+    for (const cid of a.categoryIds) {
+      if (!categoryIds.has(cid)) {
+        throw new LadderDataError(
+          `actions.csv: ${a.actionId} の categoryIds が categories.csv に存在しません: ${cid}`,
+        );
+      }
     }
   }
   for (const c of data.categories) {

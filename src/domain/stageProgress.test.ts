@@ -4,14 +4,14 @@ import { currentStageOf, nextGoalOf, readyForNext, stageGoalMet, stageProgress, 
 import type { Action, Category, CheckLevel, ActionKind } from './types';
 
 const categories: Category[] = [
-  { categoryId: 'c1', track: 'infrastructure', stage: 1, labelJa: '手順書', includes: [], sortOrder: 1 },
-  { categoryId: 'c1b', track: 'infrastructure', stage: 1, labelJa: '現場理解', includes: [], sortOrder: 2 },
+  { categoryId: 'c1', track: 'infrastructure', subtrack: 'サーバー', stage: 1, labelJa: '手順書', includes: [], sortOrder: 1 },
+  { categoryId: 'c1b', track: 'infrastructure', subtrack: 'サーバー', stage: 1, labelJa: '現場理解', includes: [], sortOrder: 2 },
   // 上位は下位を includes する。**足してはいけない**のがこの構造
-  { categoryId: 'c2', track: 'infrastructure', stage: 2, labelJa: '初動対応', includes: ['c1', 'c1b'], sortOrder: 1 },
+  { categoryId: 'c2', track: 'infrastructure', subtrack: 'サーバー', stage: 2, labelJa: '初動対応', includes: ['c1', 'c1b'], sortOrder: 1 },
 ];
 
 const act = (id: string, cat: string, kind: ActionKind): Action => ({
-  actionId: id, categoryId: cat, statement: id, sortOrder: 1, kind,
+  actionId: id, categoryIds: [cat], statement: id, sortOrder: 1, kind,
 });
 
 // STEP1: 知識2 (k1,k2) / 実務3 (p1,p2,p3)   STEP2: 知識1 (k3) / 実務2 (p4,p5)
@@ -155,7 +155,7 @@ describe('nextGoalOf — 3段階', () => {
 const emptyStage = (stage: number): StageProgress =>
   stageProgress({
     stage,
-    categories: [{ categoryId: `e${stage}`, track: 'it-support', stage, labelJa: '空', includes: [], sortOrder: 1 }],
+    categories: [{ categoryId: `e${stage}`, track: 'it-support', subtrack: 'ヘルプデスク系', stage, labelJa: '空', includes: [], sortOrder: 1 }],
     actions: [],
     actionChecks: {},
     actionSoloChecks: {},
@@ -181,10 +181,10 @@ describe('項目が 0 件の段階', () => {
   it('次の段階が空なら「挑戦できる」にしない', () => {
     const cur = stageProgress({
       stage: 1,
-      categories: [{ categoryId: 'c1', track: 'it-support', stage: 1, labelJa: 'あり', includes: [], sortOrder: 1 }],
+      categories: [{ categoryId: 'c1', track: 'it-support', subtrack: 'ヘルプデスク系', stage: 1, labelJa: 'あり', includes: [], sortOrder: 1 }],
       actions: [
-        { actionId: 'k1', categoryId: 'c1', statement: 'k', sortOrder: 1, kind: 'knowledge' },
-        { actionId: 'p1', categoryId: 'c1', statement: 'p', sortOrder: 2, kind: 'practice' },
+        { actionId: 'k1', categoryIds: ['c1'], statement: 'k', sortOrder: 1, kind: 'knowledge' },
+        { actionId: 'p1', categoryIds: ['c1'], statement: 'p', sortOrder: 2, kind: 'practice' },
       ],
       actionChecks: {},
       actionSoloChecks: { k1: true, p1: true },

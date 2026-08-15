@@ -1,4 +1,4 @@
-actionId,categoryId,statement,statementKo,sortOrder,kind,addedOn
+actionId,categoryIds,statement,statementKo,sortOrder,kind,addedOn
 t1-01,c1-inquiry,電話で問い合わせを受け付けられる,전화로 문의를 접수할 수 있다,1,practice,2026-07-23
 t1-02,c1-inquiry,メールで問い合わせを受け付けられる,메일로 문의를 접수할 수 있다,2,practice,2026-07-23
 t1-03,c1-inquiry,チャットツールで問い合わせを受け付けられる,채팅 도구로 문의를 접수할 수 있다,3,practice,2026-07-23

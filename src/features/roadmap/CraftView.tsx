@@ -11,7 +11,6 @@ import type {
   TrackId,
 } from '../../domain/types';
 import { TRACK_LABELS } from '../../types/career';
-import MoveNotice from './MoveNotice';
 import { currentStageOf, stageProgress } from '../../domain/stageProgress';
 
 /**
@@ -111,8 +110,6 @@ interface CraftViewProps {
   onExport: () => void;
   /** 書き出したファイルを読み戻す。成否メッセージを返す */
   onImport: (file: File) => Promise<{ ok: boolean; message: string }>;
-  /** 引っ越し告知の帯を出すか (まだ書き出していない / 書き出し後に増えている) */
-  needsExport: boolean;
   /** マイページから「ここへ行け」と指定されたカテゴリ。処理したら onFocusHandled を呼ぶ */
   focusRequest?: { stage: number; categoryId: string } | null;
   onFocusHandled?: () => void;
@@ -152,7 +149,6 @@ const CraftView: React.FC<CraftViewProps> = ({
   onToggleAction,
   onExport,
   onImport,
-  needsExport,
   focusRequest,
   onFocusHandled,
   lang,
@@ -190,9 +186,12 @@ const CraftView: React.FC<CraftViewProps> = ({
   const actionsByCat = useMemo(() => {
     const m = new Map<string, Action[]>();
     for (const a of actions) {
-      const list = m.get(a.categoryId);
-      if (list) list.push(a);
-      else m.set(a.categoryId, [a]);
+      // 1つのアクションが複数カテゴリに載る (v2.16)。どちらの一覧にも出す
+      for (const cid of a.categoryIds) {
+        const list = m.get(cid);
+        if (list) list.push(a);
+        else m.set(cid, [a]);
+      }
     }
     for (const list of m.values()) list.sort((a, b) => a.sortOrder - b.sortOrder);
     return m;
@@ -284,7 +283,7 @@ const CraftView: React.FC<CraftViewProps> = ({
    * 「STEP◯〜◯ は準備中」が正しく出る (どちらも stagesDesc から導いている)。
    */
   const stagesDesc = useMemo(() => {
-    const withActions = new Set(actions.map((a) => a.categoryId));
+    const withActions = new Set(actions.flatMap((a) => a.categoryIds));
     const stages = categories
       .filter((c) => withActions.has(c.categoryId))
       .map((c) => c.stage);
@@ -835,12 +834,6 @@ const CraftView: React.FC<CraftViewProps> = ({
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden">
-      {/*
-        引っ越し告知 — **一番上**。関門の帯より上に置く。
-        ここで見落とされると、その人のチェックは戻せない。
-        中身はダイアログ (初回だけ) + 帯 (書き出すまで) の二段構え。
-      */}
-      <MoveNotice needsExport={needsExport} onExport={onExport} lang={lang} />
       {/*
         対象範囲の帯 — 「これは何のロードマップで、どこまで載っているのか」。
 
