@@ -1,0 +1,15 @@
+# Cloudflare Pages の設定 (HANDOFF §4c-0)。
+#
+# プロジェクト名がそのまま配信アドレスになる → https://pletech-career.pages.dev
+# **名前は後から変えられない** (作り直しになる)。ただしテスト段階は無料なので痛くない。
+# 社員に見せるアドレスは、後からカスタムドメインを重ねて隠す。
+#
+# ⚠️ ビルド時に `VITE_BASE` を**空**で渡すこと。渡さないと `/career-v2/` (GitHub Pages 用) が
+# 焼き込まれ、配信先のルートに置いた資産が 404 になる。vite.config.ts の注記も参照。
+#
+#   VITE_BASE= npm run build      # ← 空文字。`/` と書くと Git Bash がパスに書き換える
+#
+# 合言葉は**ここに書かない**。Cloudflare の環境変数 (GATE_PASSWORD) に置く。
+name = "pletech-career"
+pages_build_output_dir = "dist"
+compatibility_date = "2025-09-01"

@@ -1,5 +1,8 @@
 node_modules/
 dist/
+.wrangler/
 *.local
 .env
 .env.*
+# ローカル確認用の合言葉。**絶対にコミットしない** (HANDOFF §5)
+.dev.vars
