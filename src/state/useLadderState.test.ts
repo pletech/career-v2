@@ -100,3 +100,81 @@ describe('resetStates', () => {
     expect(JSON.parse(window.localStorage.getItem(SOLO_KEY) ?? '{}')).toEqual({});
   });
 });
+
+// ---------------------------------------------------------------------------
+// 資格チェックの撤去 (2026-08-14)
+// ---------------------------------------------------------------------------
+// 2026-08-12 に入れて2日で戻した。資格には有効期限があるので、☑ を持つと
+// 期限切れの資格に印が残る = 古くなった時点で嘘になる。
+//
+// v4 のファイルは**2日ぶんだけ世に出ている**。それを読んだときに黙って
+// 落とすと「読み込んだのに資格が消えた」に見えるので、1行だけ断る。
+
+const CERT_KEY = 'career-ladder-cert-checks:v1';
+
+const fileOf = (payload: Record<string, unknown>) =>
+  ({ text: async () => JSON.stringify(payload) }) as unknown as File;
+
+const v4WithCerts = {
+  format: 'career-ladder-check-states',
+  version: 4,
+  exportedAt: '2026-08-13T00:00:00.000Z',
+  actionChecks: { a1: true },
+  certChecks: { 'cert-s1-01': true },
+};
+
+describe('資格チェックは持たない', () => {
+  beforeEach(() => window.localStorage.clear());
+
+  it('状態として公開しない — 画面から触れる口が無い', () => {
+    const { result } = renderHook(() => useLadderState());
+    expect('certChecks' in result.current).toBe(false);
+    expect('toggleCert' in result.current).toBe(false);
+  });
+
+  it('書き出しに含めない', () => {
+    const { result } = renderHook(() => useLadderState());
+    let written = '';
+    const orig = URL.createObjectURL;
+    // Blob の中身だけ見たいので createObjectURL を差し替える
+    (URL as { createObjectURL: unknown }).createObjectURL = (b: Blob) => {
+      void b.text().then((t) => { written = t; });
+      return 'blob:test';
+    };
+    (URL as { revokeObjectURL: unknown }).revokeObjectURL = () => {};
+    act(() => { result.current.exportJson(); });
+    (URL as { createObjectURL: unknown }).createObjectURL = orig;
+    return Promise.resolve().then(() => {
+      expect(written).not.toContain('certChecks');
+    });
+  });
+
+  it('v4 のファイルは読める — 他の区画は落とさない', async () => {
+    const { result } = renderHook(() => useLadderState());
+    let res: { ok: boolean; message: string } | undefined;
+    await act(async () => { res = await result.current.importJson(fileOf(v4WithCerts)); });
+    expect(res?.ok).toBe(true);
+    expect(result.current.actionChecks).toEqual({ a1: true });
+  });
+
+  it('資格が入っていたら、読み込まないと伝える', async () => {
+    const { result } = renderHook(() => useLadderState());
+    let res: { ok: boolean; message: string } | undefined;
+    await act(async () => { res = await result.current.importJson(fileOf(v4WithCerts)); });
+    expect(res?.message).toContain('資格は参考表示に変わった');
+  });
+
+  it('資格が入っていなければ、その一文は出さない', async () => {
+    const { result } = renderHook(() => useLadderState());
+    const { certChecks: _drop, ...noCerts } = v4WithCerts;
+    let res: { ok: boolean; message: string } | undefined;
+    await act(async () => { res = await result.current.importJson(fileOf(noCerts)); });
+    expect(res?.message).not.toContain('資格');
+  });
+
+  it('読み込んでも旧キーには書き戻さない', async () => {
+    const { result } = renderHook(() => useLadderState());
+    await act(async () => { await result.current.importJson(fileOf(v4WithCerts)); });
+    expect(window.localStorage.getItem(CERT_KEY)).toBeNull();
+  });
+});

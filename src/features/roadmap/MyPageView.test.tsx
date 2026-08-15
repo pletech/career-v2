@@ -47,9 +47,8 @@ const certs: Cert[] = [
   { certId: 'ce9', track: 'infrastructure', stage: 2, nameJa: 'LPIC-1', sortOrder: 1 },
 ];
 
-const setup = (assisted: string[] = [], solo: string[] = [], certsChecked: string[] = []) => {
+const setup = (assisted: string[] = [], solo: string[] = []) => {
   const onJump = vi.fn();
-  const onToggleCert = vi.fn();
   render(
     <MyPageView
       routeLabel="インフラ / サーバー"
@@ -60,12 +59,10 @@ const setup = (assisted: string[] = [], solo: string[] = [], certsChecked: strin
       actionChecks={Object.fromEntries(assisted.map((k) => [k, true]))}
       actionSoloChecks={Object.fromEntries(solo.map((k) => [k, true]))}
       onJump={onJump}
-      certChecks={Object.fromEntries(certsChecked.map((k) => [k, true]))}
-      onToggleCert={onToggleCert}
       lang="ja"
     />,
   );
-  return { onJump, onToggleCert };
+  return { onJump };
 };
 
 /**
@@ -197,34 +194,34 @@ describe('これまでの積み上げ', () => {
 
 /**
  * 資格は**参考であって判定要件ではない**。
- * チェックできるが、達成率にも「次へ挑戦できる条件」にも影響してはいけない。
+ *
+ * **チェックは持たない** (2026-08-14)。2026-08-12 に入れて2日で戻した —
+ * 資格には有効期限があり、☑ を持つと期限切れの資格に印が残るため。
+ * ここで固定するのは「チェックボックスが黙って戻ってこないこと」。
  */
 describe('推奨資格', () => {
+  const panel = () => block(/この段階の推奨資格/);
+
   it('その段階の資格だけを出す', () => {
     setup();
-    const el = block(/この段階の推奨資格/);
-    expect(el.textContent).toContain('ITパスポート試験');
-    expect(el.textContent).toContain('基本情報技術者試験');
-    expect(el.textContent).not.toContain('LPIC-1');   // STEP2 の資格
+    expect(panel().textContent).toContain('ITパスポート試験');
+    expect(panel().textContent).toContain('基本情報技術者試験');
+    expect(panel().textContent).not.toContain('LPIC-1');   // STEP2 の資格
   });
 
-  it('チェックできる', () => {
-    const { onToggleCert } = setup();
-    fireEvent.click(within(block(/この段階の推奨資格/)).getByRole('checkbox', { name: /ITパスポート/ }));
-    expect(onToggleCert).toHaveBeenCalledWith('ce1');
+  it('チェックボックスを置かない — 期限切れに ☑ が残るのを防ぐため', () => {
+    setup();
+    expect(within(panel()).queryAllByRole('checkbox')).toHaveLength(0);
+  });
+
+  it('取得期間・ランク・金額は出さない — 保守する数字を増やさない', () => {
+    setup();
+    expect(panel().textContent).not.toMatch(/ランク|円|時間/);
   });
 
   it('判定要件ではないと明記する', () => {
     setup();
-    expect(block(/この段階の推奨資格/).textContent)
-      .toContain('チェックしても達成率や次の段階の条件には影響しません');
-  });
-
-  it('資格をチェックしても達成率は動かない', () => {
-    setup([], [], ['ce1', 'ce2']);
-    const s1 = bannerSteps()[0];
-    expect(s1).toContain('0/3');   // 実務
-    expect(s1).toContain('0/2');   // 知識
+    expect(panel().textContent).toContain('達成率や次の段階の条件には影響しません');
   });
 });
 
@@ -324,8 +321,6 @@ const renderIts = (cats: Category[]) =>
       actionChecks={{}}
       actionSoloChecks={{}}
       onJump={vi.fn()}
-      certChecks={{}}
-      onToggleCert={vi.fn()}
       lang="ja"
     />,
   );

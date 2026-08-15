@@ -38,15 +38,12 @@ interface MyPageViewProps {
   actionSoloChecks: ActionCheckMap;
   /** 業務ロードマップの該当カテゴリへ送り出す */
   onJump: (stage: number, categoryId: string) => void;
-  /** 取得済みの資格。**判定には使わない** — 記録できるだけ */
-  certChecks: ActionCheckMap;
-  onToggleCert: (certId: string) => void;
   lang: Lang;
 }
 
 const MyPageView: React.FC<MyPageViewProps> = ({
   routeLabel, roles, categories, actions, certs,
-  actionChecks, actionSoloChecks, onJump, certChecks, onToggleCert, lang,
+  actionChecks, actionSoloChecks, onJump, lang,
 }) => {
   const ko = lang === 'ko';
   /**
@@ -446,9 +443,13 @@ const MyPageView: React.FC<MyPageViewProps> = ({
         </div>
 
         {/*
-          資格は**参考であって判定要件ではない**。持っているものを記録できるだけで、
-          チェックしても達成率にも「次へ挑戦できる条件」にも影響しない。
-          そう書いておかないと「資格を取らないと上がれない」制度に読める。
+          資格は**参考であって判定要件ではない**。達成率にも「次へ挑戦できる条件」にも
+          影響しない。そう書いておかないと「資格を取らないと上がれない」制度に読める。
+
+          **チェックは持たない** (2026-08-14)。資格には有効期限があり、
+          ☑ を持つと期限切れの資格に印が残る = 古くなった時点で嘘になる。
+          手当は人事が自分の記録で払うので、このチェックを読む人もいなかった。
+          取得期間・手当ランクも出さない — 出せばその数字を保守することになる。
         */}
         {certs.filter((c) => c.stage === current).length > 0 && (
           <div className="flex flex-col gap-1.5 rounded-xl border border-gray-200 bg-white p-3">
@@ -457,26 +458,20 @@ const MyPageView: React.FC<MyPageViewProps> = ({
             </p>
             <p className="text-[10px] leading-relaxed text-gray-400">
               {ko
-                ? '참고 정보입니다. 체크해도 달성률이나 다음 단계 조건에는 영향을 주지 않습니다.'
-                : '参考情報です。チェックしても達成率や次の段階の条件には影響しません。'}
+                ? '참고 정보입니다. 달성률이나 다음 단계 조건에는 영향을 주지 않습니다. 참고서·강좌·수험료 보조와 자격 수당 제도가 있습니다.'
+                : '参考情報です。達成率や次の段階の条件には影響しません。参考書・講座・受験費用の補助と資格手当の制度があります。'}
             </p>
-            <div className="flex flex-col gap-0.5">
+            <div className="flex flex-col gap-1">
               {certs
                 .filter((c) => c.stage === current)
                 .sort((a, b) => a.sortOrder - b.sortOrder)
                 .map((c) => (
-                  <label
-                    key={c.certId}
-                    className="flex cursor-pointer items-start gap-2 rounded px-1 py-1 hover:bg-gray-50"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={certChecks[c.certId] === true}
-                      onChange={() => onToggleCert(c.certId)}
-                      className="mt-0.5 h-3.5 w-3.5 shrink-0 accent-indigo-600"
-                    />
+                  <div key={c.certId} className="flex items-baseline gap-2">
+                    <span aria-hidden className="shrink-0 text-[10px] text-gray-300">
+                      ・
+                    </span>
                     <span className="min-w-0 flex-1">
-                      <span className="block text-[11.5px] leading-snug text-gray-700">
+                      <span className="text-[11.5px] leading-snug text-gray-700">
                         {loc(lang, c.nameJa, c.nameKo)}
                       </span>
                       {(c.note || c.noteKo) && (
@@ -485,7 +480,7 @@ const MyPageView: React.FC<MyPageViewProps> = ({
                         </span>
                       )}
                     </span>
-                  </label>
+                  </div>
                 ))}
             </div>
           </div>

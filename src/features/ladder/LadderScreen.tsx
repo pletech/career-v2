@@ -53,8 +53,6 @@ const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps', onNavigate 
     actionChecks,
     actionSoloChecks,
     toggleAction,
-    certChecks,
-    toggleCert,
     selectedAbilityId,
     setSelectedAbilityId,
     lang,
@@ -331,8 +329,6 @@ const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps', onNavigate 
               setFocusRequest({ stage, categoryId });
               onNavigate?.('roadmap');
             }}
-            certChecks={certChecks}
-            onToggleCert={toggleCert}
             lang={lang}
           />
         </div>
