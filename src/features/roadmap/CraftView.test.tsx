@@ -50,10 +50,10 @@ const roles: Role[] = [
 ];
 
 const categories: Category[] = [
-  { categoryId: 'c1', stage: 1, labelJa: '手順書・定型作業', includes: [], sortOrder: 1 },
-  { categoryId: 'c2', stage: 2, labelJa: '初動対応の実施', includes: ['c1'], sortOrder: 1 },
+  { categoryId: 'c1', track: 'infrastructure', stage: 1, labelJa: '手順書・定型作業', includes: [], sortOrder: 1 },
+  { categoryId: 'c2', track: 'infrastructure', stage: 2, labelJa: '初動対応の実施', includes: ['c1'], sortOrder: 1 },
   // 知識を含む STEP1 カテゴリ。c1 に混ぜると既存の件数アサーションが全部ずれるので別に置く
-  { categoryId: 'c3', stage: 1, labelJa: '現場理解・体制', includes: [], sortOrder: 2 },
+  { categoryId: 'c3', track: 'infrastructure', stage: 1, labelJa: '現場理解・体制', includes: [], sortOrder: 2 },
 ];
 
 const actions: Action[] = [
@@ -476,5 +476,113 @@ describe('既定で開く段階', () => {
     // STEP1 を満たしても、STEP2 の実務が無いうちは STEP1 のまま
     setup({ actionChecks: { a1: true, a2: true, k2: true }, actionSoloChecks: { k1: true } });
     expect(openedStage()).toBe('1');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 中身がまだ無い区分 (2026-08-14)
+// ---------------------------------------------------------------------------
+// 職種軸を入れて IT サポートの役割を roles.csv に足した時点で、区分を切り替えると
+// **本文が空っぽ**になった。空白は「準備中」ではなく「壊れている」と読まれる。
+//
+// カテゴリだけ先に入れてアクションを後から書くのが普通の作業順なので、
+// 「カテゴリはあるがアクションが0件」も必ず通る。0/0 は知識・実務ともに
+// 満たした扱いになるため、そのまま描くと**クリア済みに見える**。
+
+const itsRoutes = [
+  { key: 'infrastructure/サーバー', track: 'infrastructure' as const, subtrack: 'サーバー' },
+  { key: 'it-support/ヘルプデスク系', track: 'it-support' as const, subtrack: 'ヘルプデスク系' },
+];
+
+const itsRoles: Role[] = [1, 2, 3].map((n) => ({
+  roleId: `its-helpdesk-mg-${n}`,
+  track: 'it-support',
+  category: 'ヘルプデスク系',
+  stageOrder: n,
+  pathType: 'manager',
+  titleJa: `IT サポート STEP${n}`,
+  shortLabel: `IT サポート STEP${n}`,
+  summary: '',
+  status: 'published',
+}));
+
+const renderIts = (cats: Category[], acts: Action[]) =>
+  render(
+    <CraftView
+      routes={itsRoutes}
+      activeRouteKey="it-support/ヘルプデスク系"
+      onRouteChange={() => {}}
+      roles={itsRoles}
+      categories={cats}
+      actions={acts}
+      certs={[]}
+      actionChecks={{}}
+      actionSoloChecks={{}}
+      onToggleAction={vi.fn()}
+      onExport={vi.fn()}
+      onImport={vi.fn(async () => ({ ok: true, message: '' }))}
+      focusRequest={null}
+      lang="ja"
+    />,
+  );
+
+const emptyCats: Category[] = [
+  { categoryId: 'hd1-intake', track: 'it-support', stage: 1, labelJa: '問い合わせの受付・整理', includes: [], sortOrder: 1 },
+  { categoryId: 'hd2-assess', track: 'it-support', stage: 2, labelJa: '二次対応の受付・状況把握', includes: ['hd1-intake'], sortOrder: 1 },
+];
+
+const openable = () =>
+  screen.queryAllByRole('button').filter((b) => /チェックリストを開く|閉じる/.test(b.textContent ?? ''));
+
+describe('カテゴリが1件も無い区分', () => {
+  it('準備中だと言う — 空白のままにしない', () => {
+    renderIts([], []);
+    expect(screen.getByText(/この区分のチェックリストは準備中です/)).toBeTruthy();
+  });
+
+  it('段階の範囲は roles から出す — 手書きしない', () => {
+    renderIts([], []);
+    expect(screen.getByText(/STEP1〜3 の段階が決まっており/)).toBeTruthy();
+  });
+
+  it('どこを見れば役割が分かるか言う', () => {
+    renderIts([], []);
+    expect(screen.getByText(/「全体マップ」で確認できます/)).toBeTruthy();
+  });
+
+  it('インフラ専用の注記を他の区分に出さない', () => {
+    renderIts([], []);
+    expect(screen.queryByText(/サーバーとネットワークは役割が重なる/)).toBeNull();
+  });
+
+  it('インフラを選んでいればその注記は出す', () => {
+    setup();   // 既定は インフラ > サーバー
+    expect(screen.getByText(/サーバーとネットワークは役割が重なる/)).toBeTruthy();
+  });
+});
+
+describe('カテゴリだけあってアクションが無い区分', () => {
+  it('準備中と言う — カテゴリの数だけで「収録済み」と見せない', () => {
+    renderIts(emptyCats, []);
+    expect(screen.getByText(/この区分のチェックリストは準備中です/)).toBeTruthy();
+  });
+
+  it('段階のセクションを出さない — 0/0 のカードを並べない', () => {
+    renderIts(emptyCats, []);
+    expect(openable()).toHaveLength(0);
+  });
+
+  it('「収録範囲」を出さない — 1件も収録していない', () => {
+    renderIts(emptyCats, []);
+    expect(screen.queryByText('収録範囲')).toBeNull();
+  });
+
+  it('アクションのある段階だけを描く', () => {
+    renderIts(emptyCats, [
+      { actionId: 'hd1-intake-01', categoryId: 'hd1-intake', statement: '受け付けられる', sortOrder: 1, kind: 'practice' },
+    ]);
+    // STEP1 だけが出て、中身の無い STEP2 は出ない
+    expect(openable().map((b) => b.textContent)).toHaveLength(1);
+    expect(screen.queryByText(/この区分のチェックリストは準備中です/)).toBeNull();
   });
 });

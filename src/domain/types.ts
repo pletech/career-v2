@@ -169,6 +169,18 @@ export interface Evidence {
  */
 export interface Category {
   categoryId: string;
+  /**
+   * このカテゴリが属する職種 (v2.15)。
+   *
+   * **段階番号の意味は職種ごとに違う** (インフラ STEP1=運用監視補助 / 開発 STEP1=テスト)。
+   * だから「職種で絞ってから段階を取る」順序でなければ STEP1 の意味が混ざる。
+   * これが無いまま IT サポートのカテゴリを足すと、STEP1 の欄にインフラと
+   * IT サポートが並び、クリア比率も合算されてしまう (HANDOFF §4b)。
+   *
+   * サブトラック (サーバー/ネットワーク) は**入れない** — 第1版では共通扱いなので、
+   * 今そこを分けるとデータに存在しない区別を刻むことになる。
+   */
+  track: TrackId;
   /** このカテゴリが属する段階 (stageOrder) */
   stage: number;
   labelJa: string;
@@ -184,6 +196,11 @@ export interface Category {
  */
 export interface Cert {
   certId: string;
+  /**
+   * この資格を推奨する職種 (v2.15)。
+   * 段階だけで紐づけていたので、IT サポートに LPIC-1 (サーバー向け) が出てしまう。
+   */
+  track: TrackId;
   /** この資格を推奨する段階 (この段階から次段階へ進むための参考) */
   stage: number;
   nameJa: string;

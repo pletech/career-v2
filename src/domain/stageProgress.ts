@@ -8,7 +8,7 @@
  * 同じ値を2か所で導くと必ずずれる — 直近で3回踏んだ
  * (実務の水準ずれ / 知識の水準ずれ / エクスポートの取りこぼし)。計算はここだけ。
  */
-import type { Action, ActionCheckMap, ActionKind, Category, CheckLevel } from './types';
+import type { Action, ActionCheckMap, ActionKind, Category, Cert, CheckLevel, TrackId } from './types';
 
 /** クリア閾値 (実務7割)。知識は 100% なので閾値を持たない */
 export const CLEAR = 0.7;
@@ -102,9 +102,14 @@ export function stageProgress(input: StageProgressInput): StageProgress {
  * ⚠️ 当初は「目標 = 実務 70% のみ」としていたが、**知識も目標に含める**形に変えた。
  * 「今やるべきことは1つ」と言えるほうが行動に移しやすい、という判断
  * (この関門を越えると「次の段階に挑戦できる」)。
+ *
+ * ⚠️ **項目が1件も無い段階は「満たした」にしない** (`hasContent`)。
+ * `knowledgeMet` は 0===0 で真、`practiceMet` も 総数0 で真になるので、
+ * ガードが無いと**空の段階が満点で達成扱い**になる。カテゴリだけ先に入れて
+ * アクションを後から書く、という普通の作業順で必ず踏む (2026-08-14)。
  */
 export function stageGoalMet(cur: StageProgress): boolean {
-  return cur.knowledgeMet && cur.practiceMet;
+  return cur.hasContent && cur.knowledgeMet && cur.practiceMet;
 }
 
 /**
@@ -112,11 +117,14 @@ export function stageGoalMet(cur: StageProgress): boolean {
  *
  *   この段階の目標 ＋ 次の段階の知識 100%
  *
- * 次の段階の項目がまだ無いとき (`next` が null) は、その条件を**満たしたことにしない**。
+ * 次の段階の項目がまだ無いときは、その条件を**満たしたことにしない**。
  * 0件を 100% と数えると「準備中の段階を全部クリアした」ことになってしまう。
+ *
+ * ⚠️ `next !== null` だけでは足りない。**カテゴリはあるがアクションが無い**段階は
+ * null ではないのに `knowledgeMet` が真になる。`hasContent` まで見る (2026-08-14)。
  */
 export function readyForNext(cur: StageProgress, next: StageProgress | null): boolean {
-  return stageGoalMet(cur) && next !== null && next.knowledgeMet;
+  return stageGoalMet(cur) && next !== null && next.hasContent && next.knowledgeMet;
 }
 
 /**
@@ -135,7 +143,8 @@ export type NextGoal = 'goal' | 'next-study' | 'ready' | 'next-absent';
 
 export function nextGoalOf(cur: StageProgress, next: StageProgress | null): NextGoal {
   if (!stageGoalMet(cur)) return 'goal';
-  if (next === null) return 'next-absent';
+  // 項目の無い段階は「次」として数えない (準備中と同じ扱い)
+  if (next === null || !next.hasContent) return 'next-absent';
   return next.knowledgeMet ? 'ready' : 'next-study';
 }
 
@@ -160,4 +169,38 @@ export function currentStageOf(
   if (asc.length === 0) return null;
   const placed = asc.filter((s) => progressOf(s).practiceDone > 0);
   return placed.length > 0 ? placed[placed.length - 1] : asc[0];
+}
+
+/**
+ * 職種で絞る (v2.15 / HANDOFF §4b)。
+ *
+ * **段階番号の意味は職種ごとに違う** (インフラ STEP1=運用監視補助 / 開発 STEP1=テスト)。
+ * だから「職種で絞ってから段階を取る」順序でなければならない。絞らずに段階で取ると
+ * STEP1 の欄に複数職種が並び、クリア比率も合算される。
+ *
+ * ⚠️ **ビューの中で絞らない。** 以前これをビュー (LadderScreen) の中に書いていたが、
+ * 消しても型も테스트も通ってしまい、混ざっていることに気づけなかった。
+ * 純粋関数にして、ここを消したらテストが落ちるようにしてある。
+ *
+ * アクションは自分の `track` を持たない — 所属カテゴリから決まる。
+ * カテゴリの範囲は **`track` だけ**で決まる。サブトラック (サーバー/ネットワーク) は
+ * 第1版で共通扱いなので、ここで分けるとデータに無い区別を刻むことになる。
+ */
+export function scopeToTrack(
+  track: TrackId | null,
+  data: { categories: Category[]; actions: Action[]; certs: Cert[] },
+): { categories: Category[]; actions: Action[]; certs: Cert[] } {
+  if (track === null) return data;
+  const categories = data.categories.filter((c) => c.track === track);
+  const ids = new Set(categories.map((c) => c.categoryId));
+  return {
+    categories,
+    actions: data.actions.filter((a) => ids.has(a.categoryId)),
+    certs: data.certs.filter((c) => c.track === track),
+  };
+}
+
+/** その職種に存在する段階 (昇順)。**絞ってから取る**のが要点 */
+export function stagesOfTrack(categories: Category[]): number[] {
+  return [...new Set(categories.map((c) => c.stage))].sort((a, b) => a - b);
 }

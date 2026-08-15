@@ -8,7 +8,7 @@
  * の3点。
  */
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, render, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 
 import MyPageView from './MyPageView';
 import type { Action, Category, Cert, Role } from '../../domain/types';
@@ -24,9 +24,9 @@ const roles: Role[] = [
 ];
 
 const categories: Category[] = [
-  { categoryId: 'c1', stage: 1, labelJa: '手順書・定型作業', includes: [], sortOrder: 1 },
-  { categoryId: 'c1b', stage: 1, labelJa: '現場理解・体制', includes: [], sortOrder: 2 },
-  { categoryId: 'c2', stage: 2, labelJa: '初動対応の実施', includes: ['c1', 'c1b'], sortOrder: 1 },
+  { categoryId: 'c1', track: 'infrastructure', stage: 1, labelJa: '手順書・定型作業', includes: [], sortOrder: 1 },
+  { categoryId: 'c1b', track: 'infrastructure', stage: 1, labelJa: '現場理解・体制', includes: [], sortOrder: 2 },
+  { categoryId: 'c2', track: 'infrastructure', stage: 2, labelJa: '初動対応の実施', includes: ['c1', 'c1b'], sortOrder: 1 },
 ];
 
 // STEP1: 実務3 (p1,p2,p3) / 知識2 (k1,k2)   STEP2: 実務2 / 知識1 (k3)
@@ -42,9 +42,9 @@ const actions: Action[] = [
 ];
 
 const certs: Cert[] = [
-  { certId: 'ce1', stage: 1, nameJa: 'ITパスポート試験', note: 'IT全般の基礎', sortOrder: 1 },
-  { certId: 'ce2', stage: 1, nameJa: '基本情報技術者試験', sortOrder: 2 },
-  { certId: 'ce9', stage: 2, nameJa: 'LPIC-1', sortOrder: 1 },
+  { certId: 'ce1', track: 'infrastructure', stage: 1, nameJa: 'ITパスポート試験', note: 'IT全般の基礎', sortOrder: 1 },
+  { certId: 'ce2', track: 'infrastructure', stage: 1, nameJa: '基本情報技術者試験', sortOrder: 2 },
+  { certId: 'ce9', track: 'infrastructure', stage: 2, nameJa: 'LPIC-1', sortOrder: 1 },
 ];
 
 const setup = (assisted: string[] = [], solo: string[] = [], certsChecked: string[] = []) => {
@@ -303,5 +303,66 @@ describe('残りが尽きたとき', () => {
   it('残りがあるときは、その案内を出さない', () => {
     setup();
     expect(block(/次にやること/).textContent).not.toContain('埋め切りました');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 中身がまだ無い区分 (2026-08-14)
+// ---------------------------------------------------------------------------
+// 以前は「表示できる段階がありません。」の1行だけで、故障に見えた。
+// また 0/0 は知識・実務ともに満たした扱いになるため、弾かないと空の段階が
+// 「達成」「次の段階に挑戦できます」と言い出す。
+
+const renderIts = (cats: Category[]) =>
+  render(
+    <MyPageView
+      routeLabel="ITサポート / ヘルプデスク系"
+      roles={[]}
+      categories={cats}
+      actions={[]}
+      certs={[]}
+      actionChecks={{}}
+      actionSoloChecks={{}}
+      onJump={vi.fn()}
+      certChecks={{}}
+      onToggleCert={vi.fn()}
+      lang="ja"
+    />,
+  );
+
+const itsCats: Category[] = [
+  { categoryId: 'hd1-intake', track: 'it-support', stage: 1, labelJa: '問い合わせの受付・整理', includes: [], sortOrder: 1 },
+  { categoryId: 'hd2-assess', track: 'it-support', stage: 2, labelJa: '二次対応の受付', includes: ['hd1-intake'], sortOrder: 1 },
+];
+
+describe('中身がまだ無い区分', () => {
+  it('カテゴリが無ければ準備中の画面に落ちる', () => {
+    renderIts([]);
+    expect(screen.getByText(/この区分のチェックリストは準備中です/)).toBeTruthy();
+  });
+
+  it('どの区分の話か言う', () => {
+    renderIts([]);
+    expect(screen.getByText(/ITサポート \/ ヘルプデスク系 は段階と役割が決まっており/)).toBeTruthy();
+  });
+
+  it('どこを見れば役割が分かるか言う', () => {
+    renderIts([]);
+    expect(screen.getByText(/「全体マップ」で確認できます/)).toBeTruthy();
+  });
+
+  it('カテゴリはあってもアクションが0件なら準備中', () => {
+    renderIts(itsCats);
+    expect(screen.getByText(/この区分のチェックリストは準備中です/)).toBeTruthy();
+  });
+
+  it('「達成」も「挑戦できます」も「100%」も出さない', () => {
+    renderIts(itsCats);
+    expect(document.body.textContent).not.toMatch(/達成|挑戦できます|100%/);
+  });
+
+  it('帯は出さない — 目標が無いのに関門を見せない', () => {
+    renderIts(itsCats);
+    expect(document.querySelector('div.border-2')).toBeNull();
   });
 });

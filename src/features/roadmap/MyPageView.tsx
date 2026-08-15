@@ -1,8 +1,12 @@
 /**
  * マイページ — 「今どこにいて、次に何をすればよいか」を1画面で出す (2026-08-07)。
  *
- * **なぜ別画面なのか**: 業務ロードマップは 11 カテゴリ × 全項目が開いたままで
- * 8 画面ぶんある。そこに段階サマリーを足したら「情報が多すぎる」となった。
+ * **なぜ別画面なのか**: 分けた理由は**カテゴリや項目の多さではない**。
+ * 最初に開く画面の4割が「見ても見なくてもよい」情報で埋まっていて、
+ * **本当に見るべきものが後ろに追いやられていた**から、役割で画面を分けた。
+ * 件数を減らすための分割ではないので、**カテゴリを増やすこと自体はここの理由にならない**
+ * (2026-08-14 に、この主張を「項目が多いから分けた」と誤って引用して訂正を受けた)。
+ *
  * カードを畳む案は却下 — 階層が深くなるうえ、畳んだ項目は
  * 「その項目が無い」と読まれる (2026-07-30 に実際に指摘を受けている)。
  *
@@ -45,7 +49,14 @@ const MyPageView: React.FC<MyPageViewProps> = ({
   actionChecks, actionSoloChecks, onJump, certChecks, onToggleCert, lang,
 }) => {
   const ko = lang === 'ko';
-  const stages = [...new Set(categories.map((c) => c.stage))].sort((a, b) => a - b);
+  /**
+   * 段階の一覧。**アクションが1件も無い段階は外す** (2026-08-14)。
+   *
+   * カテゴリを先に入れてアクションを後から書く作業順だと、空の段階が
+   * 「知識100%・実務100%で達成」として出てしまう (0/0 はどちらも満たすため)。
+   * ここで外せば、1件も無い区分は `current === null` の準備中画面に落ちる。
+   */
+  const allStages = [...new Set(categories.map((c) => c.stage))].sort((a, b) => a - b);
   const progressOf = (stage: number): StageProgress =>
     stageProgress({
       stage, categories, actions, actionChecks, actionSoloChecks, levelOfStage, levelOfAction,
@@ -61,11 +72,37 @@ const MyPageView: React.FC<MyPageViewProps> = ({
     return r ? loc(lang, r.shortLabel, r.shortLabelKo) : '';
   };
 
+  const stages = allStages.filter((s) => progressOf(s).hasContent);
+
   const current = currentStageOf(stages, progressOf);
+  /*
+    業務カテゴリがまだ無い区分 (役割だけ入っている状態)。
+    「表示できる段階がありません」だけでは**故障に見える** —
+    IT サポートの役割を入れた 2026-08-14 に実際にそう見えた。
+    準備中であることと、どこを見れば分かるかまで言う。
+  */
   if (current === null) {
     return (
-      <div className="p-4 text-[12px] text-gray-500">
-        {ko ? '표시할 단계가 없습니다.' : '表示できる段階がありません。'}
+      <div className="p-4">
+        <div className="rounded-xl border border-dashed border-gray-300 bg-white px-4 py-6 text-center">
+          <p className="text-[12.5px] font-bold text-gray-600">
+            {ko ? '이 구분의 체크리스트는 준비 중입니다' : 'この区分のチェックリストは準備中です'}
+          </p>
+          <p className="mt-1.5 text-[11px] leading-relaxed text-gray-500">
+            {routeLabel
+              ? ko
+                ? `${routeLabel} 는 단계와 역할이 정해져 있고, 체크 항목을 순차적으로 추가할 예정입니다.`
+                : `${routeLabel} は段階と役割が決まっており、チェック項目を順次追加していきます。`
+              : ko
+                ? '체크 항목을 순차적으로 추가할 예정입니다.'
+                : 'チェック項目を順次追加していきます。'}
+          </p>
+          <p className="mt-1.5 text-[10.5px] leading-relaxed text-gray-400">
+            {ko
+              ? '단계별 역할은 「전체 맵」에서 볼 수 있습니다.'
+              : '段階ごとの役割は「全体マップ」で確認できます。'}
+          </p>
+        </div>
       </div>
     );
   }

@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
-import { currentStageOf, nextGoalOf, readyForNext, stageProgress } from './stageProgress';
+import { currentStageOf, nextGoalOf, readyForNext, stageGoalMet, stageProgress, type StageProgress } from './stageProgress';
 import type { Action, Category, CheckLevel, ActionKind } from './types';
 
 const categories: Category[] = [
-  { categoryId: 'c1', stage: 1, labelJa: '手順書', includes: [], sortOrder: 1 },
-  { categoryId: 'c1b', stage: 1, labelJa: '現場理解', includes: [], sortOrder: 2 },
+  { categoryId: 'c1', track: 'infrastructure', stage: 1, labelJa: '手順書', includes: [], sortOrder: 1 },
+  { categoryId: 'c1b', track: 'infrastructure', stage: 1, labelJa: '現場理解', includes: [], sortOrder: 2 },
   // 上位は下位を includes する。**足してはいけない**のがこの構造
-  { categoryId: 'c2', stage: 2, labelJa: '初動対応', includes: ['c1', 'c1b'], sortOrder: 1 },
+  { categoryId: 'c2', track: 'infrastructure', stage: 2, labelJa: '初動対応', includes: ['c1', 'c1b'], sortOrder: 1 },
 ];
 
 const act = (id: string, cat: string, kind: ActionKind): Action => ({
@@ -140,5 +140,59 @@ describe('nextGoalOf — 3段階', () => {
 
   it('次の段階の項目が無ければ next-absent (0件を100%と数えない)', () => {
     expect(nextGoalOf(run(1, ['p1', 'p2', 'p3'], ['k1', 'k2']), null)).toBe('next-absent');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 項目が 0 件の段階 (2026-08-14)
+// ---------------------------------------------------------------------------
+// カテゴリを先に入れてアクションを後から書く、という普通の作業順で必ず通る状態。
+// 0/0 は knowledgeMet (0===0) も practiceMet (総数0) も真になるので、
+// ガードが無いと**空の段階が満点で達成扱い**になる。
+// `readyForNext` の注釈は元々そう書いてあったが、実装は `next !== null` しか
+// 見ておらず「カテゴリはあるがアクションが無い」段階を通していた。
+
+const emptyStage = (stage: number): StageProgress =>
+  stageProgress({
+    stage,
+    categories: [{ categoryId: `e${stage}`, track: 'it-support', stage, labelJa: '空', includes: [], sortOrder: 1 }],
+    actions: [],
+    actionChecks: {},
+    actionSoloChecks: {},
+    levelOfStage: () => 'solo',
+    levelOfAction: () => 'solo',
+  });
+
+describe('項目が 0 件の段階', () => {
+  it('hasContent が偽', () => {
+    expect(emptyStage(1).hasContent).toBe(false);
+  });
+
+  it('0/0 は知識・実務ともに「満たした」と出る — だからガードが要る', () => {
+    const e = emptyStage(1);
+    expect(e.knowledgeMet).toBe(true);
+    expect(e.practiceMet).toBe(true);
+  });
+
+  it('段階の目標は達成にしない', () => {
+    expect(stageGoalMet(emptyStage(1))).toBe(false);
+  });
+
+  it('次の段階が空なら「挑戦できる」にしない', () => {
+    const cur = stageProgress({
+      stage: 1,
+      categories: [{ categoryId: 'c1', track: 'it-support', stage: 1, labelJa: 'あり', includes: [], sortOrder: 1 }],
+      actions: [
+        { actionId: 'k1', categoryId: 'c1', statement: 'k', sortOrder: 1, kind: 'knowledge' },
+        { actionId: 'p1', categoryId: 'c1', statement: 'p', sortOrder: 2, kind: 'practice' },
+      ],
+      actionChecks: {},
+      actionSoloChecks: { k1: true, p1: true },
+      levelOfStage: () => 'solo',
+      levelOfAction: () => 'solo',
+    });
+    expect(stageGoalMet(cur)).toBe(true);          // 今の段階は満たしている
+    expect(readyForNext(cur, emptyStage(2))).toBe(false);
+    expect(nextGoalOf(cur, emptyStage(2))).toBe('next-absent');
   });
 });

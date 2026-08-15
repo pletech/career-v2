@@ -268,10 +268,24 @@ const CraftView: React.FC<CraftViewProps> = ({
     };
   };
 
-  const stagesDesc = useMemo(
-    () => [...new Set(categories.map((c) => c.stage))].sort((a, b) => b - a),
-    [categories],
-  );
+  /**
+   * 描く段階 (降順)。**アクションが1件も無い段階は外す** (2026-08-14)。
+   *
+   * カテゴリを先に入れてアクションを後から書くのが普通の作業順なので、
+   * 途中の状態では「カテゴリはあるがアクションが0件」の段階ができる。
+   * そのまま描くと 0/0 のカードが並び、**達成率100%・クリア扱い**で出てしまう
+   * (`knowledgeMet` は 0===0 で真、`practiceMet` も総数0で真)。
+   *
+   * ここで外すと、`coveredMin/Max` も自動で追従して「収録範囲」と
+   * 「STEP◯〜◯ は準備中」が正しく出る (どちらも stagesDesc から導いている)。
+   */
+  const stagesDesc = useMemo(() => {
+    const withActions = new Set(actions.map((a) => a.categoryId));
+    const stages = categories
+      .filter((c) => withActions.has(c.categoryId))
+      .map((c) => c.stage);
+    return [...new Set(stages)].sort((a, b) => b - a);
+  }, [categories, actions]);
   /** 最下段 (基礎)。この段より上のカテゴリの固有原子は「この段階で追加」= NEW 扱い */
   const minStage = useMemo(
     () => (categories.length > 0 ? Math.min(...categories.map((c) => c.stage)) : 1),
@@ -1008,12 +1022,48 @@ const CraftView: React.FC<CraftViewProps> = ({
                 `STEP${coveredMax + 1}${ladderMax > coveredMax + 1 ? `〜${ladderMax}` : ''} は順次拡張予定。`}
             </span>
           )}
-          <span>
-            {ko
-              ? '서버와 네트워크는 역할이 겹치는 부분이 많아 제1판에서는 공통 카테고리로 다룹니다(필요에 따라 향후 분할).'
-              : 'サーバーとネットワークは役割が重なるため、第1版では共通のカテゴリとして扱っています（必要に応じて今後分割します）。'}
-          </span>
+          {/*
+            これは**インフラだけの事情**。区分を絞らずに出していたので、
+            IT サポートを選んでも「サーバーとネットワークは…」が出ていた
+            (2026-08-14 に IT サポートの役割を入れて発覚)。
+            区分ごとの説明を足すなら、ここに並べるのではなく区分で分けること。
+          */}
+          {activeRoute?.track === 'infrastructure' && (
+            <span>
+              {ko
+                ? '서버와 네트워크는 역할이 겹치는 부분이 많아 제1판에서는 공통 카테고리로 다룹니다(필요에 따라 향후 분할).'
+                : 'サーバーとネットワークは役割が重なるため、第1版では共通のカテゴリとして扱っています（必要に応じて今後分割します）。'}
+            </span>
+          )}
         </div>
+
+        {/*
+          役割 (roles.csv) はあるが業務カテゴリがまだ無い区分。
+          **何も出さないと故障に見える** — 空白の画面は「壊れている」と読まれる。
+          IT サポートの役割を入れた時点で実際にそうなった (2026-08-14)。
+          段階の範囲は roles から分かるので、そこまでは言う。
+        */}
+        {stagesDesc.length === 0 && (
+          <div className="rounded-xl border border-dashed border-gray-300 bg-white px-4 py-6 text-center">
+            <p className="text-[12.5px] font-bold text-gray-600">
+              {ko ? '이 구분의 체크리스트는 준비 중입니다' : 'この区分のチェックリストは準備中です'}
+            </p>
+            <p className="mt-1.5 text-[11px] leading-relaxed text-gray-500">
+              {activeRoute && ladderMax !== null
+                ? ko
+                  ? `${TRACK_LABELS[activeRoute.track]} > ${activeRoute.subtrack} 는 STEP1〜${ladderMax} 의 단계가 정해져 있고, 업무 카테고리와 체크 항목을 순차적으로 추가할 예정입니다.`
+                  : `${TRACK_LABELS[activeRoute.track]} > ${activeRoute.subtrack} は STEP1〜${ladderMax} の段階が決まっており、業務カテゴリとチェック項目を順次追加していきます。`
+                : ko
+                  ? '업무 카테고리와 체크 항목을 순차적으로 추가할 예정입니다.'
+                  : '業務カテゴリとチェック項目を順次追加していきます。'}
+            </p>
+            <p className="mt-1.5 text-[10.5px] leading-relaxed text-gray-400">
+              {ko
+                ? '단계별 역할은 「전체 맵」에서 볼 수 있습니다.'
+                : '段階ごとの役割は「全体マップ」で確認できます。'}
+            </p>
+          </div>
+        )}
 
         <div className="flex flex-col gap-3">
           {stagesDesc.map((stage) => {

@@ -63,17 +63,17 @@ const weaponsCsv = [
 
 // v2.7d カテゴリモデル
 const categoriesCsv = [
-  'categoryId,stage,labelJa,labelKo,includes,sortOrder',
-  'c1-inquiry,1,問い合わせ対応,문의 대응,,1',
-  'c1-reporting,1,記録・報告,기록·보고,,2',
-  'c2-triage,2,監視・一次対応,감시·일차 대응,c1-inquiry|c1-reporting,1',
+  'categoryId,track,stage,labelJa,labelKo,includes,sortOrder',
+  'c1-inquiry,infrastructure,1,問い合わせ対応,문의 대응,,1',
+  'c1-reporting,infrastructure,1,記録・報告,기록·보고,,2',
+  'c2-triage,infrastructure,2,監視・一次対応,감시·일차 대응,c1-inquiry|c1-reporting,1',
 ].join('\n');
 
 // v2.7n 推奨資格
 const certsCsv = [
-  'certId,stage,nameJa,nameKo,note,noteKo,sortOrder',
-  'cert-1,1,ITパスポート,IT 패스포트,基礎,기초,1',
-  'cert-2,2,CCNA,CCNA,,,1',
+  'certId,track,stage,nameJa,nameKo,note,noteKo,sortOrder',
+  'cert-1,infrastructure,1,ITパスポート,IT 패스포트,基礎,기초,1',
+  'cert-2,infrastructure,2,CCNA,CCNA,,,1',
 ].join('\n');
 
 /** validateReferences 用のフルデータセットを組み立てる */
@@ -249,5 +249,38 @@ describe('loadLadderData の CSV 変換 (CSV が DB — 確定 #24)', () => {
       weapons: parseWeapons(weaponsCsv.replace('at1|at2|at3', 'at1|atX')),
     });
     expect(() => validateReferences(data)).toThrow(/composedOf/);
+  });
+});
+
+/**
+ * 職種 (track) は必須で、値も検査する (v2.15)。
+ *
+ * 綴り違いを黙って通すと、その行はどの職種にも属さず**画面から静かに消える**。
+ * 段階番号の意味は職種ごとに違うので、混ざるとクリア比率まで狂う (HANDOFF §4b)。
+ */
+describe('categories / certs の track (v2.15)', () => {
+  it('track を読む', () => {
+    expect(parseCategories(categoriesCsv)[0].track).toBe('infrastructure');
+    expect(parseCerts(certsCsv)[0].track).toBe('infrastructure');
+  });
+
+  it('track の列が無ければエラー', () => {
+    const csv = ['categoryId,stage,labelJa,sortOrder', 'c1,1,問い合わせ,1'].join('\n');
+    expect(() => parseCategories(csv)).toThrow(/track/);
+  });
+
+  it('track が空ならエラー', () => {
+    const csv = ['categoryId,track,stage,labelJa,sortOrder', 'c1,,1,問い合わせ,1'].join('\n');
+    expect(() => parseCategories(csv)).toThrow(/track/);
+  });
+
+  it('綴り違いを黙って通さない', () => {
+    const csv = ['categoryId,track,stage,labelJa,sortOrder', 'c1,it-suport,1,問い合わせ,1'].join('\n');
+    expect(() => parseCategories(csv)).toThrow(/it-support/);
+  });
+
+  it('certs も同じ', () => {
+    const csv = ['certId,track,stage,nameJa,sortOrder', 'x,infra,1,ITパスポート,1'].join('\n');
+    expect(() => parseCerts(csv)).toThrow(/track/);
   });
 });

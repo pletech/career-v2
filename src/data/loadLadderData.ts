@@ -268,11 +268,12 @@ export function parseActions(csvText: string): Action[] {
 /** certs (v2.7n): 段階別の推奨資格 (参考) */
 export function parseCerts(csvText: string): Cert[] {
   const rows = csvToObjects(csvText);
-  requireHeaders(rows, ['certId', 'stage', 'nameJa', 'sortOrder'], 'certs.csv');
+  requireHeaders(rows, ['certId', 'track', 'stage', 'nameJa', 'sortOrder'], 'certs.csv');
   const certs = rows.map((r) => {
     const certId = requireValue(r, 'certId', 'certs.csv', r.certId || '(空)');
     return {
       certId,
+      track: requireTrack(r.track, 'certs.csv', certId),
       stage: toNumber(r.stage, 'stage', 'certs.csv', certId),
       nameJa: requireValue(r, 'nameJa', 'certs.csv', certId),
       sortOrder: toNumber(r.sortOrder, 'sortOrder', 'certs.csv', certId),
@@ -285,14 +286,27 @@ export function parseCerts(csvText: string): Cert[] {
   return certs;
 }
 
+/**
+ * 職種を読む。**綴り違いを黙って通さない** — 通すと `it-suport` のような行が
+ * どの職種にも属さず、画面から静かに消える (エラーも出ない)。
+ */
+function requireTrack(value: string | undefined, file: string, id: string): TrackId {
+  const v = (value ?? '').trim();
+  if (v === 'infrastructure' || v === 'development' || v === 'it-support') return v;
+  throw new LadderDataError(
+    `${file}: ${id} の track は infrastructure / development / it-support のみです: ${v || '(空)'}`,
+  );
+}
+
 /** categories (v2.7d): 段階別カテゴリ + 下位カテゴリ包含 */
 export function parseCategories(csvText: string): Category[] {
   const rows = csvToObjects(csvText);
-  requireHeaders(rows, ['categoryId', 'stage', 'labelJa', 'sortOrder'], 'categories.csv');
+  requireHeaders(rows, ['categoryId', 'track', 'stage', 'labelJa', 'sortOrder'], 'categories.csv');
   const categories = rows.map((r) => {
     const categoryId = requireValue(r, 'categoryId', 'categories.csv', r.categoryId || '(空)');
     return {
       categoryId,
+      track: requireTrack(r.track, 'categories.csv', categoryId),
       stage: toNumber(r.stage, 'stage', 'categories.csv', categoryId),
       labelJa: requireValue(r, 'labelJa', 'categories.csv', categoryId),
       includes: toList(r.includes ?? ''),
