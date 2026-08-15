@@ -186,9 +186,12 @@ const CraftView: React.FC<CraftViewProps> = ({
   const actionsByCat = useMemo(() => {
     const m = new Map<string, Action[]>();
     for (const a of actions) {
-      const list = m.get(a.categoryId);
-      if (list) list.push(a);
-      else m.set(a.categoryId, [a]);
+      // 1つのアクションが複数カテゴリに載る (v2.16)。どちらの一覧にも出す
+      for (const cid of a.categoryIds) {
+        const list = m.get(cid);
+        if (list) list.push(a);
+        else m.set(cid, [a]);
+      }
     }
     for (const list of m.values()) list.sort((a, b) => a.sortOrder - b.sortOrder);
     return m;
@@ -280,7 +283,7 @@ const CraftView: React.FC<CraftViewProps> = ({
    * 「STEP◯〜◯ は準備中」が正しく出る (どちらも stagesDesc から導いている)。
    */
   const stagesDesc = useMemo(() => {
-    const withActions = new Set(actions.map((a) => a.categoryId));
+    const withActions = new Set(actions.flatMap((a) => a.categoryIds));
     const stages = categories
       .filter((c) => withActions.has(c.categoryId))
       .map((c) => c.stage);

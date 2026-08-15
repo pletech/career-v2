@@ -8,7 +8,7 @@ import { DEFAULT_TARGET, useLadderState } from '../../state/useLadderState';
 import InterviewPanel from '../interview/InterviewPanel';
 import CraftView from '../roadmap/CraftView';
 import MyPageView from '../roadmap/MyPageView';
-import { scopeToTrack } from '../../domain/stageProgress';
+import { scopeToRoute } from '../../domain/stageProgress';
 import { TRACK_LABELS } from '../../types/career';
 import TargetSelector from '../selector/TargetSelector';
 import LadderView from './LadderView';
@@ -295,14 +295,14 @@ const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps', onNavigate 
   // (ドロワーは CraftView が自前で持つ)
   if (mode === 'roadmap' || mode === 'mypage') {
     /**
-     * **職種で絞ってから渡す** (v2.15 / HANDOFF §4b)。
-     * 絞り方は `scopeToTrack` が持つ — ここに書くと、消しても何も落ちない。
+     * **ルート (職種 × 分類) で絞ってから渡す** (v2.16 / HANDOFF §4b)。
+     * 絞り方は `scopeToRoute` が持つ — ここに書くと、消しても何も落ちない。
      */
     const {
       categories: routeCategories,
       actions: routeActions,
       certs: routeCerts,
-    } = scopeToTrack(activeRoute?.track ?? null, data);
+    } = scopeToRoute(activeRoute, data);
 
     // ルート内の役割だけを渡す。旧ビューの targetRole は参照しない
     const routeRoles = activeRoute

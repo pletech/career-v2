@@ -1,4 +1,4 @@
-actionId,categoryId,statement,statementKo,sortOrder,kind,addedOn
+actionId,categoryIds,statement,statementKo,sortOrder,kind,addedOn
 t1-01,c1-inquiry,電話で問い合わせを受け付けられる,전화로 문의를 접수할 수 있다,1,practice,2026-07-23
 t1-02,c1-inquiry,メールで問い合わせを受け付けられる,메일로 문의를 접수할 수 있다,2,practice,2026-07-23
 t1-03,c1-inquiry,チャットツールで問い合わせを受け付けられる,채팅 도구로 문의를 접수할 수 있다,3,practice,2026-07-23
@@ -351,17 +351,17 @@ hd1-manner-06,hd1-manner,対応の最後に解決したかを確認できる,대
 hd1-manner-07,hd1-manner,電話やメールでの基本的な言葉づかいを説明できる,전화·메일의 기본적인 말투를 설명할 수 있다,7,knowledge,2026-08-15
 hd1-manner-08,hd1-manner,一次対応で約束してはいけないことを説明できる,1차 대응에서 약속하면 안 되는 것을 설명할 수 있다,8,knowledge,2026-08-15
 hd1-manner-09,hd1-manner,利用者が何に困っているかを聞き出す質問の仕方を説明できる,이용자가 무엇에 곤란한지 끌어내는 질문법을 설명할 수 있다,9,knowledge,2026-08-15
-hd1-itbasics-01,hd1-itbasics,PC・OSの基本用語を説明できる,PC·OS의 기본 용어를 설명할 수 있다,1,knowledge,2026-08-15
-hd1-itbasics-02,hd1-itbasics,ネットワークの基本用語（IP・DNS・Wi-Fi など）を説明できる,네트워크 기본 용어(IP·DNS·Wi-Fi 등)를 설명할 수 있다,2,knowledge,2026-08-15
-hd1-itbasics-03,hd1-itbasics,サーバーとクライアントの違いを説明できる,서버와 클라이언트의 차이를 설명할 수 있다,3,knowledge,2026-08-15
-hd1-itbasics-04,hd1-itbasics,クラウドサービスとは何か説明できる,클라우드 서비스란 무엇인지 설명할 수 있다,4,knowledge,2026-08-15
-hd1-itbasics-05,hd1-itbasics,認証と認可の違いを説明できる,인증과 인가의 차이를 설명할 수 있다,5,knowledge,2026-08-15
-hd1-itbasics-06,hd1-itbasics,ファイル形式・拡張子の違いを説明できる,파일 형식·확장자의 차이를 설명할 수 있다,6,knowledge,2026-08-15
+hd1-itbasics-01,hd1-itbasics|ad1-itbasics,PC・OSの基本用語を説明できる,PC·OS의 기본 용어를 설명할 수 있다,1,knowledge,2026-08-15
+hd1-itbasics-02,hd1-itbasics|ad1-itbasics,ネットワークの基本用語（IP・DNS・Wi-Fi など）を説明できる,네트워크 기본 용어(IP·DNS·Wi-Fi 등)를 설명할 수 있다,2,knowledge,2026-08-15
+hd1-itbasics-03,hd1-itbasics|ad1-itbasics,サーバーとクライアントの違いを説明できる,서버와 클라이언트의 차이를 설명할 수 있다,3,knowledge,2026-08-15
+hd1-itbasics-04,hd1-itbasics|ad1-itbasics,クラウドサービスとは何か説明できる,클라우드 서비스란 무엇인지 설명할 수 있다,4,knowledge,2026-08-15
+hd1-itbasics-05,hd1-itbasics|ad1-itbasics,認証と認可の違いを説明できる,인증과 인가의 차이를 설명할 수 있다,5,knowledge,2026-08-15
+hd1-itbasics-06,hd1-itbasics|ad1-itbasics,ファイル形式・拡張子の違いを説明できる,파일 형식·확장자의 차이를 설명할 수 있다,6,knowledge,2026-08-15
 hd1-itbasics-07,hd1-itbasics,基本的なログから時刻と事象を読み取れる,기본적인 로그에서 시각과 사상을 읽어낼 수 있다,7,knowledge,2026-08-15
-hd1-itbasics-08,hd1-itbasics,社内で使う主なシステムの用途を説明できる,사내에서 쓰는 주요 시스템의 용도를 설명할 수 있다,8,knowledge,2026-08-15
+hd1-itbasics-08,hd1-itbasics|ad1-itbasics,社内で使う主なシステムの用途を説明できる,사내에서 쓰는 주요 시스템의 용도를 설명할 수 있다,8,knowledge,2026-08-15
 hd1-itbasics-09,hd1-itbasics,障害・インシデント・要望の違いを説明できる,장애·인시던트·요망의 차이를 설명할 수 있다,9,knowledge,2026-08-15
-hd1-itbasics-10,hd1-itbasics,分からない用語を自分で調べて確認できる,모르는 용어를 스스로 찾아 확인할 수 있다,10,practice,2026-08-15
-hd1-itbasics-11,hd1-itbasics,調べた内容を自分の言葉で説明できる,찾은 내용을 자기 말로 설명할 수 있다,11,practice,2026-08-15
+hd1-itbasics-10,hd1-itbasics|ad1-itbasics,分からない用語を自分で調べて確認できる,모르는 용어를 스스로 찾아 확인할 수 있다,10,practice,2026-08-15
+hd1-itbasics-11,hd1-itbasics|ad1-itbasics,調べた内容を自分の言葉で説明できる,찾은 내용을 자기 말로 설명할 수 있다,11,practice,2026-08-15
 hd1-security-01,hd1-security,情報の取り扱いルールを説明できる,정보 취급 규칙을 설명할 수 있다,1,knowledge,2026-08-15
 hd1-security-02,hd1-security,パスワードの取り扱いルールを説明できる,비밀번호 취급 규칙을 설명할 수 있다,2,knowledge,2026-08-15
 hd1-security-03,hd1-security,フィッシングや不審メールの見分け方を説明できる,피싱·수상한 메일의 구분법을 설명할 수 있다,3,knowledge,2026-08-15
@@ -371,13 +371,13 @@ hd1-security-06,hd1-security,利用者にパスワードを聞かない対応が
 hd1-security-07,hd1-security,不審な依頼をその場で実行せず確認できる,수상한 의뢰를 그 자리에서 실행하지 않고 확인할 수 있다,7,practice,2026-08-15
 hd1-security-08,hd1-security,画面や資料の取り扱いに配慮できる,화면·자료 취급에 배려할 수 있다,8,practice,2026-08-15
 hd1-security-09,hd1-security,端末の施錠やロックを徹底できる,단말 시건·잠금을 철저히 할 수 있다,9,practice,2026-08-15
-hd1-site-01,hd1-site,自分のチームの役割を説明できる,자기 팀의 역할을 설명할 수 있다,1,knowledge,2026-08-15
-hd1-site-02,hd1-site,エスカレーション先と連絡手段を説明できる,에스컬레이션처와 연락 수단을 설명할 수 있다,2,knowledge,2026-08-15
-hd1-site-03,hd1-site,対応時間とシフトの体制を説明できる,대응 시간과 시프트 체제를 설명할 수 있다,3,knowledge,2026-08-15
-hd1-site-04,hd1-site,主な利用者部署とその業務を説明できる,주요 이용자 부서와 그 업무를 설명할 수 있다,4,knowledge,2026-08-15
-hd1-site-05,hd1-site,SLAや対応目標時間の考え方を説明できる,SLA·대응 목표 시간의 사고방식을 설명할 수 있다,5,knowledge,2026-08-15
-hd1-site-06,hd1-site,体制図や連絡先を参照して連絡できる,체제도·연락처를 참조해 연락할 수 있다,6,practice,2026-08-15
-hd1-site-07,hd1-site,分からないことを聞ける相手を見つけられる,모르는 것을 물어볼 상대를 찾아낼 수 있다,7,practice,2026-08-15
+hd1-site-01,hd1-site|ad1-site,自分のチームの役割を説明できる,자기 팀의 역할을 설명할 수 있다,1,knowledge,2026-08-15
+hd1-site-02,hd1-site|ad1-site,エスカレーション先と連絡手段を説明できる,에스컬레이션처와 연락 수단을 설명할 수 있다,2,knowledge,2026-08-15
+hd1-site-03,hd1-site|ad1-site,対応時間とシフトの体制を説明できる,대응 시간과 시프트 체제를 설명할 수 있다,3,knowledge,2026-08-15
+hd1-site-04,hd1-site|ad1-site,主な利用者部署とその業務を説明できる,주요 이용자 부서와 그 업무를 설명할 수 있다,4,knowledge,2026-08-15
+hd1-site-05,hd1-site|ad1-site,SLAや対応目標時間の考え方を説明できる,SLA·대응 목표 시간의 사고방식을 설명할 수 있다,5,knowledge,2026-08-15
+hd1-site-06,hd1-site|ad1-site,体制図や連絡先を参照して連絡できる,체제도·연락처를 참조해 연락할 수 있다,6,practice,2026-08-15
+hd1-site-07,hd1-site|ad1-site,分からないことを聞ける相手を見つけられる,모르는 것을 물어볼 상대를 찾아낼 수 있다,7,practice,2026-08-15
 hd2-assess-01,hd2-assess,一次対応から引き継いだ内容を確認して不足を補える,1차 대응에서 인계받은 내용을 확인해 부족한 부분을 보완할 수 있다,1,practice,2026-08-15
 hd2-assess-02,hd2-assess,利用者に追加のヒアリングができる,이용자에게 추가 청취를 할 수 있다,2,practice,2026-08-15
 hd2-assess-03,hd2-assess,事象の発生条件を特定できる,사상의 발생 조건을 특정할 수 있다,3,practice,2026-08-15
@@ -498,3 +498,194 @@ hd3-knowledge-06,hd3-knowledge,使われていないナレッジを見直せる,
 hd3-knowledge-07,hd3-knowledge,ナレッジの置き場所と探し方を整理できる,지식의 보관 장소와 찾는 법을 정리할 수 있다,7,practice,2026-08-15
 hd3-knowledge-08,hd3-knowledge,手順書に書くべき粒度を説明できる,절차서에 써야 할 입도를 설명할 수 있다,8,knowledge,2026-08-15
 hd3-knowledge-09,hd3-knowledge,FAQ にする基準を説明できる,FAQ로 만드는 기준을 설명할 수 있다,9,knowledge,2026-08-15
+ad1-intake-01,ad1-intake,メールで届いた依頼を受け付けられる,메일로 온 의뢰를 접수할 수 있다,1,practice,2026-08-15
+ad1-intake-02,ad1-intake,社内システムから申請を受け付けられる,사내 시스템에서 신청을 접수할 수 있다,2,practice,2026-08-15
+ad1-intake-03,ad1-intake,依頼内容と期限を確認して記録できる,의뢰 내용과 기한을 확인해 기록할 수 있다,3,practice,2026-08-15
+ad1-intake-04,ad1-intake,依頼者と依頼部署を確認できる,의뢰자와 의뢰 부서를 확인할 수 있다,4,practice,2026-08-15
+ad1-intake-05,ad1-intake,受け付けた旨を依頼者へ返せる,접수했음을 의뢰자에게 회신할 수 있다,5,practice,2026-08-15
+ad1-intake-06,ad1-intake,依頼を管理表に登録できる,의뢰를 관리표에 등록할 수 있다,6,practice,2026-08-15
+ad1-intake-07,ad1-intake,受付の重複や取り下げに気づける,접수 중복이나 철회를 알아챌 수 있다,7,practice,2026-08-15
+ad1-intake-08,ad1-intake,受け付けてよい依頼の範囲を説明できる,접수해도 되는 의뢰의 범위를 설명할 수 있다,8,knowledge,2026-08-15
+ad1-intake-09,ad1-intake,受付時に確認すべき項目を説明できる,접수 시 확인해야 할 항목을 설명할 수 있다,9,knowledge,2026-08-15
+ad1-verify-01,ad1-verify,申請書の記入内容を確認できる,신청서의 기재 내용을 확인할 수 있다,1,practice,2026-08-15
+ad1-verify-02,ad1-verify,添付資料の内容を確認できる,첨부 자료의 내용을 확인할 수 있다,2,practice,2026-08-15
+ad1-verify-03,ad1-verify,PDFや画像の資料を読み取って確認できる,PDF·이미지 자료를 읽어 확인할 수 있다,3,practice,2026-08-15
+ad1-verify-04,ad1-verify,申請内容と社内ルールの整合を確認できる,신청 내용과 사내 규칙의 정합성을 확인할 수 있다,4,practice,2026-08-15
+ad1-verify-05,ad1-verify,過去の同種申請と照らして確認できる,과거의 같은 종류 신청과 대조해 확인할 수 있다,5,practice,2026-08-15
+ad1-verify-06,ad1-verify,金額や日付などの数値を確認できる,금액·날짜 등 수치를 확인할 수 있다,6,practice,2026-08-15
+ad1-verify-07,ad1-verify,誤りを見つけたとき申請者へ差し戻せる,오류를 발견했을 때 신청자에게 반려할 수 있다,7,practice,2026-08-15
+ad1-verify-08,ad1-verify,確認すべき項目とその優先順を説明できる,확인해야 할 항목과 그 우선순위를 설명할 수 있다,8,knowledge,2026-08-15
+ad1-verify-09,ad1-verify,差し戻す場合と補記で済む場合の違いを説明できる,반려할 경우와 보완 기재로 끝나는 경우의 차이를 설명할 수 있다,9,knowledge,2026-08-15
+ad1-verify-10,ad1-verify,誤りが後工程に与える影響を説明できる,오류가 후속 공정에 미치는 영향을 설명할 수 있다,10,knowledge,2026-08-15
+ad1-check-01,ad1-check,チェックリストに沿って必要書類の有無を確認できる,체크리스트에 따라 필요 서류의 유무를 확인할 수 있다,1,practice,2026-08-15
+ad1-check-02,ad1-check,不足している書類を特定できる,부족한 서류를 특정할 수 있다,2,practice,2026-08-15
+ad1-check-03,ad1-check,不足分の提出を依頼者へ依頼できる,부족분의 제출을 의뢰자에게 요청할 수 있다,3,practice,2026-08-15
+ad1-check-04,ad1-check,提出期限を伝えて追跡できる,제출 기한을 전달하고 추적할 수 있다,4,practice,2026-08-15
+ad1-check-05,ad1-check,揃った時点で次工程へ渡せる,갖춰진 시점에 다음 공정으로 넘길 수 있다,5,practice,2026-08-15
+ad1-check-06,ad1-check,例外的に不足のまま進める判断を仰げる,예외적으로 부족한 채 진행하는 판단을 상신할 수 있다,6,practice,2026-08-15
+ad1-check-07,ad1-check,申請の種類ごとに必要な書類を説明できる,신청 종류별로 필요한 서류를 설명할 수 있다,7,knowledge,2026-08-15
+ad1-check-08,ad1-check,不備と不足の違いを説明できる,불비와 부족의 차이를 설명할 수 있다,8,knowledge,2026-08-15
+ad1-check-09,ad1-check,書類が揃わないまま進めた場合のリスクを説明できる,서류가 갖춰지지 않은 채 진행했을 때의 위험을 설명할 수 있다,9,knowledge,2026-08-15
+ad1-routine-01,ad1-routine,社内システムへ定型的な入力ができる,사내 시스템에 정형 입력을 할 수 있다,1,practice,2026-08-15
+ad1-routine-02,ad1-routine,手順書に沿って登録作業ができる,절차서에 따라 등록 작업을 할 수 있다,2,practice,2026-08-15
+ad1-routine-03,ad1-routine,既存データの更新作業ができる,기존 데이터의 갱신 작업을 할 수 있다,3,practice,2026-08-15
+ad1-routine-04,ad1-routine,入力後に内容を見直して誤りを防げる,입력 후 내용을 재확인해 오류를 막을 수 있다,4,practice,2026-08-15
+ad1-routine-05,ad1-routine,一括処理をルールに沿って実施できる,일괄 처리를 규칙에 따라 실시할 수 있다,5,practice,2026-08-15
+ad1-routine-06,ad1-routine,処理件数と処理日を記録できる,처리 건수와 처리일을 기록할 수 있다,6,practice,2026-08-15
+ad1-routine-07,ad1-routine,締切に間に合うよう自分の作業を配分できる,마감에 맞추도록 자기 작업을 배분할 수 있다,7,practice,2026-08-15
+ad1-routine-08,ad1-routine,手順書に無い操作を求められたとき確認できる,절차서에 없는 조작을 요구받았을 때 확인할 수 있다,8,practice,2026-08-15
+ad1-routine-09,ad1-routine,入力ミスが起きやすい箇所を説明できる,입력 실수가 나기 쉬운 곳을 설명할 수 있다,9,knowledge,2026-08-15
+ad1-routine-10,ad1-routine,手順書の版と参照先を説明できる,절차서의 판과 참조처를 설명할 수 있다,10,knowledge,2026-08-15
+ad1-record-01,ad1-record,処理結果を管理表に記録できる,처리 결과를 관리표에 기록할 수 있다,1,practice,2026-08-15
+ad1-record-02,ad1-record,誰が何をいつ処理したか残せる,누가 무엇을 언제 처리했는지 남길 수 있다,2,practice,2026-08-15
+ad1-record-03,ad1-record,処理結果を依頼者へ共有できる,처리 결과를 의뢰자에게 공유할 수 있다,3,practice,2026-08-15
+ad1-record-04,ad1-record,関係部署へ必要な範囲で共有できる,관계 부서에 필요한 범위로 공유할 수 있다,4,practice,2026-08-15
+ad1-record-05,ad1-record,後から読む人が分かる書き方で記録できる,나중에 읽는 사람이 알 수 있는 방식으로 기록할 수 있다,5,practice,2026-08-15
+ad1-record-06,ad1-record,判断に迷ったときに相談できる,판단이 망설여질 때 상담할 수 있다,6,practice,2026-08-15
+ad1-record-07,ad1-record,記録に残す項目を説明できる,기록에 남길 항목을 설명할 수 있다,7,knowledge,2026-08-15
+ad1-record-08,ad1-record,共有する相手と範囲の決め方を説明できる,공유할 상대와 범위를 정하는 방법을 설명할 수 있다,8,knowledge,2026-08-15
+ad1-record-09,ad1-record,報告・連絡・相談の使い分けを説明できる,보고·연락·상담의 구분을 설명할 수 있다,9,knowledge,2026-08-15
+ad1-escalate-01,ad1-escalate,自分で判断してよい範囲を見極められる,스스로 판단해도 되는 범위를 가늠할 수 있다,1,practice,2026-08-15
+ad1-escalate-02,ad1-escalate,判断がつかない案件を上位へ相談できる,판단이 서지 않는 안건을 상위에 상담할 수 있다,2,practice,2026-08-15
+ad1-escalate-03,ad1-escalate,相談時に経緯と論点を整理して伝えられる,상담 시 경위와 논점을 정리해 전달할 수 있다,3,practice,2026-08-15
+ad1-escalate-04,ad1-escalate,承認が必要な依頼を判断して回せる,승인이 필요한 의뢰를 판단해 회부할 수 있다,4,practice,2026-08-15
+ad1-escalate-05,ad1-escalate,相談した結果を記録して次に活かせる,상담 결과를 기록해 다음에 활용할 수 있다,5,practice,2026-08-15
+ad1-escalate-06,ad1-escalate,自分の判断範囲を説明できる,자기 판단 범위를 설명할 수 있다,6,knowledge,2026-08-15
+ad1-escalate-07,ad1-escalate,承認が必要な依頼の条件を説明できる,승인이 필요한 의뢰의 조건을 설명할 수 있다,7,knowledge,2026-08-15
+ad1-escalate-08,ad1-escalate,相談するときに必ず添える情報を説明できる,상담할 때 반드시 첨부할 정보를 설명할 수 있다,8,knowledge,2026-08-15
+ad1-office-01,ad1-office,文書を作成して体裁を整えられる,문서를 작성하고 체재를 정리할 수 있다,1,practice,2026-08-15
+ad1-office-02,ad1-office,表を作成して見やすく整えられる,표를 작성해 보기 쉽게 정리할 수 있다,2,practice,2026-08-15
+ad1-office-03,ad1-office,表計算の基本的な関数を使える,스프레드시트의 기본 함수를 쓸 수 있다,3,practice,2026-08-15
+ad1-office-04,ad1-office,データの並べ替えや絞り込みができる,데이터 정렬·필터링을 할 수 있다,4,practice,2026-08-15
+ad1-office-05,ad1-office,PDF の作成と結合ができる,PDF 작성과 병합을 할 수 있다,5,practice,2026-08-15
+ad1-office-06,ad1-office,定型フォーマットを崩さずに更新できる,정형 포맷을 무너뜨리지 않고 갱신할 수 있다,6,practice,2026-08-15
+ad1-office-07,ad1-office,資料を印刷・配布できる形に整えられる,자료를 인쇄·배포 가능한 형태로 정리할 수 있다,7,practice,2026-08-15
+ad1-office-08,ad1-office,表計算でよく使う関数と用途を説明できる,스프레드시트에서 자주 쓰는 함수와 용도를 설명할 수 있다,8,knowledge,2026-08-15
+ad1-office-09,ad1-office,ファイル形式ごとの使い分けを説明できる,파일 형식별 사용 구분을 설명할 수 있다,9,knowledge,2026-08-15
+ad1-office-10,ad1-office,文字化けや書式崩れのよくある原因を説明できる,문자 깨짐·서식 붕괴의 흔한 원인을 설명할 수 있다,10,knowledge,2026-08-15
+ad1-manner-01,ad1-manner,依頼者へ手続きの流れを説明できる,의뢰자에게 절차의 흐름을 설명할 수 있다,1,practice,2026-08-15
+ad1-manner-02,ad1-manner,必要な情報を過不足なく聞き取れる,필요한 정보를 과부족 없이 청취할 수 있다,2,practice,2026-08-15
+ad1-manner-03,ad1-manner,待たせるときに理由と目安を伝えられる,기다리게 할 때 이유와 예상 시간을 전달할 수 있다,3,practice,2026-08-15
+ad1-manner-04,ad1-manner,できないことを理由とともに伝えられる,할 수 없는 것을 이유와 함께 전달할 수 있다,4,practice,2026-08-15
+ad1-manner-05,ad1-manner,催促を角が立たない形で伝えられる,독촉을 모나지 않게 전달할 수 있다,5,practice,2026-08-15
+ad1-manner-06,ad1-manner,依頼者の意図を確認してから進められる,의뢰자의 의도를 확인한 뒤 진행할 수 있다,6,practice,2026-08-15
+ad1-manner-07,ad1-manner,社内向けの基本的な言葉づかいを説明できる,사내용 기본적인 말투를 설명할 수 있다,7,knowledge,2026-08-15
+ad1-manner-08,ad1-manner,独断で約束してはいけないことを説明できる,독단으로 약속하면 안 되는 것을 설명할 수 있다,8,knowledge,2026-08-15
+ad1-manner-09,ad1-manner,依頼内容が曖昧なときの聞き方を説明できる,의뢰 내용이 모호할 때의 질문법을 설명할 수 있다,9,knowledge,2026-08-15
+ad1-security-01,ad1-security,個人情報にあたるものを説明できる,개인정보에 해당하는 것을 설명할 수 있다,1,knowledge,2026-08-15
+ad1-security-02,ad1-security,書類の保管と廃棄のルールを説明できる,서류의 보관·폐기 규칙을 설명할 수 있다,2,knowledge,2026-08-15
+ad1-security-03,ad1-security,情報を共有してよい範囲を説明できる,정보를 공유해도 되는 범위를 설명할 수 있다,3,knowledge,2026-08-15
+ad1-security-04,ad1-security,持ち出し・送付のルールを説明できる,반출·송부 규칙을 설명할 수 있다,4,knowledge,2026-08-15
+ad1-security-05,ad1-security,事故を起こした場合や見つけた場合の連絡先を説明できる,사고를 냈거나 발견했을 때의 연락처를 설명할 수 있다,5,knowledge,2026-08-15
+ad1-security-06,ad1-security,宛先や添付を送信前に確認できる,수신처·첨부를 발송 전에 확인할 수 있다,6,practice,2026-08-15
+ad1-security-07,ad1-security,机上や画面に書類を放置しない対応ができる,책상·화면에 서류를 방치하지 않는 대응을 할 수 있다,7,practice,2026-08-15
+ad1-security-08,ad1-security,不審な依頼をその場で処理せず確認できる,수상한 의뢰를 그 자리에서 처리하지 않고 확인할 수 있다,8,practice,2026-08-15
+ad1-security-09,ad1-security,保管期限を守って書類を扱える,보관 기한을 지켜 서류를 다룰 수 있다,9,practice,2026-08-15
+ad1-security-10,ad1-security,共有設定を必要な範囲に絞れる,공유 설정을 필요한 범위로 좁힐 수 있다,10,practice,2026-08-15
+ad2-gap-01,ad2-gap,申請内容から不足している情報を洗い出せる,신청 내용에서 부족한 정보를 찾아낼 수 있다,1,practice,2026-08-15
+ad2-gap-02,ad2-gap,確認すべき点を整理して一覧にできる,확인할 점을 정리해 목록으로 만들 수 있다,2,practice,2026-08-15
+ad2-gap-03,ad2-gap,誰に確認すべきか判断できる,누구에게 확인해야 할지 판단할 수 있다,3,practice,2026-08-15
+ad2-gap-04,ad2-gap,確認依頼をまとめて出せる,확인 의뢰를 한꺼번에 낼 수 있다,4,practice,2026-08-15
+ad2-gap-05,ad2-gap,回答期限を設けて追跡できる,회신 기한을 정하고 추적할 수 있다,5,practice,2026-08-15
+ad2-gap-06,ad2-gap,回答が揃わないとき代替の進め方を出せる,회신이 갖춰지지 않을 때 대체 진행 방법을 낼 수 있다,6,practice,2026-08-15
+ad2-gap-07,ad2-gap,確認結果を申請内容へ反映できる,확인 결과를 신청 내용에 반영할 수 있다,7,practice,2026-08-15
+ad2-gap-08,ad2-gap,洗い出しで見落としやすい観点を説明できる,파악 시 놓치기 쉬운 관점을 설명할 수 있다,8,knowledge,2026-08-15
+ad2-gap-09,ad2-gap,まとめて確認する利点を説明できる,한꺼번에 확인하는 이점을 설명할 수 있다,9,knowledge,2026-08-15
+ad2-coordinate-01,ad2-coordinate,申請者と担当部署の間に立って調整できる,신청자와 담당 부서 사이에서 조정할 수 있다,1,practice,2026-08-15
+ad2-coordinate-02,ad2-coordinate,複数部署にまたがる依頼を取りまとめられる,여러 부서에 걸친 의뢰를 취합할 수 있다,2,practice,2026-08-15
+ad2-coordinate-03,ad2-coordinate,関係者の都合を踏まえて日程を調整できる,관계자의 사정을 고려해 일정을 조정할 수 있다,3,practice,2026-08-15
+ad2-coordinate-04,ad2-coordinate,意見が食い違う点を整理して合意を作れる,의견이 엇갈리는 점을 정리해 합의를 만들 수 있다,4,practice,2026-08-15
+ad2-coordinate-05,ad2-coordinate,決まったことを関係者へ周知できる,정해진 것을 관계자에게 주지시킬 수 있다,5,practice,2026-08-15
+ad2-coordinate-06,ad2-coordinate,相手に応じて伝え方を変えられる,상대에 따라 전달 방식을 바꿀 수 있다,6,practice,2026-08-15
+ad2-coordinate-07,ad2-coordinate,情報を渡してよい範囲を判断できる,정보를 전달해도 되는 범위를 판단할 수 있다,7,practice,2026-08-15
+ad2-coordinate-08,ad2-coordinate,調整が難航しやすい場面を説明できる,조정이 난항을 겪기 쉬운 상황을 설명할 수 있다,8,knowledge,2026-08-15
+ad2-coordinate-09,ad2-coordinate,部署ごとの役割と窓口を説明できる,부서별 역할과 창구를 설명할 수 있다,9,knowledge,2026-08-15
+ad2-coordinate-10,ad2-coordinate,共有してよい情報の線引きを説明できる,공유해도 되는 정보의 경계를 설명할 수 있다,10,knowledge,2026-08-15
+ad2-order-01,ad2-order,依頼事項を分解して作業単位にできる,의뢰 사항을 분해해 작업 단위로 만들 수 있다,1,practice,2026-08-15
+ad2-order-02,ad2-order,依存関係を踏まえて順序を決められる,의존 관계를 고려해 순서를 정할 수 있다,2,practice,2026-08-15
+ad2-order-03,ad2-order,締切から逆算して着手日を決められる,마감에서 역산해 착수일을 정할 수 있다,3,practice,2026-08-15
+ad2-order-04,ad2-order,管理表やToDoに落として運用できる,관리표·ToDo로 옮겨 운용할 수 있다,4,practice,2026-08-15
+ad2-order-05,ad2-order,手戻りが起きたとき順序を組み直せる,재작업이 생겼을 때 순서를 다시 짤 수 있다,5,practice,2026-08-15
+ad2-order-06,ad2-order,定型化できる作業を見つけて手順にできる,정형화할 수 있는 작업을 찾아 절차로 만들 수 있다,6,practice,2026-08-15
+ad2-order-07,ad2-order,社内システムの機能を使って効率化できる,사내 시스템 기능을 써서 효율화할 수 있다,7,practice,2026-08-15
+ad2-order-08,ad2-order,順序を誤ると何が起きるか説明できる,순서를 잘못하면 무엇이 일어나는지 설명할 수 있다,8,knowledge,2026-08-15
+ad2-order-09,ad2-order,定型化してよい作業の条件を説明できる,정형화해도 되는 작업의 조건을 설명할 수 있다,9,knowledge,2026-08-15
+ad2-order-10,ad2-order,管理表に持たせる項目を説明できる,관리표에 담을 항목을 설명할 수 있다,10,knowledge,2026-08-15
+ad2-handover-01,ad2-handover,確認結果を整理して次の担当へ渡せる,확인 결과를 정리해 다음 담당에게 넘길 수 있다,1,practice,2026-08-15
+ad2-handover-02,ad2-handover,引き継ぎ時に判断の経緯を添えられる,인계 시 판단의 경위를 첨부할 수 있다,2,practice,2026-08-15
+ad2-handover-03,ad2-handover,引き継ぎ後も完了まで見届けられる,인계 후에도 완료까지 지켜볼 수 있다,3,practice,2026-08-15
+ad2-handover-04,ad2-handover,引き継ぎ先が不在のとき代替を立てられる,인계처가 부재일 때 대체를 세울 수 있다,4,practice,2026-08-15
+ad2-handover-05,ad2-handover,自分の担当分と他者の担当分を切り分けられる,자기 담당분과 타인의 담당분을 구분할 수 있다,5,practice,2026-08-15
+ad2-handover-06,ad2-handover,引き継ぎ漏れに気づける,인계 누락을 알아챌 수 있다,6,practice,2026-08-15
+ad2-handover-07,ad2-handover,引き継ぎ時に必ず添える情報を説明できる,인계 시 반드시 첨부할 정보를 설명할 수 있다,7,knowledge,2026-08-15
+ad2-handover-08,ad2-handover,引き継ぎと丸投げの違いを説明できる,인계와 떠넘기기의 차이를 설명할 수 있다,8,knowledge,2026-08-15
+ad2-record-01,ad2-record,複数の案件を並行して進行管理できる,복수의 안건을 병행해 진행 관리할 수 있다,1,practice,2026-08-15
+ad2-record-02,ad2-record,案件の状況を最新に保てる,안건의 상황을 최신으로 유지할 수 있다,2,practice,2026-08-15
+ad2-record-03,ad2-record,滞留しそうな案件を早めに検知できる,체류할 것 같은 안건을 일찍 감지할 수 있다,3,practice,2026-08-15
+ad2-record-04,ad2-record,期限や約束を管理して守れる,기한·약속을 관리하고 지킬 수 있다,4,practice,2026-08-15
+ad2-record-05,ad2-record,引き継ぎに耐える粒度で記録できる,인계에 견디는 입도로 기록할 수 있다,5,practice,2026-08-15
+ad2-record-06,ad2-record,記録から件数や傾向を集計できる,기록에서 건수·경향을 집계할 수 있다,6,practice,2026-08-15
+ad2-record-07,ad2-record,案件の状態区分の使い分けを説明できる,안건 상태 구분의 사용법을 설명할 수 있다,7,knowledge,2026-08-15
+ad2-record-08,ad2-record,記録が後で役に立つ条件を説明できる,기록이 나중에 도움이 되는 조건을 설명할 수 있다,8,knowledge,2026-08-15
+ad2-close-01,ad2-close,依頼者に完了を確認してから締められる,의뢰자에게 완료를 확인한 뒤 마감할 수 있다,1,practice,2026-08-15
+ad2-close-02,ad2-close,処理結果と証跡が揃っているか確認できる,처리 결과와 증적이 갖춰졌는지 확인할 수 있다,2,practice,2026-08-15
+ad2-close-03,ad2-close,未完了のまま放置された案件に気づける,미완료로 방치된 안건을 알아챌 수 있다,3,practice,2026-08-15
+ad2-close-04,ad2-close,締める前に必要な承認を得られる,마감 전에 필요한 승인을 받을 수 있다,4,practice,2026-08-15
+ad2-close-05,ad2-close,締めた案件を保管ルールに沿って整理できる,마감한 안건을 보관 규칙에 따라 정리할 수 있다,5,practice,2026-08-15
+ad2-close-06,ad2-close,差し戻しが必要な場合を判断できる,반려가 필요한 경우를 판단할 수 있다,6,practice,2026-08-15
+ad2-close-07,ad2-close,締めてよい条件を説明できる,마감해도 되는 조건을 설명할 수 있다,7,knowledge,2026-08-15
+ad2-close-08,ad2-close,締めた後に修正が必要になった場合の扱いを説明できる,마감 후 수정이 필요해진 경우의 취급을 설명할 수 있다,8,knowledge,2026-08-15
+ad3-priority-01,ad3-priority,締切と影響範囲から優先度を判断できる,마감과 영향 범위로 우선도를 판단할 수 있다,1,practice,2026-08-15
+ad3-priority-02,ad3-priority,複数の締切が重なったとき順序を決められる,복수의 마감이 겹쳤을 때 순서를 정할 수 있다,2,practice,2026-08-15
+ad3-priority-03,ad3-priority,優先度を変えた理由を関係者へ説明できる,우선도를 바꾼 이유를 관계자에게 설명할 수 있다,3,practice,2026-08-15
+ad3-priority-04,ad3-priority,割り込み依頼を判断して差し込める,끼어드는 의뢰를 판단해 끼워 넣을 수 있다,4,practice,2026-08-15
+ad3-priority-05,ad3-priority,全体に影響する遅延を早期に共有できる,전체에 영향을 주는 지연을 조기에 공유할 수 있다,5,practice,2026-08-15
+ad3-priority-06,ad3-priority,優先度の基準をメンバーに示せる,우선도 기준을 멤버에게 제시할 수 있다,6,practice,2026-08-15
+ad3-priority-07,ad3-priority,優先度を決める観点を説明できる,우선도를 정하는 관점을 설명할 수 있다,7,knowledge,2026-08-15
+ad3-priority-08,ad3-priority,締切に種類があることを説明できる,마감에 종류가 있음을 설명할 수 있다,8,knowledge,2026-08-15
+ad3-priority-09,ad3-priority,割り込みを受けるかどうかの基準を説明できる,끼어드는 의뢰를 받을지의 기준을 설명할 수 있다,9,knowledge,2026-08-15
+ad3-assign-01,ad3-assign,案件の内容に応じて担当者を決められる,안건 내용에 따라 담당자를 정할 수 있다,1,practice,2026-08-15
+ad3-assign-02,ad3-assign,メンバーの負荷を見て割り振りを調整できる,멤버의 부하를 보고 배분을 조정할 수 있다,2,practice,2026-08-15
+ad3-assign-03,ad3-assign,対応できる人がいないとき代替手段を用意できる,대응할 사람이 없을 때 대체 수단을 준비할 수 있다,3,practice,2026-08-15
+ad3-assign-04,ad3-assign,繁忙期に向けて要員配置を組める,번망기에 대비해 요원 배치를 짤 수 있다,4,practice,2026-08-15
+ad3-assign-05,ad3-assign,急な欠員に対応して割り振りを組み替えられる,갑작스러운 결원에 대응해 배분을 재구성할 수 있다,5,practice,2026-08-15
+ad3-assign-06,ad3-assign,割り振りの理由をメンバーに説明できる,배분의 이유를 멤버에게 설명할 수 있다,6,practice,2026-08-15
+ad3-assign-07,ad3-assign,育成を意識して案件を割り当てられる,육성을 의식해 안건을 배정할 수 있다,7,practice,2026-08-15
+ad3-assign-08,ad3-assign,メンバーごとの対応可能範囲を説明できる,멤버별 대응 가능 범위를 설명할 수 있다,8,knowledge,2026-08-15
+ad3-assign-09,ad3-assign,割り振りが偏ったときの影響を説明できる,배분이 편중됐을 때의 영향을 설명할 수 있다,9,knowledge,2026-08-15
+ad3-progress-01,ad3-progress,未完了案件の一覧を定期的に確認できる,미완료 안건 목록을 정기적으로 확인할 수 있다,1,practice,2026-08-15
+ad3-progress-02,ad3-progress,滞留している案件の原因を特定できる,체류 중인 안건의 원인을 특정할 수 있다,2,practice,2026-08-15
+ad3-progress-03,ad3-progress,滞留の解消を担当者と調整できる,체류 해소를 담당자와 조정할 수 있다,3,practice,2026-08-15
+ad3-progress-04,ad3-progress,期限超過の見込みを事前に検知できる,기한 초과 가능성을 사전에 감지할 수 있다,4,practice,2026-08-15
+ad3-progress-05,ad3-progress,処理件数や滞留状況を集計できる,처리 건수·체류 상황을 집계할 수 있다,5,practice,2026-08-15
+ad3-progress-06,ad3-progress,状況を上長へ定期的に報告できる,상황을 상사에게 정기적으로 보고할 수 있다,6,practice,2026-08-15
+ad3-progress-07,ad3-progress,積み残しを翌日へ確実に引き継げる,남은 일을 다음 날로 확실히 인계할 수 있다,7,practice,2026-08-15
+ad3-progress-08,ad3-progress,滞留の代表的な原因を説明できる,체류의 대표적인 원인을 설명할 수 있다,8,knowledge,2026-08-15
+ad3-progress-09,ad3-progress,何をもって進んでいないと判断するか説明できる,무엇을 근거로 진행되지 않는다고 판단하는지 설명할 수 있다,9,knowledge,2026-08-15
+ad3-quality-01,ad3-quality,メンバーの入力内容を確認して誤りを指摘できる,멤버의 입력 내용을 확인해 오류를 지적할 수 있다,1,practice,2026-08-15
+ad3-quality-02,ad3-quality,確認漏れや処理漏れを見つけられる,확인 누락·처리 누락을 찾아낼 수 있다,2,practice,2026-08-15
+ad3-quality-03,ad3-quality,記録の書き方を確認して改善を指示できる,기록 작성 방식을 확인해 개선을 지시할 수 있다,3,practice,2026-08-15
+ad3-quality-04,ad3-quality,二重チェックが必要な作業を切り分けられる,이중 확인이 필요한 작업을 구분할 수 있다,4,practice,2026-08-15
+ad3-quality-05,ad3-quality,誤りの傾向から再発防止策を出せる,오류의 경향에서 재발 방지책을 낼 수 있다,5,practice,2026-08-15
+ad3-quality-06,ad3-quality,良い処理例をチームに共有できる,좋은 처리 사례를 팀에 공유할 수 있다,6,practice,2026-08-15
+ad3-quality-07,ad3-quality,確認すべき観点を説明できる,확인해야 할 관점을 설명할 수 있다,7,knowledge,2026-08-15
+ad3-quality-08,ad3-quality,二重チェックが必要な作業の基準を説明できる,이중 확인이 필요한 작업의 기준을 설명할 수 있다,8,knowledge,2026-08-15
+ad3-quality-09,ad3-quality,指摘の伝え方で気をつける点を説明できる,지적을 전달할 때 주의할 점을 설명할 수 있다,9,knowledge,2026-08-15
+ad3-support-01,ad3-support,メンバーからの相談に対して判断を示せる,멤버의 상담에 대해 판단을 제시할 수 있다,1,practice,2026-08-15
+ad3-support-02,ad3-support,判断に迷う案件を一緒に整理できる,판단이 어려운 안건을 함께 정리할 수 있다,2,practice,2026-08-15
+ad3-support-03,ad3-support,新しく入ったメンバーに業務を説明できる,새로 들어온 멤버에게 업무를 설명할 수 있다,3,practice,2026-08-15
+ad3-support-04,ad3-support,メンバーの疑問を手順書へ反映できる,멤버의 의문을 절차서에 반영할 수 있다,4,practice,2026-08-15
+ad3-support-05,ad3-support,関係部署との窓口として調整できる,관계 부서와의 창구로서 조정할 수 있다,5,practice,2026-08-15
+ad3-support-06,ad3-support,チーム内の情報共有の場を運営できる,팀 내 정보 공유의 장을 운영할 수 있다,6,practice,2026-08-15
+ad3-support-07,ad3-support,判断の理由を伝えて次から自分でできるようにできる,판단의 이유를 전달해 다음부터 스스로 할 수 있게 만들 수 있다,7,practice,2026-08-15
+ad3-support-08,ad3-support,自分で判断させる場合と引き取る場合の線引きを説明できる,스스로 판단하게 할 경우와 넘겨받을 경우의 경계를 설명할 수 있다,8,knowledge,2026-08-15
+ad3-support-09,ad3-support,相談を受けたときに確認する項目を説明できる,상담을 받았을 때 확인할 항목을 설명할 수 있다,9,knowledge,2026-08-15
+ad3-support-10,ad3-support,同じ相談が繰り返される原因を説明できる,같은 상담이 반복되는 원인을 설명할 수 있다,10,knowledge,2026-08-15
+ad3-knowledge-01,ad3-knowledge,頻出する処理を手順書に落とせる,자주 나오는 처리를 절차서로 옮길 수 있다,1,practice,2026-08-15
+ad3-knowledge-02,ad3-knowledge,手順書の誤りや古い記述を更新できる,절차서의 오류·낡은 기술을 갱신할 수 있다,2,practice,2026-08-15
+ad3-knowledge-03,ad3-knowledge,チェックリストを作って抜けを防げる,체크리스트를 만들어 누락을 막을 수 있다,3,practice,2026-08-15
+ad3-knowledge-04,ad3-knowledge,新しい申請種別の手順を作成できる,새로운 신청 종별의 절차를 작성할 수 있다,4,practice,2026-08-15
+ad3-knowledge-05,ad3-knowledge,手順書の内容をメンバーに周知できる,절차서의 내용을 멤버에게 주지시킬 수 있다,5,practice,2026-08-15
+ad3-knowledge-06,ad3-knowledge,使われていない手順を見直せる,사용되지 않는 절차를 재검토할 수 있다,6,practice,2026-08-15
+ad3-knowledge-07,ad3-knowledge,手順書に書くべき粒度を説明できる,절차서에 써야 할 입도를 설명할 수 있다,7,knowledge,2026-08-15
+ad3-knowledge-08,ad3-knowledge,チェックリスト化してよい作業の条件を説明できる,체크리스트화해도 되는 작업의 조건을 설명할 수 있다,8,knowledge,2026-08-15

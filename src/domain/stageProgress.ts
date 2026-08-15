@@ -58,7 +58,7 @@ export function stageProgress(input: StageProgressInput): StageProgress {
 
   const ids = categories.filter((c) => c.stage === stage).map((c) => c.categoryId);
   const rows = ids.map((categoryId) => {
-    const own = actions.filter((a) => a.categoryId === categoryId);
+    const own = actions.filter((a) => a.categoryIds.includes(categoryId));
     const of = (kind: ActionKind) => own.filter((a) => a.kind === kind);
     return {
       categoryId,
@@ -172,7 +172,13 @@ export function currentStageOf(
 }
 
 /**
- * 職種で絞る (v2.15 / HANDOFF §4b)。
+ * ルート (職種 × 分類) で絞る (v2.16 / HANDOFF §4b)。
+ *
+ * ⚠️ **職種だけでは足りない。** ヘルプデスク系も事務系も `it-support` なので、
+ * `track` だけで絞ると事務のカテゴリがヘルプデスクの画面に並ぶ。
+ * 事務のカテゴリを1件足しただけで STEP1 に 14 枚目のカードとして出た (2026-08-15 実証)。
+ * ルートキーが `track/subtrack` である以上、**絞り込みも両方**で行う。
+ *
  *
  * **段階番号の意味は職種ごとに違う** (インフラ STEP1=運用監視補助 / 開発 STEP1=テスト)。
  * だから「職種で絞ってから段階を取る」順序でなければならない。絞らずに段階で取ると
@@ -186,17 +192,19 @@ export function currentStageOf(
  * カテゴリの範囲は **`track` だけ**で決まる。サブトラック (サーバー/ネットワーク) は
  * 第1版で共通扱いなので、ここで分けるとデータに無い区別を刻むことになる。
  */
-export function scopeToTrack(
-  track: TrackId | null,
+export function scopeToRoute(
+  route: { track: TrackId; subtrack: string } | null,
   data: { categories: Category[]; actions: Action[]; certs: Cert[] },
 ): { categories: Category[]; actions: Action[]; certs: Cert[] } {
-  if (track === null) return data;
-  const categories = data.categories.filter((c) => c.track === track);
+  if (route === null) return data;
+  const onRoute = (x: { track: TrackId; subtrack: string }) =>
+    x.track === route.track && x.subtrack === route.subtrack;
+  const categories = data.categories.filter((c) => onRoute(c));
   const ids = new Set(categories.map((c) => c.categoryId));
   return {
     categories,
-    actions: data.actions.filter((a) => ids.has(a.categoryId)),
-    certs: data.certs.filter((c) => c.track === track),
+    actions: data.actions.filter((a) => a.categoryIds.some((id) => ids.has(id))),
+    certs: data.certs.filter((c) => onRoute(c)),
   };
 }
 

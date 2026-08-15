@@ -6,7 +6,7 @@
  * クリア判定 (solo を見る) と画面のチェックが食い違う。
  */
 import { act, renderHook } from '@testing-library/react';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useLadderState } from './useLadderState';
 
@@ -176,5 +176,56 @@ describe('資格チェックは持たない', () => {
     const { result } = renderHook(() => useLadderState());
     await act(async () => { await result.current.importJson(fileOf(v4WithCerts)); });
     expect(window.localStorage.getItem(CERT_KEY)).toBeNull();
+  });
+});
+
+/**
+ * 引っ越し告知の帯を出すかどうか (2026-08-15)。
+ *
+ * 肝は **書き出したあとに増えた分**を拾えるか。書き出しはその時点の控えなので、
+ * 「一度出したから大丈夫」で差分を落とすと、その分のチェックは戻せない。
+ * 帯は閉じられない代わりに**書き出せば消える**ので、この判定が唯一の出し入れになる。
+ */
+describe('needsExport — 引っ越し前の書き出し催促', () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+    // jsdom に Blob URL は無い。ここで見たいのは控えの更新だけなので差し替えで足りる
+    URL.createObjectURL = vi.fn(() => 'blob:test');
+    URL.revokeObjectURL = vi.fn();
+  });
+
+  it('1件もチェックが無い人には出さない', () => {
+    const { result } = renderHook(() => useLadderState());
+    expect(result.current.needsExport).toBe(false);
+  });
+
+  it('チェックがあり、まだ書き出していなければ出す', () => {
+    const { result } = renderHook(() => useLadderState());
+    act(() => result.current.toggleAction('a1', 'assisted'));
+    expect(result.current.needsExport).toBe(true);
+  });
+
+  it('書き出せば消える', () => {
+    const { result } = renderHook(() => useLadderState());
+    act(() => result.current.toggleAction('a1', 'assisted'));
+    act(() => result.current.exportJson());
+    expect(result.current.needsExport).toBe(false);
+  });
+
+  it('書き出したあとに増えたら、また出す — ここを拾えないと差分が消える', () => {
+    const { result } = renderHook(() => useLadderState());
+    act(() => result.current.toggleAction('a1', 'assisted'));
+    act(() => result.current.exportJson());
+    act(() => result.current.toggleAction('a2', 'assisted'));
+    expect(result.current.needsExport).toBe(true);
+  });
+
+  it('控えは開き直しても残る (帯が出っぱなしにならない)', () => {
+    const first = renderHook(() => useLadderState());
+    act(() => first.result.current.toggleAction('a1', 'assisted'));
+    act(() => first.result.current.exportJson());
+
+    const second = renderHook(() => useLadderState());
+    expect(second.result.current.needsExport).toBe(false);
   });
 });
