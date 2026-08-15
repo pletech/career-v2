@@ -23,3 +23,29 @@ c3-recovery,infrastructure,3,復旧対応・恒久対策の検討,복구 대응�
 c3-incident,infrastructure,3,二次対応の受付・進行管理,2차 대응 접수·진행 관리,c2-escalate|c2-incident,4
 c3-maintenance,infrastructure,3,定期保守・変更作業,정기 보수·변경 작업,c2-operations,5
 c3-document,infrastructure,3,手順書・ナレッジ整備,절차서·지식 정비,,6
+hd1-intake,it-support,1,問い合わせの受付・整理,문의 접수·정리,,1
+hd1-triage,it-support,1,問い合わせの一次切り分け,문의 1차 분류,,2
+hd1-guidance,it-support,1,定型案内・操作説明,정형 안내·조작 설명,,3
+hd1-escalate,it-support,1,対応範囲の判断・引き継ぎ,대응 범위 판단·인계,,4
+hd1-record,it-support,1,記録・報告（報連相）,기록·보고(호렌소),,5
+hd1-account,it-support,1,アカウント対応,계정 대응,,6
+hd1-device,it-support,1,端末・周辺機器,단말·주변기기,,7
+hd1-asset,it-support,1,端末・ライセンスの資産管理,단말·라이선스 자산 관리,,8
+hd1-office,it-support,1,PC・Microsoft 365 の基本操作,PC·Microsoft 365 기본 조작,,9
+hd1-manner,it-support,1,利用者対応の基本,이용자 대응의 기본,,10
+hd1-itbasics,it-support,1,IT基礎知識,IT 기초 지식,,11
+hd1-security,it-support,1,セキュリティ・ルール遵守,보안·규칙 준수,,12
+hd1-site,it-support,1,現場理解・体制,현장 이해·체제,,13
+hd2-assess,it-support,2,二次対応の受付・状況把握,2차 대응 접수·상황 파악,hd1-intake|hd1-triage,1
+hd2-diagnose,it-support,2,原因の切り分け（ログ・設定・操作履歴）,원인 범위 좁히기(로그·설정·조작 이력),hd1-itbasics|hd1-device,2
+hd2-config,it-support,2,権限・端末・アプリ設定の変更対応,권한·단말·앱 설정 변경 대응,hd1-account|hd1-asset|hd1-security,3
+hd2-resolve,it-support,2,解決対応の実施・利用者への説明,해결 대응 실시·이용자 설명,hd1-guidance|hd1-manner|hd1-office,4
+hd2-close,it-support,2,完了確認・クローズ処理,완료 확인·클로즈 처리,,5
+hd2-escalate,it-support,2,対応方針の整理・エスカレーション,대응 방침 정리·에스컬레이션,hd1-escalate|hd1-site,6
+hd2-record,it-support,2,対応記録・進行管理,대응 기록·진행 관리,hd1-record,7
+hd3-priority,it-support,3,優先度の判断（SLA・影響範囲）,우선도 판단(SLA·영향 범위),hd2-assess,1
+hd3-assign,it-support,3,案件の振り分け・アサイン調整,안건 배분·어사인 조정,,2
+hd3-progress,it-support,3,進捗確認・滞留案件の管理,진척 확인·체류 안건 관리,hd2-record|hd2-close,3
+hd3-quality,it-support,3,対応品質の確認・クロスチェック,대응 품질 확인·크로스체크,hd2-resolve|hd2-config,4
+hd3-support,it-support,3,メンバーの判断支援・連携調整,멤버 판단 지원·연계 조정,hd2-diagnose|hd2-escalate,5
+hd3-knowledge,it-support,3,FAQ・手順書の整備,FAQ·절차서 정비,,6
