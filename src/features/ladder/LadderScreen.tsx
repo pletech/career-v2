@@ -59,6 +59,7 @@ const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps', onNavigate 
     setLang,
     exportJson,
     importJson,
+    needsExport,
   } = useLadderState();
 
   const [data, setData] = useState<LadderDataSet | null>(null);
@@ -350,6 +351,7 @@ const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps', onNavigate 
           onToggleAction={toggleAction}
           onExport={exportJson}
           onImport={importJson}
+          needsExport={needsExport}
           focusRequest={focusRequest}
           onFocusHandled={() => setFocusRequest(null)}
           lang={lang}

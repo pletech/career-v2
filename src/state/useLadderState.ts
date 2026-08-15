@@ -45,6 +45,34 @@ const ACTION_SOLO_CHECKS_KEY = 'career-ladder-action-solo-checks:v1';
  *   2日ぶんの他人の記録を、こちらの都合で消しに行く必要はない。
  */
 const LANG_KEY = 'career-ladder-lang:v1';
+/**
+ * 「いつ・何件の状態で書き出したか」の控え (2026-08-15、引っ越し告知のため)。
+ *
+ * **チェックそのものではない**ので、消えても失うものは無い (帯がもう一度出るだけ)。
+ * 件数まで持つのは、**書き出したあとに続けてチェックした分**を拾うため —
+ * 書き出しはその時点の控えなので、「一度出したから安心」で取りこぼす。
+ */
+const EXPORT_MARK_KEY = 'career-ladder-export-mark:v1';
+
+interface ExportMark {
+  at: string;
+  /** 書き出した時点のチェック総数。**今と違えば書き出し後に増えている** */
+  count: number;
+}
+
+function loadExportMark(): ExportMark | null {
+  try {
+    const raw = window.localStorage.getItem(EXPORT_MARK_KEY);
+    if (raw === null) return null;
+    const parsed: unknown = JSON.parse(raw);
+    if (typeof parsed !== 'object' || parsed === null) return null;
+    const { at, count } = parsed as Partial<ExportMark>;
+    if (typeof at !== 'string' || typeof count !== 'number') return null;
+    return { at, count };
+  } catch {
+    return null;
+  }
+}
 
 /** 既定は日本語 (共有時の事故防止 — 確定 #21)。韓国語は作業用 */
 function loadLang(): Lang {
@@ -269,6 +297,32 @@ export function useLadderState() {
     });
   }, []);
 
+  /**
+   * チェックの総数。引っ越し告知の帯を出すかどうかにだけ使う。
+   *
+   * 4つのマップとも**チェックされた項目だけが鍵として残る** (外すと delete される)
+   * ので、鍵の数がそのまま件数になる。
+   */
+  const checkedCount = useMemo(
+    () =>
+      Object.keys(evidenceChecks).length +
+      Object.keys(managerConfirms).length +
+      Object.keys(actionChecks).length +
+      Object.keys(actionSoloChecks).length,
+    [evidenceChecks, managerConfirms, actionChecks, actionSoloChecks],
+  );
+
+  const [exportMark, setExportMark] = useState<ExportMark | null>(loadExportMark);
+
+  /**
+   * 「書き出してください」と言う必要があるか。
+   *
+   * **1件もチェックが無い人には言わない** — 失うものが無いのに警告を出しても
+   * 帯が景色になるだけで、本当に必要な人への効き目まで落ちる。
+   */
+  const needsExport =
+    checkedCount > 0 && (exportMark === null || exportMark.count !== checkedCount);
+
   /** JSONエクスポート: ファイルダウンロード */
   const exportJson = useCallback(() => {
     const payload: ExportPayload = {
@@ -291,7 +345,16 @@ export function useLadderState() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-  }, [evidenceChecks, managerConfirms, actionChecks, actionSoloChecks]);
+
+    // 出し終えた時点の控え。これで引っ越し告知の帯が消える。
+    const mark: ExportMark = { at: new Date().toISOString(), count: checkedCount };
+    setExportMark(mark);
+    try {
+      window.localStorage.setItem(EXPORT_MARK_KEY, JSON.stringify(mark));
+    } catch {
+      // 控えが残せなくてもファイルは出ている。帯がもう一度出るだけなので握りつぶす
+    }
+  }, [evidenceChecks, managerConfirms, actionChecks, actionSoloChecks, checkedCount]);
 
   /**
    * JSONインポート。成否メッセージ (日本語) を返す。
@@ -403,8 +466,10 @@ export function useLadderState() {
       exportJson,
       importJson,
       resetStates,
+      needsExport,
     }),
     [
+      needsExport,
       targetRoleId,
       setTargetRoleId,
       evidenceChecks,
