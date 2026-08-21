@@ -5,7 +5,7 @@ cert-s1-04,infrastructure,サーバー,1,LPIC-1,LPIC-1,サーバーOS（Linux）
 cert-s1-05,infrastructure,サーバー,1,CCNA,CCNA,インフラ案件で入口として求められることが多い,인프라 안건의 입구로 요구되는 경우가 많음,4
 cert-s2-01,infrastructure,サーバー,2,基本情報技術者試験（FE）,기본정보기술자시험(FE),未取得なら優先。運用保守の基礎,미취득이면 우선. 운용보수의 기초,1
 cert-s2-02,infrastructure,サーバー,2,CCNA,CCNA,未取得なら優先。障害の切り分けに必要なネットワーク知識,미취득이면 우선. 장애 범위를 좁히는 데 필요한 네트워크 지식,2
-cert-s2-03,infrastructure,サーバー,2,LPIC-1〜2,LPIC-1~2,サーバー運用の実務レベル,서버 운용의 실무 레벨,3
+cert-s2-03,infrastructure,サーバー,2,LPIC-2,LPIC-2,サーバー運用の実務レベル,서버 운용의 실무 레벨,3
 cert-s2-04,infrastructure,サーバー,2,AZ-800/AZ-801: Windows Server Hybrid Administrator Associate,AZ-800/AZ-801: Windows Server Hybrid Administrator Associate,Windows Server の運用・保守（Linux 側は LPIC）。2試験構成,Windows Server 운용·보수(Linux 쪽은 LPIC). 2개 시험 구성,4
 cert-s2-05,infrastructure,サーバー,2,ITIL 4 Foundation,ITIL 4 Foundation,インシデント管理・サービス運用の共通言語（二次対応の土台）,인시던트 관리·서비스 운용의 공통 언어(2차 대응의 토대),5
 cert-s3-01,infrastructure,サーバー,3,応用情報技術者試験（AP）,응용정보기술자시험(AP),運用保守の応用範囲。次段階（構築）の土台,운용보수의 응용 범위. 다음 단계(구축)의 토대,1
@@ -13,7 +13,7 @@ cert-s3-02,infrastructure,サーバー,3,LPIC-2,LPIC-2,サーバー障害の原�
 cert-s3-03,infrastructure,サーバー,3,CCNP,CCNP,ネットワークの設計・構築レベル。次段階（構築）の土台,네트워크 설계·구축 레벨. 다음 단계(구축)의 토대,3
 cert-hd1-01,it-support,ヘルプデスク系,1,ITパスポート試験,IT 패스포트 시험,IT全般の基礎知識,IT 전반의 기초 지식,1
 cert-hd1-02,it-support,ヘルプデスク系,1,MS-900: Microsoft 365 Fundamentals,MS-900: Microsoft 365 Fundamentals,この段階の業務そのもの（Microsoft 365 の基礎）,이 단계의 업무 그 자체(Microsoft 365 기초),2
-cert-hd1-03,it-support,ヘルプデスク系,1,MOS（Word / Excel / PowerPoint / Access）,MOS(Word / Excel / PowerPoint / Access),利用者から実際に来る操作質問の範囲,이용자에게 실제로 오는 조작 질문의 범위,3
+cert-hd1-03,it-support,ヘルプデスク系,1,MOS エキスパート（Word / Excel / PowerPoint / Access）,MOS 엑스퍼트(Word / Excel / PowerPoint / Access),利用者から実際に来る操作質問の範囲,이용자에게 실제로 오는 조작 질문의 범위,3
 cert-hd2-01,it-support,ヘルプデスク系,2,ITIL 4 Foundation,ITIL 4 Foundation,インシデント管理・エスカレーションの共通言語,인시던트 관리·에스컬레이션의 공통 언어,1
 cert-hd2-02,it-support,ヘルプデスク系,2,MD-102: Endpoint Administrator Associate,MD-102: Endpoint Administrator Associate,端末・Intune の設定変更対応,단말·Intune 설정 변경 대응,2
 cert-hd2-03,it-support,ヘルプデスク系,2,SC-300: Identity and Access Administrator Associate,SC-300: Identity and Access Administrator Associate,Active Directory・権限設定,Active Directory·권한 설정,3
@@ -21,10 +21,28 @@ cert-hd2-04,it-support,ヘルプデスク系,2,情報セキュリティマネジ
 cert-hd3-01,it-support,ヘルプデスク系,3,基本情報技術者試験（FE）,기본정보기술자시험(FE),未取得なら優先。上の段階の土台,미취득이면 우선. 상위 단계의 토대,1
 cert-hd3-02,it-support,ヘルプデスク系,3,応用情報技術者試験（AP）,응용정보기술자시험(AP),運用管理・企画の範囲,운용 관리·기획 범위,2
 cert-ad1-01,it-support,事務系,1,ITパスポート試験,IT 패스포트 시험,IT全般の基礎知識,IT 전반의 기초 지식,1
-cert-ad1-02,it-support,事務系,1,MOS（Word / Excel / PowerPoint / Access）,MOS(Word / Excel / PowerPoint / Access),書類作成・データ入力の道具そのもの,서류 작성·데이터 입력의 도구 그 자체,2
+cert-ad1-02,it-support,事務系,1,MOS エキスパート（Word / Excel / PowerPoint / Access）,MOS 엑스퍼트(Word / Excel / PowerPoint / Access),書類作成・データ入力の道具そのもの,서류 작성·데이터 입력의 도구 그 자체,2
 cert-ad2-01,it-support,事務系,2,MS-900: Microsoft 365 Fundamentals,MS-900: Microsoft 365 Fundamentals,共有・権限まわりの前提知識,공유·권한 관련의 전제 지식,1
 cert-ad2-02,it-support,事務系,2,PL-900: Power Platform Fundamentals,PL-900: Power Platform Fundamentals,定型業務の自動化の入口,정형 업무 자동화의 입구,2
 cert-ad2-03,it-support,事務系,2,VBA エキスパート Excel ベーシック,VBA 엑스퍼트 Excel 베이직,繰り返しの入力・集計を自分で減らす,반복 입력·집계를 스스로 줄인다,3
 cert-ad2-04,it-support,事務系,2,情報セキュリティマネジメント試験,정보보안 매니지먼트 시험,申請書・個人情報を扱う立場の判断,신청서·개인정보를 다루는 자리의 판단,4
 cert-ad3-01,it-support,事務系,3,基本情報技術者試験（FE）,기본정보기술자시험(FE),未取得なら優先。上の段階の土台,미취득이면 우선. 상위 단계의 토대,1
 cert-ad3-02,it-support,事務系,3,応用情報技術者試験（AP）,응용정보기술자시험(AP),業務管理・企画の範囲,업무 관리·기획 범위,2
+cert-dw1-01,development,Webアプリケーション,1,ITパスポート試験,IT 패스포트 시험,IT全般の基礎知識,IT 전반의 기초 지식,1
+cert-dw1-02,development,Webアプリケーション,1,Webクリエイター能力認定試験・エキスパート,Web 크리에이터 능력인정시험·엑스퍼트,画面（HTML・CSS）の基礎。表示を確認する土台,화면(HTML·CSS)의 기초. 표시를 확인하는 토대,2
+cert-dw1-03,development,Webアプリケーション,1,Oracle認定Javaプログラマ（Bronze）,Oracle 인정 Java 프로그래머(Bronze),サーバー側の言語の入口,서버 측 언어의 입구,3
+cert-dw2-01,development,Webアプリケーション,2,ORACLE MASTER Bronze,ORACLE MASTER Bronze,SQL の入口。既存SQLの軽微な修正に直結,SQL의 입구. 기존 SQL의 경미한 수정에 직결,1
+cert-dw2-02,development,Webアプリケーション,2,Oracle認定Javaプログラマ（Silver）,Oracle 인정 Java 프로그래머(Silver),既存コードを読んで直せる範囲,기존 코드를 읽고 고칠 수 있는 범위,2
+cert-dw2-03,development,Webアプリケーション,2,Python 3 エンジニア認定試験 基礎,Python 3 엔지니어 인정시험 기초,案件の言語が Python の場合,안건의 언어가 Python인 경우,3
+cert-dw2-04,development,Webアプリケーション,2,情報セキュリティマネジメント試験,정보보안 매니지먼트 시험,コードと本番データを触る立場の判断,코드와 본번 데이터를 다루는 자리의 판단,4
+cert-dw3-01,development,Webアプリケーション,3,基本情報技術者試験（FE）,기본정보기술자시험(FE),未取得なら優先。上の段階の土台,미취득이면 우선. 상위 단계의 토대,1
+cert-dw3-02,development,Webアプリケーション,3,ORACLE MASTER Silver,ORACLE MASTER Silver,DB入出力を設計書どおりに実装する範囲,DB 입출력을 설계서대로 구현하는 범위,2
+cert-dw3-03,development,Webアプリケーション,3,Oracle認定Javaプログラマ（Gold）,Oracle 인정 Java 프로그래머(Gold),サーバー処理を一から実装する範囲,서버 처리를 처음부터 구현하는 범위,3
+cert-dw3-04,development,Webアプリケーション,3,Python 3 エンジニア認定試験 実践,Python 3 엔지니어 인정시험 실전,案件の言語が Python の場合,안건의 언어가 Python인 경우,4
+cert-dm1-01,development,モバイルアプリ,1,ITパスポート試験,IT 패스포트 시험,IT全般の基礎知識,IT 전반의 기초 지식,1
+cert-dm1-02,development,モバイルアプリ,1,Oracle認定Javaプログラマ（Bronze）,Oracle 인정 Java 프로그래머(Bronze),Android は Java・Kotlin 系。言語の入口として効く,Android는 Java·Kotlin 계열. 언어의 입구로 효과가 있다,2
+cert-dm2-01,development,モバイルアプリ,2,Oracle認定Javaプログラマ（Silver）,Oracle 인정 Java 프로그래머(Silver),既存コードを読んで直せる範囲,기존 코드를 읽고 고칠 수 있는 범위,1
+cert-dm2-02,development,モバイルアプリ,2,ORACLE MASTER Bronze,ORACLE MASTER Bronze,ローカルデータ処理（SQLite）の土台となる SQL,로컬 데이터 처리(SQLite)의 토대가 되는 SQL,2
+cert-dm2-03,development,モバイルアプリ,2,情報セキュリティマネジメント試験,정보보안 매니지먼트 시험,端末内にデータを残す立場の判断,단말 내에 데이터를 남기는 자리의 판단,3
+cert-dm3-01,development,モバイルアプリ,3,基本情報技術者試験（FE）,기본정보기술자시험(FE),未取得なら優先。上の段階の土台,미취득이면 우선. 상위 단계의 토대,1
+cert-dm3-02,development,モバイルアプリ,3,Oracle認定Javaプログラマ（Gold）,Oracle 인정 Java 프로그래머(Gold),画面と処理を一から実装する範囲,화면과 처리를 처음부터 구현하는 범위,2
