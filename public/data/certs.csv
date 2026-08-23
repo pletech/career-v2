@@ -46,3 +46,9 @@ cert-dm2-02,development,モバイルアプリ,2,ORACLE MASTER Bronze,,ローカ�
 cert-dm2-03,development,モバイルアプリ,2,情報セキュリティマネジメント試験,,端末内にデータを残す立場の判断,,3
 cert-dm3-01,development,モバイルアプリ,3,基本情報技術者試験（FE）,,未取得なら優先。上の段階の土台,,1
 cert-dm3-02,development,モバイルアプリ,3,Oracle認定Javaプログラマ（Gold）,,画面と処理を一から実装する範囲,,2
+cert-dw2-05,development,Webアプリケーション,2,AZ-900:Azure Fundamentals,,案件が Azure 上の場合。自分が触る環境の前提を知る,,5
+cert-dw2-06,development,Webアプリケーション,2,AWS Certified Cloud Practitioner,,案件が AWS 上の場合。自分が触る環境の前提を知る,,6
+cert-dw3-05,development,Webアプリケーション,3,AZ-204:Azure Developer Associate,,Azure 上で動くアプリを実装する場合,,5
+cert-dw3-06,development,Webアプリケーション,3,AWS Certified Developer,,AWS 上で動くアプリを実装する場合,,6
+cert-dm2-04,development,モバイルアプリ,2,AZ-900:Azure Fundamentals,,連携先が Azure の場合。自分が呼ぶ環境の前提を知る,,4
+cert-dm2-05,development,モバイルアプリ,2,AWS Certified Cloud Practitioner,,連携先が AWS の場合。自分が呼ぶ環境の前提を知る,,5
