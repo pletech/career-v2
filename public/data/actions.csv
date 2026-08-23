@@ -783,16 +783,16 @@ dw1-security-07,dw1-security|dm1-security,作業に必要な範囲だけの権�
 dw1-security-08,dw1-security|dm1-security,スクリーンショットを残すとき、見せてはいけない情報を隠せる,,8,practice,2026-08-18
 dw1-security-09,dw1-security|dm1-security,資料やデータを決められた保存場所に置ける,,9,practice,2026-08-18
 dw1-security-10,dw1-security|dm1-security,情報の取り扱いに迷ったときに確認できる,,10,practice,2026-08-18
-dw1-site-01,dw1-site|dm1-site,開発の工程（要件定義・設計・実装・テスト・リリース）の流れを説明できる,,1,knowledge,2026-08-18
-dw1-site-02,dw1-site|dm1-site,自分の担当工程が前後の工程とどうつながるか説明できる,,2,knowledge,2026-08-18
-dw1-site-03,dw1-site|dm1-site,案件に関わる役割（PM・PL・SE・PG・テスター）の違いを説明できる,,3,knowledge,2026-08-18
-dw1-site-04,dw1-site|dm1-site,お客様と自社の間の窓口が誰か説明できる,,4,knowledge,2026-08-18
-dw1-site-05,dw1-site|dm1-site,リリースまでに何が必要か説明できる,,5,knowledge,2026-08-18
-dw1-site-06,dw1-site|dm1-site,自分の担当範囲と担当外の範囲を区別できる,,6,practice,2026-08-18
-dw1-site-07,dw1-site|dm1-site,判断できないことを誰に確認すべきか分かる,,7,practice,2026-08-18
-dw1-site-08,dw1-site|dm1-site,決められた時刻までに進捗を報告できる,,8,practice,2026-08-18
-dw1-site-09,dw1-site|dm1-site,予定より遅れそうなときに早めに相談できる,,9,practice,2026-08-18
-dw1-site-10,dw1-site|dm1-site,会議で決まったことを自分の作業に落とし込める,,10,practice,2026-08-18
+dw1-process-01,dw1-process|dm1-process,開発の工程（要件定義・設計・実装・テスト・リリース）の流れを説明できる,,1,knowledge,2026-08-18
+dw1-process-02,dw1-process|dm1-process,自分の担当工程が前後の工程とどうつながるか説明できる,,2,knowledge,2026-08-18
+dw1-site-03,dw1-site|dm1-site,案件に関わる役割（PM・PL・SE・PG・テスター）の違いを説明できる,,1,knowledge,2026-08-18
+dw1-site-04,dw1-site|dm1-site,お客様と自社の間の窓口が誰か説明できる,,2,knowledge,2026-08-18
+dw1-process-03,dw1-process|dm1-process,リリースまでに何が必要か説明できる,,3,knowledge,2026-08-18
+dw1-site-06,dw1-site|dm1-site,自分の担当範囲と担当外の範囲を区別できる,,3,practice,2026-08-18
+dw1-site-07,dw1-site|dm1-site,判断できないことを誰に確認すべきか分かる,,4,practice,2026-08-18
+dw1-site-08,dw1-site|dm1-site,決められた時刻までに進捗を報告できる,,5,practice,2026-08-18
+dw1-site-09,dw1-site|dm1-site,予定より遅れそうなときに早めに相談できる,,6,practice,2026-08-18
+dw1-site-10,dw1-site|dm1-site,会議で決まったことを自分の作業に落とし込める,,7,practice,2026-08-18
 dw2-target-01,dw2-target|dm2-target,改修依頼に必要な情報（現象・対象画面・期待する状態）を挙げられる,,1,knowledge,2026-08-18
 dw2-target-02,dw2-target|dm2-target,改修の影響がどこまで及ぶかを考える観点を説明できる,,2,knowledge,2026-08-18
 dw2-target-03,dw2-target|dm2-target,仕様変更と不具合修正の違いを説明できる,,3,knowledge,2026-08-18
@@ -939,3 +939,39 @@ dm3-core-07,dm3-core,設計書どおりに端末内へのデータ保存・読�
 dm3-core-08,dm3-core,通信エラー時の処理を設計書どおりに実装できる,,8,practice,2026-08-18
 dm3-core-09,dm3-core,画面を離れて戻ったときの状態を設計書どおりに実装できる,,9,practice,2026-08-18
 dm3-core-10,dm3-core,実装した機能を実機で確認できる,,10,practice,2026-08-18
+dw1-process-04,dw1-process|dm1-process,担当するテスト工程の目的とゴールを説明できる,,4,knowledge,2026-08-23
+dw1-process-05,dw1-process|dm1-process,テスト作業の Input（受け取るもの）と Output（渡すもの）が何かを説明できる,,5,knowledge,2026-08-23
+dw1-process-06,dw1-process|dm1-process,自分が出したテスト結果が後続の工程でどう使われるかを説明できる,,6,knowledge,2026-08-23
+dw1-process-07,dw1-process|dm1-process,テストの目的とゴールについての自分の理解を関係者に伝え、認識の相違があれば確認して合わせられる,,7,practice,2026-08-23
+dw1-process-08,dw1-process|dm1-process,Input の不備（テスト仕様書の未確定・環境の未整備）を確認し、Output の条件を関係者と合わせたうえで着手できる,,8,practice,2026-08-23
+dw1-process-09,dw1-process|dm1-process,先行工程の遅れや成果物の不備が自分のテストに与える影響を判断し、関係者と確認して合わせられる,,9,practice,2026-08-23
+dw1-process-10,dw1-process|dm1-process,自分のテストの遅れが後続に与える影響を判断し、早期に共有できる,,10,practice,2026-08-23
+dw1-process-11,dw1-process|dm1-process,指標値には品質指標値（成果物の品質を評価する値）と標準生産性（成果物作成の生産性を評価する値）の2種類があることを説明できる,,11,knowledge,2026-08-23
+dw1-process-12,dw1-process|dm1-process,担当プロジェクトにて定められている指標値のうち、単体テスト項目数と単体テスト検出バグ数が何を見る値かを説明できる,,12,knowledge,2026-08-23
+dw1-process-13,dw1-process|dm1-process,許容範囲は設定値を中央値としてその前後X%で上限・下限を定めるものであり、実測値がその範囲内にあるかで判断することを説明できる,,13,knowledge,2026-08-23
+dw1-process-14,dw1-process|dm1-process,バグ数の指標値について、許容範囲の下限を下回るとバグ検出不十分の疑義、上限を上回ると品質そのものの疑義になることを説明できる,,14,knowledge,2026-08-23
+dw1-process-15,dw1-process|dm1-process,テスト項目数の指標値について、許容範囲の下限を下回るとテスト不十分の疑義、上限を上回ると実施テストの妥当性の疑義になることを説明できる,,15,knowledge,2026-08-23
+dw1-process-16,dw1-process|dm1-process,標準生産性の指標値について、許容範囲の下限を下回ると生産性が低く、上限を上回ると生産性が高い状態であることを説明できる,,16,knowledge,2026-08-23
+dw1-process-17,dw1-process|dm1-process,担当プロジェクトにて定められている指標値を関係者と確認して合わせた状態で、単体テストを実施しバグを検出できる,,17,practice,2026-08-23
+dw1-process-18,dw1-process|dm1-process,担当プロジェクトにて定められている1営業日当たりの単体テスト消化項目数の標準値を関係者と確認して合わせた状態で、テストを消化できる,,18,practice,2026-08-23
+dw2-process-01,dw2-process|dm2-process,担当する改修の目的（何のための改修か）とゴールを説明できる,,1,knowledge,2026-08-23
+dw2-process-02,dw2-process|dm2-process,改修作業の Input（依頼・現象・設計書）と Output（修正内容・更新した設計書）が何かを説明できる,,2,knowledge,2026-08-23
+dw2-process-03,dw2-process|dm2-process,改修の目的とゴールについての自分の理解を依頼元・関係者に伝え、認識の相違があれば確認して合わせられる,,3,practice,2026-08-23
+dw2-process-04,dw2-process|dm2-process,依頼内容の不足を確認し、完了の条件を関係者と合わせたうえで着手できる,,4,practice,2026-08-23
+dw2-process-05,dw2-process|dm2-process,自分の改修が後続（再テスト・リリース）に与える影響を判断し、早期に共有できる,,5,practice,2026-08-23
+dw2-process-06,dw2-process|dm2-process,前の工程で検出すべきバグが後の工程で出ることを「バグ流出」と呼び、品質そのものの疑義になることを説明できる,,6,knowledge,2026-08-23
+dw2-process-07,dw2-process|dm2-process,担当プロジェクトにて定められている指標値を関係者と確認して合わせた状態で、改修後の確認項目を決められる,,7,practice,2026-08-23
+dw2-process-08,dw2-process|dm2-process,自分の改修で見つかったバグが本来どの工程で検出されるべきだったかを判断し、関係者と共有できる,,8,practice,2026-08-23
+dw3-process-01,dw3-process|dm3-process,担当する実装の目的（設計の意図）とゴールを説明できる,,1,knowledge,2026-08-23
+dw3-process-02,dw3-process|dm3-process,実装作業の Input（詳細設計書）と Output（実装・単体テスト結果）が何かを説明できる,,2,knowledge,2026-08-23
+dw3-process-03,dw3-process|dm3-process,自分の実装が後続の結合テスト・システムテストでどう使われるかを説明できる,,3,knowledge,2026-08-23
+dw3-process-04,dw3-process|dm3-process,設計の意図についての自分の理解を設計者・関係者に伝え、認識の相違があれば確認して合わせられる,,4,practice,2026-08-23
+dw3-process-05,dw3-process|dm3-process,詳細設計書の不備を確認し、完了の条件を関係者と合わせたうえで着手できる,,5,practice,2026-08-23
+dw3-process-06,dw3-process|dm3-process,先行（設計）の遅れや不備が自分の実装に与える影響を判断し、関係者と確認して合わせられる,,6,practice,2026-08-23
+dw3-process-07,dw3-process|dm3-process,自分の実装の遅れが後続に与える影響を判断し、早期に共有できる,,7,practice,2026-08-23
+dw3-process-08,dw3-process|dm3-process,担当プロジェクトにて定められている指標値のうち、製造検出バグ数と製造Step数が何を見る値かを説明できる,,8,knowledge,2026-08-23
+dw3-process-09,dw3-process|dm3-process,指標値が品質管理と顧客への品質報告に使われることを説明できる,,9,knowledge,2026-08-23
+dw3-process-10,dw3-process|dm3-process,担当プロジェクトにて定められている1営業日当たりの製造Step数の標準値を関係者と確認して合わせた状態で、実装を進められる,,10,practice,2026-08-23
+dw3-process-11,dw3-process|dm3-process,実装した範囲の検出バグ数が許容範囲に収まっているかを確認し、外れている場合に関係者へ相談できる,,11,practice,2026-08-23
+dw3-process-12,dw3-process|dm3-process,担当プロジェクトにて定められている単体テスト項目執筆時間数の標準値を関係者と確認して合わせた状態で、自分が実装した範囲の単体テスト項目を作成できる,,12,practice,2026-08-23
+dw3-process-13,dw3-process|dm3-process,自分が実装した範囲の単体テスト項目数が許容範囲に収まっているかを確認し、外れている場合に関係者へ相談できる,,13,practice,2026-08-23

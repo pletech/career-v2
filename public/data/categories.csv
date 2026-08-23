@@ -118,3 +118,9 @@ dm3-core,development,モバイルアプリ,3,画面遷移・API連携・ロー�
 dm3-unittest,development,モバイルアプリ,3,単体テストの実施,,dm2-verify,4
 dm3-quality,development,モバイルアプリ,3,コード品質・レビュー対応,,dm2-vcs|dm2-doc,5
 dm3-debug,development,モバイルアプリ,3,実装した機能の不具合調査・修正,,dm2-logic,6
+dw1-process,development,Webアプリケーション,1,工程全体の理解,,,11
+dw2-process,development,Webアプリケーション,2,工程全体の理解,,dw1-process,8
+dw3-process,development,Webアプリケーション,3,工程全体の理解,,dw2-process,7
+dm1-process,development,モバイルアプリ,1,工程全体の理解,,,11
+dm2-process,development,モバイルアプリ,2,工程全体の理解,,dm1-process,8
+dm3-process,development,モバイルアプリ,3,工程全体の理解,,dm2-process,7
