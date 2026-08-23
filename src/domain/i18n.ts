@@ -1,11 +1,16 @@
 /**
- * 表示言語 (v2.3 — 確定 #21)
+ * 表示言語 (v2.3 — 確定 #21 / 2026-08-22 に韓国語を廃止)
  *
- * 作成・検討作業は韓国語、共有時は日本語に切り替えられるようにする。
- * 既定値は日本語 (共有時の事故防止)。韓国語は作業用の便宜であり、正本は日本語。
+ * もともとは「作成・検討は韓国語、共有時は日本語」の切り替えだった。
+ * **韓国語は使わないことになったので落とした** (2026-08-22 ユーザー指示)。
+ * シードの `*Ko` フィールドも全て空にしてある。
  *
- * コンテンツ (役割・能力・根拠・ヒント) の韓国語はシードの *Ko フィールド、
- * 固定文言はこの STRINGS で切り替える。
+ * ⚠️ 型・`loc()`・`*Ko` フィールドは**残してある**。消すには 34 箇所の
+ * 呼び出しと 13 ファイルの `lang` 受け渡しを畳むことになり、そこは
+ * 機能側の担当範囲で `main` と `draft` が既に分岐している。
+ * `KO_UI_ENABLED` が false であれば言語は 'ja' に固定され、
+ * `loc()` は日本語を返すだけになるので、**製品としては韓国語が無い状態**になる。
+ * 呼び出し側を畳むのは、draft を main に合流させた後の別作業。
  */
 
 import type { AbilityState, EvidenceType, WorkTagId } from './types';
@@ -13,13 +18,18 @@ import type { AbilityState, EvidenceType, WorkTagId } from './types';
 export type Lang = 'ja' | 'ko';
 
 /**
- * 韓国語 UI の有効条件: dev サーバー、または VITE_ENABLE_KO=true のビルドのみ。
- * 公開ビルド (GitHub Pages) は日本語のみ — 韓国語はローカル作業用 (確定 #21)
+ * 韓国語 UI は廃止 (2026-08-22)。**常に false**。
+ *
+ * これが false だと `loadLang()` が 'ja' を返し、言語トグルも描かれない。
+ * 以前は `DEV || VITE_ENABLE_KO` で dev だけ出していたが、
+ * 韓国語を使わないことになったので出さない。
  */
-export const KO_UI_ENABLED =
-  import.meta.env.DEV || import.meta.env.VITE_ENABLE_KO === 'true';
+export const KO_UI_ENABLED = false;
 
-/** 韓国語フィールドがあればそれを、なければ日本語を返す */
+/**
+ * 韓国語フィールドがあればそれを、なければ日本語を返す。
+ * 韓国語廃止後は `lang` が常に 'ja' なので、実質「日本語を返す」だけ。
+ */
 export const loc = (lang: Lang, ja: string, ko?: string): string =>
   lang === 'ko' && ko ? ko : ja;
 
