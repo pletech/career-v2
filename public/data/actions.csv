@@ -739,7 +739,7 @@ dw1-retest-06,dw1-retest|dm1-retest,修正の影響が及ぶ周辺の画面・�
 dw1-retest-07,dw1-retest|dm1-retest,再テストの結果をチケットに記録できる,,7,practice,2026-08-18
 dw1-retest-08,dw1-retest|dm1-retest,修正されていない場合に、どこまで修正されたかを書き分けて差し戻せる,,8,practice,2026-08-18
 dw1-retest-09,dw1-retest|dm1-retest,再テストが必要な項目を漏らさず管理できる,,9,practice,2026-08-18
-dw1-tools-01,dw1-tools|dm1-tools,バージョン管理（Git）が何のためにあるか説明できる,,1,knowledge,2026-08-18
+dw1-tools-01,dw1-tools|dm1-tools,バージョン管理が何のためにあるか説明できる,,1,knowledge,2026-08-18
 dw1-tools-02,dw1-tools|dm1-tools,課題管理ツールのチケットの状態（未着手・対応中・確認待ち・完了）を説明できる,,2,knowledge,2026-08-18
 dw1-tools-03,dw1-tools|dm1-tools,開発環境・検証環境・本番環境の違いを説明できる,,3,knowledge,2026-08-18
 dw1-tools-04,dw1-tools|dm1-tools,ブラウザの開発者ツールで何が見られるか説明できる,,4,knowledge,2026-08-18
