@@ -34,7 +34,7 @@ cert-dw1-03,development,Webアプリケーション,1,Oracle認定Javaプログ�
 cert-dw2-01,development,Webアプリケーション,2,ORACLE MASTER Bronze,,SQL の入口。既存SQLの軽微な修正に直結,,1
 cert-dw2-02,development,Webアプリケーション,2,Oracle認定Javaプログラマ（Silver）,,既存コードを読んで直せる範囲,,2
 cert-dw2-03,development,Webアプリケーション,2,Python 3 エンジニア認定試験 基礎,,案件の言語が Python の場合,,3
-cert-dw2-04,development,Webアプリケーション,2,情報セキュリティマネジメント試験,,コードと本番データを触る立場の判断,,4
+cert-dw2-04,development,Webアプリケーション,2,情報セキュリティマネジメント試験,,コードと本番データを触る立場の判断。技術力の証明にはならないが、リスクへの嗅覚が上がる。情報処理安全確保支援士への現実的なステップ,,4
 cert-dw3-01,development,Webアプリケーション,3,基本情報技術者試験（FE）,,未取得なら優先。上の段階の土台,,1
 cert-dw3-02,development,Webアプリケーション,3,ORACLE MASTER Silver,,DB入出力を設計書どおりに実装する範囲,,2
 cert-dw3-03,development,Webアプリケーション,3,Oracle認定Javaプログラマ（Gold）,,サーバー処理を一から実装する範囲,,3
@@ -43,7 +43,7 @@ cert-dm1-01,development,モバイルアプリ,1,ITパスポート試験,,IT全�
 cert-dm1-02,development,モバイルアプリ,1,Oracle認定Javaプログラマ（Bronze）,,Android は Java・Kotlin 系。言語の入口として効く,,2
 cert-dm2-01,development,モバイルアプリ,2,Oracle認定Javaプログラマ（Silver）,,既存コードを読んで直せる範囲,,1
 cert-dm2-02,development,モバイルアプリ,2,ORACLE MASTER Bronze,,ローカルデータ処理（SQLite）の土台となる SQL,,2
-cert-dm2-03,development,モバイルアプリ,2,情報セキュリティマネジメント試験,,端末内にデータを残す立場の判断,,3
+cert-dm2-03,development,モバイルアプリ,2,情報セキュリティマネジメント試験,,端末内にデータを残す立場の判断。技術力の証明にはならないが、リスクへの嗅覚が上がる。情報処理安全確保支援士への現実的なステップ,,3
 cert-dm3-01,development,モバイルアプリ,3,基本情報技術者試験（FE）,,未取得なら優先。上の段階の土台,,1
 cert-dm3-02,development,モバイルアプリ,3,Oracle認定Javaプログラマ（Gold）,,画面と処理を一から実装する範囲,,2
 cert-dw2-05,development,Webアプリケーション,2,AZ-900:Azure Fundamentals,,案件が Azure 上の場合。自分が触る環境の前提を知る,,5
