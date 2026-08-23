@@ -1,120 +1,120 @@
 categoryId,track,subtrack,stage,labelJa,labelKo,includes,sortOrder
-c1-inquiry,infrastructure,サーバー,1,問い合わせ対応,문의 대응,,1
-c1-triage,infrastructure,サーバー,1,問い合わせ一次切り分け,문의 1차 분류·초기 대응,,2
-c1-reporting,infrastructure,サーバー,1,記録・報告（報連相）,기록·보고 (호렌소),,3
-c1-procedure,infrastructure,サーバー,1,手順書・定型作業,절차서·정형 작업,,4
-c1-operations,infrastructure,サーバー,1,定常運用・データ保全,정기 운용·데이터 보전,,5
-c1-account,infrastructure,サーバー,1,アカウント対応,계정 대응,,6
-c1-device,infrastructure,サーバー,1,端末・周辺機器,단말·주변기기,,7
-c1-monitoring,infrastructure,サーバー,1,監視補助・基本確認,감시 보조·기본 확인,,8
-c1-itbasics,infrastructure,サーバー,1,IT基礎知識,IT 기초 지식,,9
-c1-security,infrastructure,サーバー,1,セキュリティ・ルール遵守,보안·룰 준수,,10
-c1-site,infrastructure,サーバー,1,現場理解・体制,현장 이해·체제,,11
-c2-monitor,infrastructure,サーバー,2,監視・異常検知,감시·이상 감지,c1-monitoring,1
-c2-assess,infrastructure,サーバー,2,障害状況の一次確認,장애 상황의 1차 확인,c1-itbasics|c1-triage,2
-c2-response,infrastructure,サーバー,2,初動対応の実施,초동 대응 수행,c1-procedure|c1-security,3
-c2-recovery,infrastructure,サーバー,2,復旧確認・完了処理,복구 확인·완료 처리,,4
-c2-escalate,infrastructure,サーバー,2,エスカレーション・引き継ぎ,에스컬레이션·인계,c1-site,5
-c2-incident,infrastructure,サーバー,2,インシデント記録・進行管理,인시던트 기록·진행 관리,c1-inquiry|c1-reporting,6
-c2-operations,infrastructure,サーバー,2,定常運用の自立実施,정기 운용 자립 수행,c1-operations|c1-account|c1-device,7
-c3-analysis,infrastructure,サーバー,3,監視分析・改善提案,감시 분석·개선 제안,c2-monitor,1
-c3-diagnosis,infrastructure,サーバー,3,原因調査・切り分け,원인 조사·범위 좁히기,c2-assess,2
-c3-recovery,infrastructure,サーバー,3,復旧対応・恒久対策の検討,복구 대응·근본 대책 검토,c2-response|c2-recovery,3
-c3-incident,infrastructure,サーバー,3,二次対応の受付・進行管理,2차 대응 접수·진행 관리,c2-escalate|c2-incident,4
-c3-maintenance,infrastructure,サーバー,3,定期保守・変更作業,정기 보수·변경 작업,c2-operations,5
-c3-document,infrastructure,サーバー,3,手順書・ナレッジ整備,절차서·지식 정비,,6
-hd1-intake,it-support,ヘルプデスク系,1,問い合わせの受付・整理,문의 접수·정리,,1
-hd1-triage,it-support,ヘルプデスク系,1,問い合わせの一次切り分け,문의 1차 분류,,2
-hd1-guidance,it-support,ヘルプデスク系,1,定型案内・操作説明,정형 안내·조작 설명,,3
-hd1-escalate,it-support,ヘルプデスク系,1,対応範囲の判断・引き継ぎ,대응 범위 판단·인계,,4
-hd1-record,it-support,ヘルプデスク系,1,記録・報告（報連相）,기록·보고(호렌소),,5
-hd1-account,it-support,ヘルプデスク系,1,アカウント対応,계정 대응,,6
-hd1-device,it-support,ヘルプデスク系,1,端末・周辺機器,단말·주변기기,,7
-hd1-asset,it-support,ヘルプデスク系,1,端末・ライセンスの資産管理,단말·라이선스 자산 관리,,8
-hd1-office,it-support,ヘルプデスク系,1,PC・Microsoft 365 の基本操作,PC·Microsoft 365 기본 조작,,9
-hd1-manner,it-support,ヘルプデスク系,1,利用者対応の基本,이용자 대응의 기본,,10
-hd1-itbasics,it-support,ヘルプデスク系,1,IT基礎知識,IT 기초 지식,,11
-hd1-security,it-support,ヘルプデスク系,1,セキュリティ・ルール遵守,보안·규칙 준수,,12
-hd1-site,it-support,ヘルプデスク系,1,現場理解・体制,현장 이해·체제,,13
-hd2-assess,it-support,ヘルプデスク系,2,二次対応の受付・状況把握,2차 대응 접수·상황 파악,hd1-intake|hd1-triage,1
-hd2-diagnose,it-support,ヘルプデスク系,2,原因の切り分け（ログ・設定・操作履歴）,원인 범위 좁히기(로그·설정·조작 이력),hd1-itbasics|hd1-device,2
-hd2-config,it-support,ヘルプデスク系,2,権限・端末・アプリ設定の変更対応,권한·단말·앱 설정 변경 대응,hd1-account|hd1-asset|hd1-security,3
-hd2-resolve,it-support,ヘルプデスク系,2,解決対応の実施・利用者への説明,해결 대응 실시·이용자 설명,hd1-guidance|hd1-manner|hd1-office,4
-hd2-close,it-support,ヘルプデスク系,2,完了確認・クローズ処理,완료 확인·클로즈 처리,,5
-hd2-escalate,it-support,ヘルプデスク系,2,対応方針の整理・エスカレーション,대응 방침 정리·에스컬레이션,hd1-escalate|hd1-site,6
-hd2-record,it-support,ヘルプデスク系,2,対応記録・進行管理,대응 기록·진행 관리,hd1-record,7
-hd3-priority,it-support,ヘルプデスク系,3,優先度の判断（SLA・影響範囲）,우선도 판단(SLA·영향 범위),hd2-assess,1
-hd3-assign,it-support,ヘルプデスク系,3,案件の振り分け・アサイン調整,안건 배분·어사인 조정,,2
-hd3-progress,it-support,ヘルプデスク系,3,進捗確認・滞留案件の管理,진척 확인·체류 안건 관리,hd2-record|hd2-close,3
-hd3-quality,it-support,ヘルプデスク系,3,対応品質の確認・クロスチェック,대응 품질 확인·크로스체크,hd2-resolve|hd2-config,4
-hd3-support,it-support,ヘルプデスク系,3,メンバーの判断支援・連携調整,멤버 판단 지원·연계 조정,hd2-diagnose|hd2-escalate,5
-hd3-knowledge,it-support,ヘルプデスク系,3,FAQ・手順書の整備,FAQ·절차서 정비,,6
-ad1-intake,it-support,事務系,1,依頼・申請の受付,의뢰·신청 접수,,1
-ad1-verify,it-support,事務系,1,申請内容・資料の確認,신청 내용·자료 확인,,2
-ad1-check,it-support,事務系,1,必要書類の不備・不足確認,필요 서류의 불비·부족 확인,,3
-ad1-routine,it-support,事務系,1,定型的な入力・登録・更新,정형 입력·등록·갱신,,4
-ad1-record,it-support,事務系,1,処理結果の記録・共有,처리 결과 기록·공유,,5
-ad1-escalate,it-support,事務系,1,判断の確認・上位への相談,판단 확인·상위 상담,,6
-ad1-office,it-support,事務系,1,Office での資料作成,Office 자료 작성,,7
-ad1-manner,it-support,事務系,1,申請者への案内・確認,신청자 안내·확인,,8
-ad1-itbasics,it-support,事務系,1,IT基礎知識,IT 기초 지식,,9
-ad1-security,it-support,事務系,1,個人情報・書類の取り扱い,개인정보·서류 취급,,10
-ad1-site,it-support,事務系,1,現場理解・体制,현장 이해·체제,,11
-ad2-gap,it-support,事務系,2,不足情報の洗い出し・確認依頼,부족 정보 파악·확인 의뢰,ad1-verify|ad1-check,1
-ad2-coordinate,it-support,事務系,2,関係者間の連絡・調整,관계자 간 연락·조정,ad1-manner|ad1-site|ad1-security,2
-ad2-order,it-support,事務系,2,依頼事項・対応順序の整理,의뢰 사항·대응 순서 정리,ad1-routine|ad1-office|ad1-itbasics,3
-ad2-handover,it-support,事務系,2,次対応への引き継ぎ・連携,다음 대응으로의 인계·연계,ad1-escalate,4
-ad2-record,it-support,事務系,2,対応記録・進行管理,대응 기록·진행 관리,ad1-record|ad1-intake,5
-ad2-close,it-support,事務系,2,完了確認・処理の締め,완료 확인·처리 마감,,6
-ad3-priority,it-support,事務系,3,優先度の判断（締切・影響）,우선도 판단(마감·영향),ad2-gap,1
-ad3-assign,it-support,事務系,3,業務の振り分け・アサイン調整,업무 배분·어사인 조정,,2
-ad3-progress,it-support,事務系,3,進行状況・滞留案件の管理,진행 상황·체류 안건 관리,ad2-record|ad2-close,3
-ad3-quality,it-support,事務系,3,作業内容のクロスチェック,작업 내용 크로스체크,ad2-order|ad2-handover,4
-ad3-support,it-support,事務系,3,メンバーの判断支援・相談対応,멤버 판단 지원·상담 대응,ad2-coordinate,5
-ad3-knowledge,it-support,事務系,3,手順書・チェックリストの整備,절차서·체크리스트 정비,,6
-dw1-spec,development,Webアプリケーション,1,テスト仕様の理解・準備,테스트 사양의 이해·준비,,1
-dw1-exec,development,Webアプリケーション,1,テストの実施（単体・結合・システム）,테스트 실시(단위·결합·시스템),,2
-dw1-defect,development,Webアプリケーション,1,不具合の確認・再現,결함 확인·재현,,3
-dw1-report,development,Webアプリケーション,1,テスト結果の記録・報告,테스트 결과 기록·보고,,4
-dw1-retest,development,Webアプリケーション,1,修正後の再テスト,수정 후 재테스트,,5
-dw1-tools,development,Webアプリケーション,1,開発環境・ツールの基本操作,개발 환경·도구의 기본 조작,,6
-dw1-readspec,development,Webアプリケーション,1,仕様書・設計書の読み方,사양서·설계서 읽는 법,,7
-dw1-basics,development,Webアプリケーション,1,IT・開発の基礎知識,IT·개발 기초 지식,,8
-dw1-security,development,Webアプリケーション,1,セキュリティ・情報の取り扱い,보안·정보 취급,,9
-dw1-site,development,Webアプリケーション,1,開発現場の理解・体制,개발 현장 이해·체제,,10
-dw2-target,development,Webアプリケーション,2,改修対象の把握,개수 대상 파악,dw1-readspec|dw1-spec,1
-dw2-ui,development,Webアプリケーション,2,既存画面の表示修正,기존 화면의 표시 수정,dw1-defect,2
-dw2-logic,development,Webアプリケーション,2,既存機能の条件分岐・文言の修正,기존 기능의 조건 분기·문구 수정,dw1-basics,3
-dw2-data,development,Webアプリケーション,2,既存API・SQLの軽微な修正,기존 API·SQL의 경미한 수정,dw1-security,4
-dw2-doc,development,Webアプリケーション,2,詳細設計書の更新,상세설계서 갱신,dw1-report,5
-dw2-verify,development,Webアプリケーション,2,影響確認・デグレ確認,영향 확인·디그레이드 확인,dw1-exec|dw1-retest,6
-dw2-vcs,development,Webアプリケーション,2,バージョン管理・レビュー対応,버전 관리·리뷰 대응,dw1-tools|dw1-site,7
-dw3-read,development,Webアプリケーション,3,詳細設計書の読解・実装計画,상세설계서 독해·구현 계획,dw2-target,1
-dw3-ui,development,Webアプリケーション,3,画面機能の実装,화면 기능 구현,dw2-ui,2
-dw3-core,development,Webアプリケーション,3,API・サーバー処理・DB入出力の実装,API·서버 처리·DB 입출력 구현,dw2-data,3
-dw3-unittest,development,Webアプリケーション,3,単体テストの実施,단위 테스트 실시,dw2-verify,4
-dw3-quality,development,Webアプリケーション,3,コード品質・レビュー対応,코드 품질·리뷰 대응,dw2-vcs|dw2-doc,5
-dw3-debug,development,Webアプリケーション,3,実装した機能の不具合調査・修正,구현한 기능의 결함 조사·수정,dw2-logic,6
-dm1-spec,development,モバイルアプリ,1,テスト仕様の理解・準備,테스트 사양의 이해·준비,,1
-dm1-exec,development,モバイルアプリ,1,テストの実施（単体・結合・システム）,테스트 실시(단위·결합·시스템),,2
-dm1-defect,development,モバイルアプリ,1,不具合の確認・再現,결함 확인·재현,,3
-dm1-report,development,モバイルアプリ,1,テスト結果の記録・報告,테스트 결과 기록·보고,,4
-dm1-retest,development,モバイルアプリ,1,修正後の再テスト,수정 후 재테스트,,5
-dm1-tools,development,モバイルアプリ,1,開発環境・ツールの基本操作,개발 환경·도구의 기본 조작,,6
-dm1-readspec,development,モバイルアプリ,1,仕様書・設計書の読み方,사양서·설계서 읽는 법,,7
-dm1-basics,development,モバイルアプリ,1,IT・開発の基礎知識,IT·개발 기초 지식,,8
-dm1-security,development,モバイルアプリ,1,セキュリティ・情報の取り扱い,보안·정보 취급,,9
-dm1-site,development,モバイルアプリ,1,開発現場の理解・体制,개발 현장 이해·체제,,10
-dm2-target,development,モバイルアプリ,2,改修対象の把握,개수 대상 파악,dm1-readspec|dm1-spec,1
-dm2-ui,development,モバイルアプリ,2,既存画面の表示修正,기존 화면의 표시 수정,dm1-defect,2
-dm2-logic,development,モバイルアプリ,2,既存機能の入力制御・画面遷移の修正,기존 기능의 입력 제어·화면 전환 수정,dm1-basics,3
-dm2-data,development,モバイルアプリ,2,既存API連携・ローカルデータ処理の修正,기존 API 연동·로컬 데이터 처리 수정,dm1-security,4
-dm2-doc,development,モバイルアプリ,2,詳細設計書の更新,상세설계서 갱신,dm1-report,5
-dm2-verify,development,モバイルアプリ,2,影響確認・デグレ確認,영향 확인·디그레이드 확인,dm1-exec|dm1-retest,6
-dm2-vcs,development,モバイルアプリ,2,バージョン管理・レビュー対応,버전 관리·리뷰 대응,dm1-tools|dm1-site,7
-dm3-read,development,モバイルアプリ,3,詳細設計書の読解・実装計画,상세설계서 독해·구현 계획,dm2-target,1
-dm3-ui,development,モバイルアプリ,3,画面機能の実装,화면 기능 구현,dm2-ui,2
-dm3-core,development,モバイルアプリ,3,画面遷移・API連携・ローカルデータ処理の実装,화면 전환·API 연동·로컬 데이터 처리 구현,dm2-data,3
-dm3-unittest,development,モバイルアプリ,3,単体テストの実施,단위 테스트 실시,dm2-verify,4
-dm3-quality,development,モバイルアプリ,3,コード品質・レビュー対応,코드 품질·리뷰 대응,dm2-vcs|dm2-doc,5
-dm3-debug,development,モバイルアプリ,3,実装した機能の不具合調査・修正,구현한 기능의 결함 조사·수정,dm2-logic,6
+c1-inquiry,infrastructure,サーバー,1,問い合わせ対応,,,1
+c1-triage,infrastructure,サーバー,1,問い合わせ一次切り分け,,,2
+c1-reporting,infrastructure,サーバー,1,記録・報告（報連相）,,,3
+c1-procedure,infrastructure,サーバー,1,手順書・定型作業,,,4
+c1-operations,infrastructure,サーバー,1,定常運用・データ保全,,,5
+c1-account,infrastructure,サーバー,1,アカウント対応,,,6
+c1-device,infrastructure,サーバー,1,端末・周辺機器,,,7
+c1-monitoring,infrastructure,サーバー,1,監視補助・基本確認,,,8
+c1-itbasics,infrastructure,サーバー,1,IT基礎知識,,,9
+c1-security,infrastructure,サーバー,1,セキュリティ・ルール遵守,,,10
+c1-site,infrastructure,サーバー,1,現場理解・体制,,,11
+c2-monitor,infrastructure,サーバー,2,監視・異常検知,,c1-monitoring,1
+c2-assess,infrastructure,サーバー,2,障害状況の一次確認,,c1-itbasics|c1-triage,2
+c2-response,infrastructure,サーバー,2,初動対応の実施,,c1-procedure|c1-security,3
+c2-recovery,infrastructure,サーバー,2,復旧確認・完了処理,,,4
+c2-escalate,infrastructure,サーバー,2,エスカレーション・引き継ぎ,,c1-site,5
+c2-incident,infrastructure,サーバー,2,インシデント記録・進行管理,,c1-inquiry|c1-reporting,6
+c2-operations,infrastructure,サーバー,2,定常運用の自立実施,,c1-operations|c1-account|c1-device,7
+c3-analysis,infrastructure,サーバー,3,監視分析・改善提案,,c2-monitor,1
+c3-diagnosis,infrastructure,サーバー,3,原因調査・切り分け,,c2-assess,2
+c3-recovery,infrastructure,サーバー,3,復旧対応・恒久対策の検討,,c2-response|c2-recovery,3
+c3-incident,infrastructure,サーバー,3,二次対応の受付・進行管理,,c2-escalate|c2-incident,4
+c3-maintenance,infrastructure,サーバー,3,定期保守・変更作業,,c2-operations,5
+c3-document,infrastructure,サーバー,3,手順書・ナレッジ整備,,,6
+hd1-intake,it-support,ヘルプデスク系,1,問い合わせの受付・整理,,,1
+hd1-triage,it-support,ヘルプデスク系,1,問い合わせの一次切り分け,,,2
+hd1-guidance,it-support,ヘルプデスク系,1,定型案内・操作説明,,,3
+hd1-escalate,it-support,ヘルプデスク系,1,対応範囲の判断・引き継ぎ,,,4
+hd1-record,it-support,ヘルプデスク系,1,記録・報告（報連相）,,,5
+hd1-account,it-support,ヘルプデスク系,1,アカウント対応,,,6
+hd1-device,it-support,ヘルプデスク系,1,端末・周辺機器,,,7
+hd1-asset,it-support,ヘルプデスク系,1,端末・ライセンスの資産管理,,,8
+hd1-office,it-support,ヘルプデスク系,1,PC・Microsoft 365 の基本操作,,,9
+hd1-manner,it-support,ヘルプデスク系,1,利用者対応の基本,,,10
+hd1-itbasics,it-support,ヘルプデスク系,1,IT基礎知識,,,11
+hd1-security,it-support,ヘルプデスク系,1,セキュリティ・ルール遵守,,,12
+hd1-site,it-support,ヘルプデスク系,1,現場理解・体制,,,13
+hd2-assess,it-support,ヘルプデスク系,2,二次対応の受付・状況把握,,hd1-intake|hd1-triage,1
+hd2-diagnose,it-support,ヘルプデスク系,2,原因の切り分け（ログ・設定・操作履歴）,,hd1-itbasics|hd1-device,2
+hd2-config,it-support,ヘルプデスク系,2,権限・端末・アプリ設定の変更対応,,hd1-account|hd1-asset|hd1-security,3
+hd2-resolve,it-support,ヘルプデスク系,2,解決対応の実施・利用者への説明,,hd1-guidance|hd1-manner|hd1-office,4
+hd2-close,it-support,ヘルプデスク系,2,完了確認・クローズ処理,,,5
+hd2-escalate,it-support,ヘルプデスク系,2,対応方針の整理・エスカレーション,,hd1-escalate|hd1-site,6
+hd2-record,it-support,ヘルプデスク系,2,対応記録・進行管理,,hd1-record,7
+hd3-priority,it-support,ヘルプデスク系,3,優先度の判断（SLA・影響範囲）,,hd2-assess,1
+hd3-assign,it-support,ヘルプデスク系,3,案件の振り分け・アサイン調整,,,2
+hd3-progress,it-support,ヘルプデスク系,3,進捗確認・滞留案件の管理,,hd2-record|hd2-close,3
+hd3-quality,it-support,ヘルプデスク系,3,対応品質の確認・クロスチェック,,hd2-resolve|hd2-config,4
+hd3-support,it-support,ヘルプデスク系,3,メンバーの判断支援・連携調整,,hd2-diagnose|hd2-escalate,5
+hd3-knowledge,it-support,ヘルプデスク系,3,FAQ・手順書の整備,,,6
+ad1-intake,it-support,事務系,1,依頼・申請の受付,,,1
+ad1-verify,it-support,事務系,1,申請内容・資料の確認,,,2
+ad1-check,it-support,事務系,1,必要書類の不備・不足確認,,,3
+ad1-routine,it-support,事務系,1,定型的な入力・登録・更新,,,4
+ad1-record,it-support,事務系,1,処理結果の記録・共有,,,5
+ad1-escalate,it-support,事務系,1,判断の確認・上位への相談,,,6
+ad1-office,it-support,事務系,1,Office での資料作成,,,7
+ad1-manner,it-support,事務系,1,申請者への案内・確認,,,8
+ad1-itbasics,it-support,事務系,1,IT基礎知識,,,9
+ad1-security,it-support,事務系,1,個人情報・書類の取り扱い,,,10
+ad1-site,it-support,事務系,1,現場理解・体制,,,11
+ad2-gap,it-support,事務系,2,不足情報の洗い出し・確認依頼,,ad1-verify|ad1-check,1
+ad2-coordinate,it-support,事務系,2,関係者間の連絡・調整,,ad1-manner|ad1-site|ad1-security,2
+ad2-order,it-support,事務系,2,依頼事項・対応順序の整理,,ad1-routine|ad1-office|ad1-itbasics,3
+ad2-handover,it-support,事務系,2,次対応への引き継ぎ・連携,,ad1-escalate,4
+ad2-record,it-support,事務系,2,対応記録・進行管理,,ad1-record|ad1-intake,5
+ad2-close,it-support,事務系,2,完了確認・処理の締め,,,6
+ad3-priority,it-support,事務系,3,優先度の判断（締切・影響）,,ad2-gap,1
+ad3-assign,it-support,事務系,3,業務の振り分け・アサイン調整,,,2
+ad3-progress,it-support,事務系,3,進行状況・滞留案件の管理,,ad2-record|ad2-close,3
+ad3-quality,it-support,事務系,3,作業内容のクロスチェック,,ad2-order|ad2-handover,4
+ad3-support,it-support,事務系,3,メンバーの判断支援・相談対応,,ad2-coordinate,5
+ad3-knowledge,it-support,事務系,3,手順書・チェックリストの整備,,,6
+dw1-spec,development,Webアプリケーション,1,テスト仕様の理解・準備,,,1
+dw1-exec,development,Webアプリケーション,1,テストの実施（単体・結合・システム）,,,2
+dw1-defect,development,Webアプリケーション,1,不具合の確認・再現,,,3
+dw1-report,development,Webアプリケーション,1,テスト結果の記録・報告,,,4
+dw1-retest,development,Webアプリケーション,1,修正後の再テスト,,,5
+dw1-tools,development,Webアプリケーション,1,開発環境・ツールの基本操作,,,6
+dw1-readspec,development,Webアプリケーション,1,仕様書・設計書の読み方,,,7
+dw1-basics,development,Webアプリケーション,1,IT・開発の基礎知識,,,8
+dw1-security,development,Webアプリケーション,1,セキュリティ・情報の取り扱い,,,9
+dw1-site,development,Webアプリケーション,1,開発現場の理解・体制,,,10
+dw2-target,development,Webアプリケーション,2,改修対象の把握,,dw1-readspec|dw1-spec,1
+dw2-ui,development,Webアプリケーション,2,既存画面の表示修正,,dw1-defect,2
+dw2-logic,development,Webアプリケーション,2,既存機能の条件分岐・文言の修正,,dw1-basics,3
+dw2-data,development,Webアプリケーション,2,既存API・SQLの軽微な修正,,dw1-security,4
+dw2-doc,development,Webアプリケーション,2,詳細設計書の更新,,dw1-report,5
+dw2-verify,development,Webアプリケーション,2,影響確認・デグレ確認,,dw1-exec|dw1-retest,6
+dw2-vcs,development,Webアプリケーション,2,バージョン管理・レビュー対応,,dw1-tools|dw1-site,7
+dw3-read,development,Webアプリケーション,3,詳細設計書の読解・実装計画,,dw2-target,1
+dw3-ui,development,Webアプリケーション,3,画面機能の実装,,dw2-ui,2
+dw3-core,development,Webアプリケーション,3,API・サーバー処理・DB入出力の実装,,dw2-data,3
+dw3-unittest,development,Webアプリケーション,3,単体テストの実施,,dw2-verify,4
+dw3-quality,development,Webアプリケーション,3,コード品質・レビュー対応,,dw2-vcs|dw2-doc,5
+dw3-debug,development,Webアプリケーション,3,実装した機能の不具合調査・修正,,dw2-logic,6
+dm1-spec,development,モバイルアプリ,1,テスト仕様の理解・準備,,,1
+dm1-exec,development,モバイルアプリ,1,テストの実施（単体・結合・システム）,,,2
+dm1-defect,development,モバイルアプリ,1,不具合の確認・再現,,,3
+dm1-report,development,モバイルアプリ,1,テスト結果の記録・報告,,,4
+dm1-retest,development,モバイルアプリ,1,修正後の再テスト,,,5
+dm1-tools,development,モバイルアプリ,1,開発環境・ツールの基本操作,,,6
+dm1-readspec,development,モバイルアプリ,1,仕様書・設計書の読み方,,,7
+dm1-basics,development,モバイルアプリ,1,IT・開発の基礎知識,,,8
+dm1-security,development,モバイルアプリ,1,セキュリティ・情報の取り扱い,,,9
+dm1-site,development,モバイルアプリ,1,開発現場の理解・体制,,,10
+dm2-target,development,モバイルアプリ,2,改修対象の把握,,dm1-readspec|dm1-spec,1
+dm2-ui,development,モバイルアプリ,2,既存画面の表示修正,,dm1-defect,2
+dm2-logic,development,モバイルアプリ,2,既存機能の入力制御・画面遷移の修正,,dm1-basics,3
+dm2-data,development,モバイルアプリ,2,既存API連携・ローカルデータ処理の修正,,dm1-security,4
+dm2-doc,development,モバイルアプリ,2,詳細設計書の更新,,dm1-report,5
+dm2-verify,development,モバイルアプリ,2,影響確認・デグレ確認,,dm1-exec|dm1-retest,6
+dm2-vcs,development,モバイルアプリ,2,バージョン管理・レビュー対応,,dm1-tools|dm1-site,7
+dm3-read,development,モバイルアプリ,3,詳細設計書の読解・実装計画,,dm2-target,1
+dm3-ui,development,モバイルアプリ,3,画面機能の実装,,dm2-ui,2
+dm3-core,development,モバイルアプリ,3,画面遷移・API連携・ローカルデータ処理の実装,,dm2-data,3
+dm3-unittest,development,モバイルアプリ,3,単体テストの実施,,dm2-verify,4
+dm3-quality,development,モバイルアプリ,3,コード品質・レビュー対応,,dm2-vcs|dm2-doc,5
+dm3-debug,development,モバイルアプリ,3,実装した機能の不具合調査・修正,,dm2-logic,6
