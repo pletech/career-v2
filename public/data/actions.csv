@@ -272,7 +272,7 @@ hd1-intake-09,hd1-intake,よくある問い合わせの種類を説明できる,
 hd1-intake-10,hd1-intake,受付時に確認すべき項目を説明できる,,10,knowledge,2026-08-15
 hd1-triage-01,hd1-triage,FAQ・ナレッジを検索して回答を探せる,,1,practice,2026-08-15
 hd1-triage-02,hd1-triage,どの手順書に該当するか判断できる,,2,practice,2026-08-15
-hd1-triage-03,hd1-triage,事象の再現手順を確認できる,,3,practice,2026-08-15
+hd1-triage-03,hd1-triage,事象の再現手順を言語化できる,,3,practice,2026-08-15
 hd1-triage-04,hd1-triage,発生時期と発生範囲を確認できる,,4,practice,2026-08-15
 hd1-triage-05,hd1-triage,自分で対応できるものとできないものを見分けられる,,5,practice,2026-08-15
 hd1-triage-06,hd1-triage,過去の類似案件を検索して参照できる,,6,practice,2026-08-15
@@ -298,7 +298,7 @@ hd1-escalate-07,hd1-escalate,引き継ぎ先の体制と担当範囲を説明で
 hd1-escalate-08,hd1-escalate,引き継ぎ時に必ず伝える項目を説明できる,,8,knowledge,2026-08-15
 hd1-record-01,hd1-record,対応内容をチケットに記録できる,,1,practice,2026-08-15
 hd1-record-02,hd1-record,手順書で定められた作業証跡（ログ・画面キャプチャ等）を残せる,,2,practice,2026-08-15
-hd1-record-03,hd1-record,後から読む人が分かる書き方で記録できる,,3,practice,2026-08-15
+hd1-record-03,hd1-record,ヘルプデスク未経験者が読んでも分かる書き方で記録できる,,3,practice,2026-08-15
 hd1-record-04,hd1-record,対応中の状況を上長や関係者へ報告できる,,4,practice,2026-08-15
 hd1-record-05,hd1-record,判断に迷ったときに相談できる,,5,practice,2026-08-15
 hd1-record-06,hd1-record,期限に間に合わないと分かった時点で連絡できる,,6,practice,2026-08-15
@@ -445,7 +445,7 @@ hd2-record-07,hd2-record,案件のステータスの使い分けを説明でき�
 hd2-record-08,hd2-record,記録がナレッジになる条件を説明できる,,8,knowledge,2026-08-15
 hd3-priority-01,hd3-priority,影響範囲と緊急度から優先度を判断できる,,1,practice,2026-08-15
 hd3-priority-02,hd3-priority,SLA の期限から着手順を決められる,,2,practice,2026-08-15
-hd3-priority-03,hd3-priority,複数の障害が同時に起きたとき順序を決められる,,3,practice,2026-08-15
+hd3-priority-03,hd3-priority,複数の障害が同時に起きたとき対応の順序を決められる,,3,practice,2026-08-15
 hd3-priority-04,hd3-priority,全社に影響する事象を判断して周知を手配できる,,4,practice,2026-08-15
 hd3-priority-05,hd3-priority,優先度を変更した理由を関係者に説明できる,,5,practice,2026-08-15
 hd3-priority-06,hd3-priority,優先度判断の基準をメンバーに示せる,,6,practice,2026-08-15
@@ -979,3 +979,7 @@ dw1-process-19,dw1-process|dm1-process,バグには「本来検出すべき工�
 dw1-process-20,dw1-process|dm1-process,担当プロジェクトにて定められている指標値のうち、結合テスト項目数・結合テスト検出バグ数・総合テスト項目数・総合テスト検出バグ数が何を見る値かを説明できる,,20,knowledge,2026-08-24
 dw1-process-21,dw1-process|dm1-process,担当プロジェクトにて定められている結合テスト・総合テストの消化項目数の標準値を関係者と認識合わせのうえ、テスト消化ができる,,21,practice,2026-08-24
 dw3-process-14,dw3-process|dm3-process,後続工程である「単体テスト」が円滑に進められるように、最低限の動作確認（正常系1パス等）ができる,,14,knowledge,2026-08-24
+hd1-triage-10,hd1-triage,事象の再現手順を正確に実施できる,,10,practice,2026-08-25
+hd1-record-10,hd1-record,記録していい個人情報かどうか判断できる,,10,practice,2026-08-25
+hd1-asset-09,hd1-asset,新規購入した資産を台帳に登録できる,,9,practice,2026-08-25
+hd1-asset-10,hd1-asset,廃止・処分する資産を台帳から除却できる,,9,practice,2026-08-25
