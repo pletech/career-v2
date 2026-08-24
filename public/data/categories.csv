@@ -73,7 +73,7 @@ ad3-quality,it-support,事務系,3,作業内容のクロスチェック,,ad2-ord
 ad3-support,it-support,事務系,3,メンバーの判断支援・相談対応,,ad2-coordinate,5
 ad3-knowledge,it-support,事務系,3,手順書・チェックリストの整備,,,6
 dw1-spec,development,Webアプリケーション,1,テスト仕様の理解・準備,,,1
-dw1-exec,development,Webアプリケーション,1,テストの実施（単体・結合・システム）,,,2
+dw1-exec,development,Webアプリケーション,1,テストの実施（単体・結合・総合）,,,2
 dw1-defect,development,Webアプリケーション,1,不具合の確認・再現,,,3
 dw1-report,development,Webアプリケーション,1,テスト結果の記録・報告,,,4
 dw1-retest,development,Webアプリケーション,1,修正後の再テスト,,,5
@@ -96,7 +96,7 @@ dw3-unittest,development,Webアプリケーション,3,単体テストの実施,
 dw3-quality,development,Webアプリケーション,3,コード品質・レビュー対応,,dw2-vcs|dw2-doc,5
 dw3-debug,development,Webアプリケーション,3,実装した機能の不具合調査・修正,,dw2-logic,6
 dm1-spec,development,モバイルアプリ,1,テスト仕様の理解・準備,,,1
-dm1-exec,development,モバイルアプリ,1,テストの実施（単体・結合・システム）,,,2
+dm1-exec,development,モバイルアプリ,1,テストの実施（単体・結合・総合）,,,2
 dm1-defect,development,モバイルアプリ,1,不具合の確認・再現,,,3
 dm1-report,development,モバイルアプリ,1,テスト結果の記録・報告,,,4
 dm1-retest,development,モバイルアプリ,1,修正後の再テスト,,,5

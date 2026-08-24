@@ -690,17 +690,17 @@ ad3-knowledge-06,ad3-knowledge,使われていない手順を見直せる,,6,pra
 ad3-knowledge-07,ad3-knowledge,手順書に書くべき粒度を説明できる,,7,knowledge,2026-08-15
 ad3-knowledge-08,ad3-knowledge,チェックリスト化してよい作業の条件を説明できる,,8,knowledge,2026-08-15
 dw1-spec-01,dw1-spec|dm1-spec,テスト仕様書に書かれる項目（前提条件・手順・期待結果）を挙げられる,,1,knowledge,2026-08-18
-dw1-spec-02,dw1-spec|dm1-spec,単体テスト・結合テスト・システムテストの違いを説明できる,,2,knowledge,2026-08-18
+dw1-spec-02,dw1-spec|dm1-spec,単体テスト・結合テスト・総合テストの違いを説明できる,,2,knowledge,2026-08-18
 dw1-spec-03,dw1-spec|dm1-spec,期待結果が正常系か異常系かを見分けられる,,3,knowledge,2026-08-18
 dw1-spec-04,dw1-spec|dm1-spec,テストを始める前に確認すべきこと（対象環境・データ・版）を挙げられる,,4,knowledge,2026-08-18
 dw1-spec-05,dw1-spec|dm1-spec,テスト仕様書を読んで自分が担当する範囲を把握できる,,5,practice,2026-08-18
 dw1-spec-06,dw1-spec|dm1-spec,確認項目ごとに何をどう操作するか整理できる,,6,practice,2026-08-18
 dw1-spec-07,dw1-spec|dm1-spec,テストに必要なテストデータを準備できる,,7,practice,2026-08-18
 dw1-spec-08,dw1-spec|dm1-spec,テストに必要な環境（アカウント・端末・接続先）を用意できる,,8,practice,2026-08-18
-dw1-spec-09,dw1-spec|dm1-spec,仕様書の記載が曖昧な箇所を質問して確認できる,,9,practice,2026-08-18
-dw1-spec-10,dw1-spec|dm1-spec,担当分のテストにかかる時間を見積もって伝えられる,,10,practice,2026-08-18
+dw1-spec-09,dw1-spec|dm1-spec,仕様書の記載が曖昧な箇所を関係者に質問して確認できる,,9,practice,2026-08-18
+dw1-spec-10,dw1-spec|dm1-spec,担当分のテストにかかる時間を見積もって関係者に伝えられる,,10,practice,2026-08-18
 dw1-exec-01,dw1-exec|dm1-exec,単体テストで確認する範囲を説明できる,,1,knowledge,2026-08-18
-dw1-exec-02,dw1-exec|dm1-exec,結合テスト・システムテストで確認する範囲を説明できる,,2,knowledge,2026-08-18
+dw1-exec-02,dw1-exec|dm1-exec,結合テスト・総合テストで確認する範囲を説明できる,,2,knowledge,2026-08-18
 dw1-exec-03,dw1-exec|dm1-exec,テスト仕様書の手順どおりに操作できる,,3,practice,2026-08-18
 dw1-exec-04,dw1-exec|dm1-exec,手順を飛ばさず順番どおりに実施できる,,4,practice,2026-08-18
 dw1-exec-05,dw1-exec|dm1-exec,実施済みの確認項目と未実施の項目を区別して管理できる,,5,practice,2026-08-18
@@ -708,7 +708,7 @@ dw1-exec-06,dw1-exec|dm1-exec,期待結果と実際の結果を照合して合�
 dw1-exec-07,dw1-exec|dm1-exec,画面の表示・遷移が期待どおりか確認できる,,7,practice,2026-08-18
 dw1-exec-08,dw1-exec|dm1-exec,入力チェック（必須・桁数・形式）が期待どおりか確認できる,,8,practice,2026-08-18
 dw1-exec-09,dw1-exec|dm1-exec,異常系（エラー時の挙動）を仕様書どおりに確認できる,,9,practice,2026-08-18
-dw1-exec-10,dw1-exec|dm1-exec,手順と実際の画面が違うとき、作業を止めて確認できる,,10,practice,2026-08-18
+dw1-exec-10,dw1-exec|dm1-exec,手順と実際の画面が違うとき、作業を止めて関係者に確認できる,,10,practice,2026-08-18
 dw1-exec-11,dw1-exec|dm1-exec,決められた期限内に担当分のテストを完了できる,,11,practice,2026-08-18
 dw1-defect-01,dw1-defect|dm1-defect,不具合報告に必要な情報（手順・環境・期待結果・実際の結果）を挙げられる,,1,knowledge,2026-08-18
 dw1-defect-02,dw1-defect|dm1-defect,再現すると言えるために必要な条件を説明できる,,2,knowledge,2026-08-18
@@ -727,9 +727,9 @@ dw1-report-04,dw1-report|dm1-report,確認項目ごとに合否を決められ�
 dw1-report-05,dw1-report|dm1-report,不具合を管理ツール（チケット）へ起票できる,,5,practice,2026-08-18
 dw1-report-06,dw1-report|dm1-report,起票するときに再現手順・環境・期待結果・実際の結果を書ける,,6,practice,2026-08-18
 dw1-report-07,dw1-report|dm1-report,画面の証跡（スクリーンショット・ログ）を残せる,,7,practice,2026-08-18
-dw1-report-08,dw1-report|dm1-report,担当分の進捗（実施済み・残り・不具合件数）を報告できる,,8,practice,2026-08-18
+dw1-report-08,dw1-report|dm1-report,担当分の進捗（実施済み・残り・不具合件数）を関係者に報告できる,,8,practice,2026-08-18
 dw1-report-09,dw1-report|dm1-report,事実と推測を区別して書ける,,9,practice,2026-08-18
-dw1-report-10,dw1-report|dm1-report,テストが進められない状態をすぐ報告できる,,10,practice,2026-08-18
+dw1-report-10,dw1-report|dm1-report,テストが進められない状態をすぐ関係者に報告できる,,10,practice,2026-08-18
 dw1-retest-01,dw1-retest|dm1-retest,再テストで確認すべき範囲（修正箇所と周辺）を説明できる,,1,knowledge,2026-08-18
 dw1-retest-02,dw1-retest|dm1-retest,修正によって別の箇所が壊れることがある理由を説明できる,,2,knowledge,2026-08-18
 dw1-retest-03,dw1-retest|dm1-retest,再テストで修正できたと判断できる条件を説明できる,,3,knowledge,2026-08-18
@@ -737,7 +737,7 @@ dw1-retest-04,dw1-retest|dm1-retest,修正内容を確認して再テストの�
 dw1-retest-05,dw1-retest|dm1-retest,元の再現手順をたどって現象が解消したか確認できる,,5,practice,2026-08-18
 dw1-retest-06,dw1-retest|dm1-retest,修正の影響が及ぶ周辺の画面・機能も確認できる,,6,practice,2026-08-18
 dw1-retest-07,dw1-retest|dm1-retest,再テストの結果をチケットに記録できる,,7,practice,2026-08-18
-dw1-retest-08,dw1-retest|dm1-retest,修正されていない場合に、どこまで修正されたかを書き分けて差し戻せる,,8,practice,2026-08-18
+dw1-retest-08,dw1-retest|dm1-retest,修正されていない場合に、どこまで修正されたかを書き分けて関係者と確認のうえ差し戻せる,,8,practice,2026-08-18
 dw1-retest-09,dw1-retest|dm1-retest,再テストが必要な項目を漏らさず管理できる,,9,practice,2026-08-18
 dw1-tools-01,dw1-tools|dm1-tools,バージョン管理が何のためにあるか説明できる,,1,knowledge,2026-08-18
 dw1-tools-02,dw1-tools|dm1-tools,課題管理ツールのチケットの状態（未着手・対応中・確認待ち・完了）を説明できる,,2,knowledge,2026-08-18
@@ -747,9 +747,9 @@ dw1-tools-05,dw1-tools|dm1-tools,指示された手順で開発環境を自分�
 dw1-tools-06,dw1-tools|dm1-tools,リポジトリを取得して指定されたブランチに切り替えられる,,6,practice,2026-08-18
 dw1-tools-07,dw1-tools|dm1-tools,課題管理ツールで自分のチケットを探して状態を更新できる,,7,practice,2026-08-18
 dw1-tools-08,dw1-tools|dm1-tools,ブラウザの開発者ツールでエラー表示を確認できる,,8,practice,2026-08-18
-dw1-tools-09,dw1-tools|dm1-tools,端末・ブラウザ・アプリの版を確認して伝えられる,,9,practice,2026-08-18
+dw1-tools-09,dw1-tools|dm1-tools,端末・ブラウザ・アプリの版を確認して関係者に伝えられる,,9,practice,2026-08-18
 dw1-tools-10,dw1-tools|dm1-tools,決められた手順でアプリを起動して動作確認できる,,10,practice,2026-08-18
-dw1-tools-11,dw1-tools|dm1-tools,分からない操作を調べたうえで質問できる,,11,practice,2026-08-18
+dw1-tools-11,dw1-tools|dm1-tools,分からない操作を調べたうえで関係者に質問できる,,11,practice,2026-08-18
 dw1-readspec-01,dw1-readspec|dm1-readspec,要件定義書・基本設計書・詳細設計書の役割の違いを説明できる,,1,knowledge,2026-08-18
 dw1-readspec-02,dw1-readspec|dm1-readspec,画面設計書に書かれる内容（項目・入力条件・遷移）を挙げられる,,2,knowledge,2026-08-18
 dw1-readspec-03,dw1-readspec|dm1-readspec,正常系・異常系・例外処理の違いを説明できる,,3,knowledge,2026-08-18
@@ -782,7 +782,7 @@ dw1-security-06,dw1-security|dm1-security,テストデータから個人情報�
 dw1-security-07,dw1-security|dm1-security,作業に必要な範囲だけの権限で作業できる,,7,practice,2026-08-18
 dw1-security-08,dw1-security|dm1-security,スクリーンショットを残すとき、見せてはいけない情報を隠せる,,8,practice,2026-08-18
 dw1-security-09,dw1-security|dm1-security,資料やデータを決められた保存場所に置ける,,9,practice,2026-08-18
-dw1-security-10,dw1-security|dm1-security,情報の取り扱いに迷ったときに確認できる,,10,practice,2026-08-18
+dw1-security-10,dw1-security|dm1-security,情報の取り扱いに迷ったときに関係者に確認できる,,10,practice,2026-08-18
 dw1-process-01,dw1-process|dm1-process,開発の工程（要件定義・設計・実装・テスト・リリース）の流れを説明できる,,1,knowledge,2026-08-18
 dw1-process-02,dw1-process|dm1-process,自分の担当工程が前後の工程とどうつながるか説明できる,,2,knowledge,2026-08-18
 dw1-site-03,dw1-site|dm1-site,案件に関わる役割（PM・PL・SE・PG・テスター）の違いを説明できる,,1,knowledge,2026-08-18
@@ -790,8 +790,8 @@ dw1-site-04,dw1-site|dm1-site,お客様と自社の間の窓口が誰か説明�
 dw1-process-03,dw1-process|dm1-process,リリースまでに何が必要か説明できる,,3,knowledge,2026-08-18
 dw1-site-06,dw1-site|dm1-site,自分の担当範囲と担当外の範囲を区別できる,,3,practice,2026-08-18
 dw1-site-07,dw1-site|dm1-site,判断できないことを誰に確認すべきか分かる,,4,practice,2026-08-18
-dw1-site-08,dw1-site|dm1-site,決められた時刻までに進捗を報告できる,,5,practice,2026-08-18
-dw1-site-09,dw1-site|dm1-site,予定より遅れそうなときに早めに相談できる,,6,practice,2026-08-18
+dw1-site-08,dw1-site|dm1-site,決められた時刻までに関係者へ進捗を報告できる,,5,practice,2026-08-18
+dw1-site-09,dw1-site|dm1-site,予定より遅れそうなときに早めに関係者へ相談できる,,6,practice,2026-08-18
 dw1-site-10,dw1-site|dm1-site,会議で決まったことを自分の作業に落とし込める,,7,practice,2026-08-18
 dw2-target-01,dw2-target|dm2-target,改修依頼に必要な情報（現象・対象画面・期待する状態）を挙げられる,,1,knowledge,2026-08-18
 dw2-target-02,dw2-target|dm2-target,改修の影響がどこまで及ぶかを考える観点を説明できる,,2,knowledge,2026-08-18
@@ -800,14 +800,14 @@ dw2-target-04,dw2-target|dm2-target,改修依頼から修正対象の画面と�
 dw2-target-05,dw2-target|dm2-target,対象のソースコードの場所を見つけられる,,5,practice,2026-08-18
 dw2-target-06,dw2-target|dm2-target,現状の挙動を実際に動かして確認できる,,6,practice,2026-08-18
 dw2-target-07,dw2-target|dm2-target,修正前の状態を記録しておける,,7,practice,2026-08-18
-dw2-target-08,dw2-target|dm2-target,改修範囲に含めないことを切り分けて確認できる,,8,practice,2026-08-18
+dw2-target-08,dw2-target|dm2-target,改修範囲に含めないことを切り分けて関係者と確認できる,,8,practice,2026-08-18
 dw2-target-09,dw2-target|dm2-target,影響が及ぶ他の画面・機能を洗い出せる,,9,practice,2026-08-18
 dw2-target-10,dw2-target|dm2-target,見積りに必要な作業項目を挙げられる,,10,practice,2026-08-18
 dw2-ui-01,dw2-ui|dm2-ui,画面の表示崩れが起きる主な原因を挙げられる,,1,knowledge,2026-08-18
 dw2-ui-02,dw2-ui|dm2-ui,表示を修正するときに他の画面へ影響が出る場合を説明できる,,2,knowledge,2026-08-18
 dw2-ui-03,dw2-ui|dm2-ui,表示崩れの原因になっている箇所を特定できる,,3,practice,2026-08-18
-dw2-ui-04,dw2-ui|dm2-ui,文字・色・余白などの表示を指示どおりに修正できる,,4,practice,2026-08-18
-dw2-ui-05,dw2-ui|dm2-ui,項目の並びや配置を指示どおりに修正できる,,5,practice,2026-08-18
+dw2-ui-04,dw2-ui|dm2-ui,文字・色・余白などの表示を関係者の指示どおりに修正できる,,4,practice,2026-08-18
+dw2-ui-05,dw2-ui|dm2-ui,項目の並びや配置を関係者の指示どおりに修正できる,,5,practice,2026-08-18
 dw2-ui-06,dw2-ui|dm2-ui,表示条件（権限・状態による出し分け）を修正できる,,6,practice,2026-08-18
 dw2-ui-07,dw2-ui|dm2-ui,修正後の画面を指定された表示条件で確認できる,,7,practice,2026-08-18
 dw2-ui-08,dw2-ui|dm2-ui,画面幅の違い（PC・スマートフォン）による崩れを確認できる,,8,practice,2026-08-18
@@ -828,8 +828,8 @@ dw2-verify-05,dw2-verify|dm2-verify,修正前と修正後で挙動を比べら�
 dw2-verify-06,dw2-verify|dm2-verify,修正していない機能が壊れていないか確認できる,,6,practice,2026-08-18
 dw2-verify-07,dw2-verify|dm2-verify,既存のテスト仕様書を使って確認できる,,7,practice,2026-08-18
 dw2-verify-08,dw2-verify|dm2-verify,確認した範囲と確認していない範囲を説明できる,,8,practice,2026-08-18
-dw2-verify-09,dw2-verify|dm2-verify,確認結果を記録して報告できる,,9,practice,2026-08-18
-dw2-verify-10,dw2-verify|dm2-verify,影響が読み切れないときに相談できる,,10,practice,2026-08-18
+dw2-verify-09,dw2-verify|dm2-verify,確認結果を記録して関係者に報告できる,,9,practice,2026-08-18
+dw2-verify-10,dw2-verify|dm2-verify,影響が読み切れないときに関係者へ相談できる,,10,practice,2026-08-18
 dw2-vcs-01,dw2-vcs|dm2-vcs,ブランチを分けて作業する理由を説明できる,,1,knowledge,2026-08-18
 dw2-vcs-02,dw2-vcs|dm2-vcs,コミットを分ける単位の考え方を説明できる,,2,knowledge,2026-08-18
 dw2-vcs-03,dw2-vcs|dm2-vcs,レビューが必要な理由を説明できる,,3,knowledge,2026-08-18
@@ -839,16 +839,16 @@ dw2-vcs-06,dw2-vcs|dm2-vcs,修正した差分を自分で見直してから提�
 dw2-vcs-07,dw2-vcs|dm2-vcs,レビュー依頼に必要な情報（対象・目的・確認方法）を書ける,,7,practice,2026-08-18
 dw2-vcs-08,dw2-vcs|dm2-vcs,レビューの指摘内容を理解して修正できる,,8,practice,2026-08-18
 dw2-vcs-09,dw2-vcs|dm2-vcs,指摘に対して修正した内容を説明できる,,9,practice,2026-08-18
-dw2-vcs-10,dw2-vcs|dm2-vcs,指摘の意図が分からないときに確認できる,,10,practice,2026-08-18
+dw2-vcs-10,dw2-vcs|dm2-vcs,指摘の意図が分からないときに関係者に確認できる,,10,practice,2026-08-18
 dw3-read-01,dw3-read|dm3-read,詳細設計書に書かれる粒度（処理単位・入出力・条件）を説明できる,,1,knowledge,2026-08-18
 dw3-read-02,dw3-read|dm3-read,設計書の記載漏れに気づくための観点を挙げられる,,2,knowledge,2026-08-18
 dw3-read-03,dw3-read|dm3-read,詳細設計書から実装すべき処理を洗い出せる,,3,practice,2026-08-18
 dw3-read-04,dw3-read|dm3-read,処理の入力と出力を整理できる,,4,practice,2026-08-18
 dw3-read-05,dw3-read|dm3-read,実装の順序を決められる,,5,practice,2026-08-18
 dw3-read-06,dw3-read|dm3-read,既存のコードのどこに手を入れるか決められる,,6,practice,2026-08-18
-dw3-read-07,dw3-read|dm3-read,設計書の疑問点を実装前に確認できる,,7,practice,2026-08-18
-dw3-read-08,dw3-read|dm3-read,担当分の実装にかかる時間を見積もって伝えられる,,8,practice,2026-08-18
-dw3-read-09,dw3-read|dm3-read,実装範囲に含めないことを確認できる,,9,practice,2026-08-18
+dw3-read-07,dw3-read|dm3-read,設計書の疑問点を実装前に関係者に確認できる,,7,practice,2026-08-18
+dw3-read-08,dw3-read|dm3-read,担当分の実装にかかる時間を見積もって関係者に伝えられる,,8,practice,2026-08-18
+dw3-read-09,dw3-read|dm3-read,実装範囲に含めないことを関係者と確認できる,,9,practice,2026-08-18
 dw3-ui-01,dw3-ui|dm3-ui,画面の表示と処理を分けて書く理由を説明できる,,1,knowledge,2026-08-18
 dw3-ui-02,dw3-ui|dm3-ui,共通部品を使う理由を説明できる,,2,knowledge,2026-08-18
 dw3-ui-03,dw3-ui|dm3-ui,設計書どおりに画面の項目を実装できる,,3,practice,2026-08-18
@@ -857,7 +857,7 @@ dw3-ui-05,dw3-ui|dm3-ui,設計書どおりに画面の状態による表示の�
 dw3-ui-06,dw3-ui|dm3-ui,既存の共通部品を使って実装できる,,6,practice,2026-08-18
 dw3-ui-07,dw3-ui|dm3-ui,エラー時の表示を設計書どおりに実装できる,,7,practice,2026-08-18
 dw3-ui-08,dw3-ui|dm3-ui,実装した画面が設計書どおりか自分で確認できる,,8,practice,2026-08-18
-dw3-ui-09,dw3-ui|dm3-ui,設計書に書かれていない挙動を勝手に決めずに確認できる,,9,practice,2026-08-18
+dw3-ui-09,dw3-ui|dm3-ui,設計書に書かれていない挙動を勝手に決めずに関係者に確認できる,,9,practice,2026-08-18
 dw3-unittest-01,dw3-unittest|dm3-unittest,実装した処理をどの単位に分けてテストするか説明できる,,1,knowledge,2026-08-18
 dw3-unittest-02,dw3-unittest|dm3-unittest,確認すべき値の観点（正常値・境界値・異常値）を挙げられる,,2,knowledge,2026-08-18
 dw3-unittest-03,dw3-unittest|dm3-unittest,自分のコードを自分でテストする限界を説明できる,,3,knowledge,2026-08-18
@@ -884,13 +884,13 @@ dw3-debug-05,dw3-debug|dm3-debug,開発者ツールやデバッガで処理の�
 dw3-debug-06,dw3-debug|dm3-debug,原因が自分の実装か既存の仕様かを切り分けられる,,6,practice,2026-08-18
 dw3-debug-07,dw3-debug|dm3-debug,原因を特定してから修正できる,,7,practice,2026-08-18
 dw3-debug-08,dw3-debug|dm3-debug,修正したあとに同じ手順で再現しないことを確認できる,,8,practice,2026-08-18
-dw3-debug-09,dw3-debug|dm3-debug,自分で解決できないと判断して相談できる,,9,practice,2026-08-18
+dw3-debug-09,dw3-debug|dm3-debug,自分で解決できないと判断して関係者へ相談できる,,9,practice,2026-08-18
 dw2-data-01,dw2-data,API のリクエストとレスポンスの対応を説明できる,,1,knowledge,2026-08-18
 dw2-data-02,dw2-data,SQL を修正するときに件数や性能に影響が出る場合を説明できる,,2,knowledge,2026-08-18
 dw2-data-03,dw2-data,本番のデータを直接変更してはいけない理由を説明できる,,3,knowledge,2026-08-18
 dw2-data-04,dw2-data,対象の API がどこから呼ばれているか追える,,4,practice,2026-08-18
-dw2-data-05,dw2-data,レスポンスに含める項目の追加・変更を指示どおりに実装できる,,5,practice,2026-08-18
-dw2-data-06,dw2-data,取得条件（絞り込み・並び順）を指示どおりに修正できる,,6,practice,2026-08-18
+dw2-data-05,dw2-data,レスポンスに含める項目の追加・変更を関係者の指示どおりに実装できる,,5,practice,2026-08-18
+dw2-data-06,dw2-data,取得条件（絞り込み・並び順）を関係者の指示どおりに修正できる,,6,practice,2026-08-18
 dw2-data-07,dw2-data,修正した SQL の実行結果を件数と内容で確認できる,,7,practice,2026-08-18
 dw2-data-08,dw2-data,API の変更が呼び出し側に与える影響を確認できる,,8,practice,2026-08-18
 dw2-data-09,dw2-data,検証環境のデータで動作確認できる,,9,practice,2026-08-18
@@ -898,25 +898,25 @@ dm2-data-01,dm2-data,通信が失敗する場合にアプリが取るべき挙�
 dm2-data-02,dm2-data,端末内にデータを保存する仕組み（ローカルDB・設定値）を説明できる,,2,knowledge,2026-08-18
 dm2-data-03,dm2-data,端末に残ったデータが原因で不具合が起きることを説明できる,,3,knowledge,2026-08-18
 dm2-data-04,dm2-data,対象の API 呼び出し箇所を追える,,4,practice,2026-08-18
-dm2-data-05,dm2-data,送信・受信する項目の追加・変更を指示どおりに実装できる,,5,practice,2026-08-18
-dm2-data-06,dm2-data,端末内に保存する項目の追加・変更を指示どおりに実装できる,,6,practice,2026-08-18
+dm2-data-05,dm2-data,送信・受信する項目の追加・変更を関係者の指示どおりに実装できる,,5,practice,2026-08-18
+dm2-data-06,dm2-data,端末内に保存する項目の追加・変更を関係者の指示どおりに実装できる,,6,practice,2026-08-18
 dm2-data-07,dm2-data,通信エラー時の表示や再試行の挙動を確認できる,,7,practice,2026-08-18
 dm2-data-08,dm2-data,アプリを再起動しても保存内容が保たれるか確認できる,,8,practice,2026-08-18
 dm2-data-09,dm2-data,端末のデータを初期化した状態で動作確認できる,,9,practice,2026-08-18
 dw2-logic-01,dw2-logic,条件分岐を修正するときに漏れやすい観点（境界値・未入力）を挙げられる,,1,knowledge,2026-08-18
 dw2-logic-02,dw2-logic,画面の文言がどこで管理されているか説明できる,,2,knowledge,2026-08-18
 dw2-logic-03,dw2-logic,修正対象の条件分岐を読み取れる,,3,practice,2026-08-18
-dw2-logic-04,dw2-logic|dm2-logic,入力チェックの条件を指示どおりに修正できる,,4,practice,2026-08-18
-dw2-logic-05,dw2-logic,条件の追加・変更を指示どおりに実装できる,,5,practice,2026-08-18
-dw2-logic-06,dw2-logic,画面やメッセージの文言を指示どおりに修正できる,,6,practice,2026-08-18
+dw2-logic-04,dw2-logic|dm2-logic,入力チェックの条件を関係者の指示どおりに修正できる,,4,practice,2026-08-18
+dw2-logic-05,dw2-logic,条件の追加・変更を関係者の指示どおりに実装できる,,5,practice,2026-08-18
+dw2-logic-06,dw2-logic,画面やメッセージの文言を関係者の指示どおりに修正できる,,6,practice,2026-08-18
 dw2-logic-07,dw2-logic,修正前後で挙動が変わらない条件も確認できる,,7,practice,2026-08-18
 dw2-logic-08,dw2-logic,修正した条件をすべて通るように動作確認できる,,8,practice,2026-08-18
 dw2-logic-09,dw2-logic|dm2-logic,修正した箇所と修正していない箇所を説明できる,,9,practice,2026-08-18
 dm2-logic-01,dm2-logic,入力制御（必須・桁数・形式）を修正するときに漏れやすい観点を挙げられる,,1,knowledge,2026-08-18
 dm2-logic-02,dm2-logic,画面遷移を修正するときに戻る操作で起きやすい問題を説明できる,,2,knowledge,2026-08-18
 dm2-logic-03,dm2-logic,修正対象の入力制御を読み取れる,,3,practice,2026-08-18
-dm2-logic-05,dm2-logic,キーボードの種類や入力補助の設定を指示どおりに修正できる,,5,practice,2026-08-18
-dm2-logic-06,dm2-logic,画面遷移の順序や遷移先を指示どおりに修正できる,,6,practice,2026-08-18
+dm2-logic-05,dm2-logic,キーボードの種類や入力補助の設定を関係者の指示どおりに修正できる,,5,practice,2026-08-18
+dm2-logic-06,dm2-logic,画面遷移の順序や遷移先を関係者の指示どおりに修正できる,,6,practice,2026-08-18
 dm2-logic-07,dm2-logic,戻る操作や端末の戻るボタンでの挙動を確認できる,,7,practice,2026-08-18
 dm2-logic-08,dm2-logic,修正した遷移をすべてたどって動作確認できる,,8,practice,2026-08-18
 dw3-core-01,dw3-core,リクエストを受けてから応答を返すまでの処理の流れを説明できる,,1,knowledge,2026-08-18
@@ -940,38 +940,42 @@ dm3-core-08,dm3-core,通信エラー時の処理を設計書どおりに実装�
 dm3-core-09,dm3-core,画面を離れて戻ったときの状態を設計書どおりに実装できる,,9,practice,2026-08-18
 dm3-core-10,dm3-core,実装した機能を実機で確認できる,,10,practice,2026-08-18
 dw1-process-04,dw1-process|dm1-process,担当するテスト工程の目的とゴールを説明できる,,4,knowledge,2026-08-23
-dw1-process-05,dw1-process|dm1-process,テスト作業の Input（受け取るもの）と Output（渡すもの）が何かを説明できる,,5,knowledge,2026-08-23
+dw1-process-05,dw1-process|dm1-process,テスト作業の Input（テスト仕様書の下となる設計書・テスト実施時に使用するテスト仕様書・テストで使用するテストデータ）と Output（テスト実施時に使用するテスト仕様書・テスト結果報告書やエビデンス）が何かを説明できる,,5,knowledge,2026-08-23
 dw1-process-06,dw1-process|dm1-process,自分が出したテスト結果が後続の工程でどう使われるかを説明できる,,6,knowledge,2026-08-23
-dw1-process-07,dw1-process|dm1-process,テストの目的とゴールについての自分の理解を関係者に伝え、認識の相違があれば確認して合わせられる,,7,practice,2026-08-23
-dw1-process-08,dw1-process|dm1-process,Input の不備（テスト仕様書の未確定・環境の未整備）を確認し、Output の条件を関係者と合わせたうえで着手できる,,8,practice,2026-08-23
-dw1-process-09,dw1-process|dm1-process,先行工程の遅れや成果物の不備が自分のテストに与える影響を判断し、関係者と確認して合わせられる,,9,practice,2026-08-23
-dw1-process-10,dw1-process|dm1-process,自分のテストの遅れが後続に与える影響を判断し、早期に共有できる,,10,practice,2026-08-23
+dw1-process-07,dw1-process|dm1-process,テストの目的とゴールについての自分の理解を関係者に伝え、認識齟齬がない状態にできる,,7,practice,2026-08-23
+dw1-process-08,dw1-process|dm1-process,Input の不備（テスト仕様書や環境不備等）を確認し、Output の条件を関係者と合わせたうえで着手できる,,8,practice,2026-08-23
+dw1-process-09,dw1-process|dm1-process,先行工程の遅れや成果物の不備が自分のテストに与える影響を判断し、関係者と認識合わせのうえ作業推進できる,,9,practice,2026-08-23
+dw1-process-10,dw1-process|dm1-process,自分のテストの遅れが後続に与える影響を判断し、関係者に対し早期に共有できる,,10,practice,2026-08-23
 dw1-process-11,dw1-process|dm1-process,指標値には品質指標値（成果物の品質を評価する値）と標準生産性（成果物作成の生産性を評価する値）の2種類があることを説明できる,,11,knowledge,2026-08-23
 dw1-process-12,dw1-process|dm1-process,担当プロジェクトにて定められている指標値のうち、単体テスト項目数と単体テスト検出バグ数が何を見る値かを説明できる,,12,knowledge,2026-08-23
 dw1-process-13,dw1-process|dm1-process,許容範囲は設定値を中央値としてその前後X%で上限・下限を定めるものであり、実測値がその範囲内にあるかで判断することを説明できる,,13,knowledge,2026-08-23
 dw1-process-14,dw1-process|dm1-process,バグ数の指標値について、許容範囲の下限を下回るとバグ検出不十分の疑義、上限を上回ると品質そのものの疑義になることを説明できる,,14,knowledge,2026-08-23
 dw1-process-15,dw1-process|dm1-process,テスト項目数の指標値について、許容範囲の下限を下回るとテスト不十分の疑義、上限を上回ると実施テストの妥当性の疑義になることを説明できる,,15,knowledge,2026-08-23
 dw1-process-16,dw1-process|dm1-process,標準生産性の指標値について、許容範囲の下限を下回ると生産性が低く、上限を上回ると生産性が高い状態であることを説明できる,,16,knowledge,2026-08-23
-dw1-process-17,dw1-process|dm1-process,担当プロジェクトにて定められている指標値を関係者と確認して合わせた状態で、単体テストを実施しバグを検出できる,,17,practice,2026-08-23
-dw1-process-18,dw1-process|dm1-process,担当プロジェクトにて定められている1営業日当たりの単体テスト消化項目数の標準値を関係者と確認して合わせた状態で、テストを消化できる,,18,practice,2026-08-23
+dw1-process-17,dw1-process|dm1-process,担当プロジェクトにて定められている指標値を関係者と認識合わせのうえ単体テストを実施し、バグを検出できる,,17,practice,2026-08-23
+dw1-process-18,dw1-process|dm1-process,テスト消化項目数の標準値を関係者と認識合わせのうえ、テスト消化ができる,,18,practice,2026-08-23
 dw2-process-01,dw2-process|dm2-process,担当する改修の目的（何のための改修か）とゴールを説明できる,,1,knowledge,2026-08-23
-dw2-process-02,dw2-process|dm2-process,改修作業の Input（依頼・現象・設計書）と Output（修正内容・更新した設計書）が何かを説明できる,,2,knowledge,2026-08-23
-dw2-process-03,dw2-process|dm2-process,改修の目的とゴールについての自分の理解を依頼元・関係者に伝え、認識の相違があれば確認して合わせられる,,3,practice,2026-08-23
-dw2-process-04,dw2-process|dm2-process,依頼内容の不足を確認し、完了の条件を関係者と合わせたうえで着手できる,,4,practice,2026-08-23
-dw2-process-05,dw2-process|dm2-process,自分の改修が後続（再テスト・リリース）に与える影響を判断し、早期に共有できる,,5,practice,2026-08-23
-dw2-process-06,dw2-process|dm2-process,前の工程で検出すべきバグが後の工程で出ることを「バグ流出」と呼び、品質そのものの疑義になることを説明できる,,6,knowledge,2026-08-23
+dw2-process-02,dw2-process|dm2-process,改修作業の Input（改修依頼・発生している現象・既存のプログラム・設計書）と Output（改修したプログラム・更新した設計書）が何かを説明できる,,2,knowledge,2026-08-23
+dw2-process-03,dw2-process|dm2-process,改修の目的とゴールについての自分の理解を関係者に伝え、認識齟齬がない状態にできる,,3,practice,2026-08-23
+dw2-process-04,dw2-process|dm2-process,依頼内容の不足を確認し、作業完了条件について関係者と認識合わせのうえ作業着手できる,,4,practice,2026-08-23
+dw2-process-05,dw2-process|dm2-process,自分の改修が後続（再テスト・リリース）に与える影響を判断し、関係者に対し早期に共有できる,,5,practice,2026-08-23
+dw2-process-06,dw2-process|dm2-process,前工程で検出すべきバグが後工程で検出されることを「バグ流出」と呼び、品質そのものの疑義になることを説明できる,,6,knowledge,2026-08-23
 dw2-process-07,dw2-process|dm2-process,担当プロジェクトにて定められている指標値を関係者と確認して合わせた状態で、改修後の確認項目を決められる,,7,practice,2026-08-23
 dw2-process-08,dw2-process|dm2-process,自分の改修で見つかったバグが本来どの工程で検出されるべきだったかを判断し、関係者と共有できる,,8,practice,2026-08-23
 dw3-process-01,dw3-process|dm3-process,担当する実装の目的（設計の意図）とゴールを説明できる,,1,knowledge,2026-08-23
-dw3-process-02,dw3-process|dm3-process,実装作業の Input（詳細設計書）と Output（実装・単体テスト結果）が何かを説明できる,,2,knowledge,2026-08-23
-dw3-process-03,dw3-process|dm3-process,自分の実装が後続の結合テスト・システムテストでどう使われるかを説明できる,,3,knowledge,2026-08-23
-dw3-process-04,dw3-process|dm3-process,設計の意図についての自分の理解を設計者・関係者に伝え、認識の相違があれば確認して合わせられる,,4,practice,2026-08-23
-dw3-process-05,dw3-process|dm3-process,詳細設計書の不備を確認し、完了の条件を関係者と合わせたうえで着手できる,,5,practice,2026-08-23
-dw3-process-06,dw3-process|dm3-process,先行（設計）の遅れや不備が自分の実装に与える影響を判断し、関係者と確認して合わせられる,,6,practice,2026-08-23
-dw3-process-07,dw3-process|dm3-process,自分の実装の遅れが後続に与える影響を判断し、早期に共有できる,,7,practice,2026-08-23
+dw3-process-02,dw3-process|dm3-process,実装作業の Input（詳細設計書）と Output（実装したプログラム）が何かを説明できる,,2,knowledge,2026-08-23
+dw3-process-03,dw3-process|dm3-process,自分の実装が後続の結合テスト・総合テストでどう使われるかを説明できる,,3,knowledge,2026-08-23
+dw3-process-04,dw3-process|dm3-process,設計の意図についての自分の理解を関係者に伝え、認識齟齬がない状態にできる,,4,practice,2026-08-23
+dw3-process-05,dw3-process|dm3-process,詳細設計書の不備を確認し、作業完了条件について関係者と認識合わせのうえ作業着手できる,,5,practice,2026-08-23
+dw3-process-06,dw3-process|dm3-process,先行（設計）の遅れや不備が自分の実装に与える影響を判断し、関係者と認識合わせのうえ作業推進できる,,6,practice,2026-08-23
+dw3-process-07,dw3-process|dm3-process,自分の実装の遅れが後続に与える影響を判断し、関係者に対し早期に共有できる,,7,practice,2026-08-23
 dw3-process-08,dw3-process|dm3-process,担当プロジェクトにて定められている指標値のうち、製造検出バグ数と製造Step数が何を見る値かを説明できる,,8,knowledge,2026-08-23
 dw3-process-09,dw3-process|dm3-process,指標値が品質管理と顧客への品質報告に使われることを説明できる,,9,knowledge,2026-08-23
-dw3-process-10,dw3-process|dm3-process,担当プロジェクトにて定められている1営業日当たりの製造Step数の標準値を関係者と確認して合わせた状態で、実装を進められる,,10,practice,2026-08-23
-dw3-process-11,dw3-process|dm3-process,実装した範囲の検出バグ数が許容範囲に収まっているかを確認し、外れている場合に関係者へ相談できる,,11,practice,2026-08-23
+dw3-process-10,dw3-process|dm3-process,担当プロジェクトにて定められている1営業日当たりの製造Step数の標準値について、関係者と認識合わせのうえ実装を進められる,,10,practice,2026-08-23
+dw3-process-11,dw3-process|dm3-process,実装した範囲の検出バグ数が品質指標における許容範囲内かを確認し、許容範囲外の場合は関係者へ相談できる,,11,practice,2026-08-23
 dw3-process-12,dw3-process|dm3-process,担当プロジェクトにて定められている単体テスト項目執筆時間数の標準値を関係者と確認して合わせた状態で、自分が実装した範囲の単体テスト項目を作成できる,,12,practice,2026-08-23
-dw3-process-13,dw3-process|dm3-process,自分が実装した範囲の単体テスト項目数が許容範囲に収まっているかを確認し、外れている場合に関係者へ相談できる,,13,practice,2026-08-23
+dw3-process-13,dw3-process|dm3-process,自分が実装した範囲の単体テスト項目数が品質指標における許容範囲内かを確認し、許容範囲外の場合は関係者へ相談できる,,13,practice,2026-08-23
+dw1-process-19,dw1-process|dm1-process,バグには「本来検出すべき工程」があることを理解し、前工程で検出すべきバグが後工程で検出されることを「バグ流出」と呼び、品質そのものの疑義になることを説明できる,,19,knowledge,2026-08-24
+dw1-process-20,dw1-process|dm1-process,担当プロジェクトにて定められている指標値のうち、結合テスト項目数・結合テスト検出バグ数・総合テスト項目数・総合テスト検出バグ数が何を見る値かを説明できる,,20,knowledge,2026-08-24
+dw1-process-21,dw1-process|dm1-process,結合テスト・総合テストの消化項目数の標準値を関係者と認識合わせのうえ、テスト消化ができる,,21,practice,2026-08-24
+dw3-process-14,dw3-process|dm3-process,後続工程である「単体テスト」が円滑に進められるように、最低限の動作確認（正常系1パス等）ができる,,14,knowledge,2026-08-24
