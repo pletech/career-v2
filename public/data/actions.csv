@@ -715,7 +715,7 @@ dw1-defect-02,dw1-defect|dm1-defect,再現すると言えるために必要な�
 dw1-defect-03,dw1-defect|dm1-defect,不具合と仕様どおりの挙動を見分ける観点を説明できる,,3,knowledge,2026-08-18
 dw1-defect-04,dw1-defect|dm1-defect,期待結果と違う挙動に気づける,,4,practice,2026-08-18
 dw1-defect-05,dw1-defect|dm1-defect,発生した操作手順を省略せずに記録できる,,5,practice,2026-08-18
-dw1-defect-06,dw1-defect|dm1-defect,同じ手順をたどって事象が再現するか確認できる,,6,practice,2026-08-18
+dw1-defect-06,dw1-defect|dm1-defect,同じ手順で事象の再現確認ができる,,6,practice,2026-08-18
 dw1-defect-07,dw1-defect|dm1-defect,発生した環境（端末・OS・ブラウザ・アプリ版）を記録できる,,7,practice,2026-08-18
 dw1-defect-08,dw1-defect|dm1-defect,エラーメッセージや画面表示をそのまま記録できる,,8,practice,2026-08-18
 dw1-defect-09,dw1-defect|dm1-defect,再現しない場合に条件を変えて試せる,,9,practice,2026-08-18
@@ -734,7 +734,7 @@ dw1-retest-01,dw1-retest|dm1-retest,再テストで確認すべき範囲（修�
 dw1-retest-02,dw1-retest|dm1-retest,修正によって別の箇所が壊れることがある理由を説明できる,,2,knowledge,2026-08-18
 dw1-retest-03,dw1-retest|dm1-retest,再テストで修正できたと判断できる条件を説明できる,,3,knowledge,2026-08-18
 dw1-retest-04,dw1-retest|dm1-retest,修正内容を確認して再テストの対象を決められる,,4,practice,2026-08-18
-dw1-retest-05,dw1-retest|dm1-retest,元の再現手順をたどって事象が解消したか確認できる,,5,practice,2026-08-18
+dw1-retest-05,dw1-retest|dm1-retest,元の再現手順で事象の解消確認ができる,,5,practice,2026-08-18
 dw1-retest-06,dw1-retest|dm1-retest,修正の影響が及ぶ周辺の画面・機能も確認できる,,6,practice,2026-08-18
 dw1-retest-07,dw1-retest|dm1-retest,再テストの結果をチケットに記録できる,,7,practice,2026-08-18
 dw1-retest-08,dw1-retest|dm1-retest,修正されていない場合に、どこまで修正されたかを書き分けて関係者と確認のうえ差し戻せる,,8,practice,2026-08-18
