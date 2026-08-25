@@ -878,7 +878,7 @@ dw3-quality-08,dw3-quality|dm3-quality,レビューの指摘を理解して修�
 dw3-quality-09,dw3-quality|dm3-quality,指摘された内容を次の実装で繰り返さないようにできる,,9,practice,2026-08-18
 dw3-debug-01,dw3-debug|dm3-debug,不具合の原因を絞り込む手順を説明できる,,1,knowledge,2026-08-18
 dw3-debug-02,dw3-debug|dm3-debug,ログとエラーメッセージから何が分かるか説明できる,,2,knowledge,2026-08-18
-dw3-debug-03,dw3-debug|dm3-debug,事象の再現確認ができる,,3,practice,2026-08-18
+dw3-debug-03,dw3-debug|dm3-debug,同じ手順で事象を再現できる,,3,practice,2026-08-18
 dw3-debug-04,dw3-debug|dm3-debug,ログやエラーメッセージから発生箇所を絞り込める,,4,practice,2026-08-18
 dw3-debug-05,dw3-debug|dm3-debug,開発者ツールやデバッガで処理の流れを追える,,5,practice,2026-08-18
 dw3-debug-06,dw3-debug|dm3-debug,原因が自分の実装か既存の仕様かを切り分けられる,,6,practice,2026-08-18
@@ -943,24 +943,24 @@ dw1-process-04,dw1-process|dm1-process,担当するテスト工程の目的と�
 dw1-process-05,dw1-process|dm1-process,テスト作業の Input（テスト仕様書の下となる設計書・テスト実施時に使用するテスト仕様書・テストで使用するテストデータ）と Output（テスト実施時に使用するテスト仕様書・テスト結果報告書やエビデンス）が何かを説明できる,,5,knowledge,2026-08-23
 dw1-process-06,dw1-process|dm1-process,自分が出したテスト結果が後続の工程でどう使われるかを説明できる,,6,knowledge,2026-08-23
 dw1-process-07,dw1-process|dm1-process,テストの目的とゴールについての自分の理解を関係者に伝え、認識齟齬がない状態にできる,,7,practice,2026-08-23
-dw1-process-08,dw1-process|dm1-process,Input の不備（テスト仕様書や環境不備等）を確認し、作業完了条件について関係者と認識合わせのうえ作業着手できる,,8,practice,2026-08-23
+dw1-process-08,dw1-process|dm1-process,Input の不備（テスト仕様書や環境不備等）を確認し、Output の条件を関係者と合わせたうえで着手できる,,8,practice,2026-08-23
 dw1-process-09,dw1-process|dm1-process,先行工程の遅れや成果物の不備が自分のテストに与える影響を判断し、関係者と認識合わせのうえ作業推進できる,,9,practice,2026-08-23
 dw1-process-10,dw1-process|dm1-process,自分のテストの遅れが後続に与える影響を判断し、関係者に対し早期に共有できる,,10,practice,2026-08-23
 dw1-process-11,dw1-process|dm1-process,指標値には品質指標値（成果物の品質を評価する値）と標準生産性（成果物作成の生産性を評価する値）の2種類があることを説明できる,,11,knowledge,2026-08-23
 dw1-process-12,dw1-process|dm1-process,担当プロジェクトにて定められている指標値のうち、単体テスト項目数と単体テスト検出バグ数が何を見る値かを説明できる,,12,knowledge,2026-08-23
 dw1-process-13,dw1-process|dm1-process,許容範囲は設定値を中央値としてその前後X%で上限・下限を定めるものであり、実測値がその範囲内にあるかで判断することを説明できる,,13,knowledge,2026-08-23
-dw1-process-14,dw1-process|dm1-process,バグ数について、品質指標における許容範囲の下限を下回るとバグ検出不十分の疑義、上限を上回ると品質そのものの疑義になることを説明できる,,14,knowledge,2026-08-23
-dw1-process-15,dw1-process|dm1-process,テスト項目数について、品質指標における許容範囲の下限を下回るとテスト不十分の疑義、上限を上回ると実施テストの妥当性の疑義になることを説明できる,,15,knowledge,2026-08-23
-dw1-process-16,dw1-process|dm1-process,標準値について、標準生産性における許容範囲の下限を下回ると生産性が低く、上限を上回ると生産性が高い状態であることを説明できる,,16,knowledge,2026-08-23
+dw1-process-14,dw1-process|dm1-process,バグ数の指標値について、許容範囲の下限を下回るとバグ検出不十分の疑義、上限を上回ると品質そのものの疑義になることを説明できる,,14,knowledge,2026-08-23
+dw1-process-15,dw1-process|dm1-process,テスト項目数の指標値について、許容範囲の下限を下回るとテスト不十分の疑義、上限を上回ると実施テストの妥当性の疑義になることを説明できる,,15,knowledge,2026-08-23
+dw1-process-16,dw1-process|dm1-process,標準生産性の指標値について、許容範囲の下限を下回ると生産性が低く、上限を上回ると生産性が高い状態であることを説明できる,,16,knowledge,2026-08-23
 dw1-process-17,dw1-process|dm1-process,担当プロジェクトにて定められている指標値を関係者と認識合わせのうえ単体テストを実施し、バグを検出できる,,17,practice,2026-08-23
-dw1-process-18,dw1-process|dm1-process,担当プロジェクトにて定められているテスト消化項目数の標準値を関係者と認識合わせのうえ、テスト消化ができる,,18,practice,2026-08-23
+dw1-process-18,dw1-process|dm1-process,テスト消化項目数の標準値を関係者と認識合わせのうえ、テスト消化ができる,,18,practice,2026-08-23
 dw2-process-01,dw2-process|dm2-process,担当する改修の目的（何のための改修か）とゴールを説明できる,,1,knowledge,2026-08-23
 dw2-process-02,dw2-process|dm2-process,改修作業の Input（改修依頼・発生している事象・既存のプログラム・設計書）と Output（改修したプログラム・更新した設計書）が何かを説明できる,,2,knowledge,2026-08-23
 dw2-process-03,dw2-process|dm2-process,改修の目的とゴールについての自分の理解を関係者に伝え、認識齟齬がない状態にできる,,3,practice,2026-08-23
 dw2-process-04,dw2-process|dm2-process,依頼内容の不足を確認し、作業完了条件について関係者と認識合わせのうえ作業着手できる,,4,practice,2026-08-23
 dw2-process-05,dw2-process|dm2-process,自分の改修が後続（再テスト・リリース）に与える影響を判断し、関係者に対し早期に共有できる,,5,practice,2026-08-23
 dw2-process-06,dw2-process|dm2-process,前工程で検出すべきバグが後工程で検出されることを「バグ流出」と呼び、品質そのものの疑義になることを説明できる,,6,knowledge,2026-08-23
-dw2-process-07,dw2-process|dm2-process,担当プロジェクトにて定められている指標値を関係者と認識合わせのうえ、改修後の確認項目を決められる,,7,practice,2026-08-23
+dw2-process-07,dw2-process|dm2-process,担当プロジェクトにて定められている指標値を関係者と確認して合わせた状態で、改修後の確認項目を決められる,,7,practice,2026-08-23
 dw2-process-08,dw2-process|dm2-process,自分の改修で見つかったバグが本来どの工程で検出されるべきだったかを判断し、関係者と共有できる,,8,practice,2026-08-23
 dw3-process-01,dw3-process|dm3-process,担当する実装の目的（設計の意図）とゴールを説明できる,,1,knowledge,2026-08-23
 dw3-process-02,dw3-process|dm3-process,実装作業の Input（詳細設計書）と Output（実装したプログラム）が何かを説明できる,,2,knowledge,2026-08-23
@@ -973,11 +973,11 @@ dw3-process-08,dw3-process|dm3-process,担当プロジェクトにて定めら�
 dw3-process-09,dw3-process|dm3-process,指標値が品質管理と顧客への品質報告に使われることを説明できる,,9,knowledge,2026-08-23
 dw3-process-10,dw3-process|dm3-process,担当プロジェクトにて定められている1営業日当たりの製造Step数の標準値について、関係者と認識合わせのうえ実装を進められる,,10,practice,2026-08-23
 dw3-process-11,dw3-process|dm3-process,実装した範囲の検出バグ数が品質指標における許容範囲内かを確認し、許容範囲外の場合は関係者へ相談できる,,11,practice,2026-08-23
-dw3-process-12,dw3-process|dm3-process,担当プロジェクトにて定められている単体テスト項目執筆時間数の標準値について、関係者と認識合わせのうえ自分が実装した範囲の単体テスト項目を作成できる,,12,practice,2026-08-23
+dw3-process-12,dw3-process|dm3-process,担当プロジェクトにて定められている単体テスト項目執筆時間数の標準値を関係者と確認して合わせた状態で、自分が実装した範囲の単体テスト項目を作成できる,,12,practice,2026-08-23
 dw3-process-13,dw3-process|dm3-process,自分が実装した範囲の単体テスト項目数が品質指標における許容範囲内かを確認し、許容範囲外の場合は関係者へ相談できる,,13,practice,2026-08-23
 dw1-process-19,dw1-process|dm1-process,バグには「本来検出すべき工程」があることを理解し、前工程で検出すべきバグが後工程で検出されることを「バグ流出」と呼び、品質そのものの疑義になることを説明できる,,19,knowledge,2026-08-24
 dw1-process-20,dw1-process|dm1-process,担当プロジェクトにて定められている指標値のうち、結合テスト項目数・結合テスト検出バグ数・総合テスト項目数・総合テスト検出バグ数が何を見る値かを説明できる,,20,knowledge,2026-08-24
-dw1-process-21,dw1-process|dm1-process,担当プロジェクトにて定められている結合テスト・総合テストの消化項目数の標準値を関係者と認識合わせのうえ、テスト消化ができる,,21,practice,2026-08-24
+dw1-process-21,dw1-process|dm1-process,結合テスト・総合テストの消化項目数の標準値を関係者と認識合わせのうえ、テスト消化ができる,,21,practice,2026-08-24
 dw3-process-14,dw3-process|dm3-process,後続工程である「単体テスト」が円滑に進められるように、最低限の動作確認（正常系1パス等）ができる,,14,knowledge,2026-08-24
 hd1-triage-10,hd1-triage,事象の再現手順を正確に実施できる,,10,practice,2026-08-25
 hd1-record-10,hd1-record,記録していい個人情報かどうか判断できる,,10,practice,2026-08-25
