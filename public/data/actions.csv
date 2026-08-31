@@ -502,7 +502,7 @@ ad1-intake-01,ad1-intake,メールで届いた依頼を受け付けられる,,1,
 ad1-intake-02,ad1-intake,社内システムから申請を受け付けられる,,2,practice,2026-08-15
 ad1-intake-03,ad1-intake,依頼内容と期限を確認して記録できる,,3,practice,2026-08-15
 ad1-intake-04,ad1-intake,依頼者と依頼部署を確認できる,,4,practice,2026-08-15
-ad1-intake-05,ad1-intake,受け付けた旨を依頼者へ返せる,,5,practice,2026-08-15
+ad1-intake-05,ad1-intake,受理・不受理を依頼者へ返せる,,5,practice,2026-08-15
 ad1-intake-06,ad1-intake,依頼を管理表に登録できる,,6,practice,2026-08-15
 ad1-intake-07,ad1-intake,受付の重複や取り下げに気づける,,7,practice,2026-08-15
 ad1-intake-08,ad1-intake,受け付けてよい依頼の範囲を説明できる,,8,knowledge,2026-08-15
@@ -521,7 +521,7 @@ ad1-check-01,ad1-check,チェックリストに沿って必要書類の有無を
 ad1-check-02,ad1-check,不足している書類を特定できる,,2,practice,2026-08-15
 ad1-check-03,ad1-check,不足分の提出を依頼者へ依頼できる,,3,practice,2026-08-15
 ad1-check-04,ad1-check,提出期限を伝えて追跡できる,,4,practice,2026-08-15
-ad1-check-05,ad1-check,揃った時点で次工程へ渡せる,,5,practice,2026-08-15
+ad1-check-05,ad1-check,必要書類が次工程へ渡せるかどうか判断できる,,5,practice,2026-08-15
 ad1-check-06,ad1-check,例外的に不足のまま進める判断を仰げる,,6,practice,2026-08-15
 ad1-check-07,ad1-check,申請の種類ごとに必要な書類を説明できる,,7,knowledge,2026-08-15
 ad1-check-08,ad1-check,不備と不足の違いを説明できる,,8,knowledge,2026-08-15
@@ -576,7 +576,7 @@ ad1-security-01,ad1-security,個人情報にあたるものを説明できる,,1
 ad1-security-02,ad1-security,書類の保管と廃棄のルールを説明できる,,2,knowledge,2026-08-15
 ad1-security-03,ad1-security,情報を共有してよい範囲を説明できる,,3,knowledge,2026-08-15
 ad1-security-04,ad1-security,持ち出し・送付のルールを説明できる,,4,knowledge,2026-08-15
-ad1-security-05,ad1-security,事故を起こした場合や見つけた場合の連絡先を説明できる,,5,knowledge,2026-08-15
+ad1-security-05,ad1-security,事故を起こした場合や見つけた場合にどう対応すべきかを説明できる,,5,knowledge,2026-08-15
 ad1-security-06,ad1-security,宛先や添付を送信前に確認できる,,6,practice,2026-08-15
 ad1-security-07,ad1-security,机上や画面に書類を放置しない対応ができる,,7,practice,2026-08-15
 ad1-security-08,ad1-security,不審な依頼をその場で処理せず確認できる,,8,practice,2026-08-15
@@ -984,3 +984,6 @@ hd1-record-10,hd1-record,記録していい個人情報かどうか判断でき�
 hd1-asset-09,hd1-asset,新規購入した資産を台帳に登録できる,,9,practice,2026-08-25
 hd1-asset-10,hd1-asset,廃止・処分する資産を台帳から除却できる,,9,practice,2026-08-25
 hd1-account-10,hd1-account,アカウント情報の変更・修正を手順書に沿って実施できる,,10,practice,2026-08-25
+ad1-intake-10,ad1-intake,電話で受けた依頼・問い合わせを受け付けられる,,10,practice,2026-09-01
+ad1-office-11,ad1-office,クラウド上の共有ファイルを扱うときの注意点を説明できる,,11,knowledge,2026-09-01
+ad1-security-11,ad1-security,フィッシング・なりすましメールが届いたときの扱い方を説明できる,,11,knowledge,2026-09-01
