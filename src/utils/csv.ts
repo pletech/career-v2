@@ -4,7 +4,7 @@ export function parseCsv(text: string): string[][] {
   let field = '';
   let inQuotes = false;
 
-  // UTF-8 BOM 제거
+  // UTF-8 BOM を落とす
   if (text.charCodeAt(0) === 0xfeff) text = text.slice(1);
 
   const pushField = () => {
@@ -13,7 +13,7 @@ export function parseCsv(text: string): string[][] {
   };
 
   const pushRow = () => {
-    // 빈 줄 스킵
+    // 空行は飛ばす
     if (row.length === 1 && row[0] === '') {
       row = [];
       return;

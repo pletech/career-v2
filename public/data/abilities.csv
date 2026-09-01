@@ -1,21 +1,21 @@
-abilityId,roleId,statement,statementKo,roleStatement,roleStatementKo,toolsReference,weight,isCommon,commonGroupId,sortOrder,growthLineId,growsInto
-infra-server-common-1-a1,infra-server-common-1,問い合わせを受け付け、内容を整理して担当者へ連携できる,,問い合わせ内容を受け付け、担当者へ連携する役割,,Outlook|Teams|ServiceNow,1,true,common-infra-stage1-inquiry,1,response,infra-server-sp-2-a2
-infra-server-common-1-a2,infra-server-common-1,手順書に沿って定型作業を実施できる,,手順書に沿って、アカウント対応や定型作業を行う役割,,手順書|チェックシート,1,false,,2,execution,infra-server-sp-2-a4
-infra-server-common-1-a3,infra-server-common-1,アカウントの登録・変更・削除の対応ができる,,手順書に沿って、アカウント対応や定型作業を行う役割,,Active Directory|Microsoft Entra ID,1,false,,3,response,
-infra-server-common-1-a4,infra-server-common-1,PCや周辺機器の初期設定作業ができる,,PC、端末、周辺機器の初期設定やキッティングを行う役割,,Windows 10/11|BIOS|Microsoft 365,1,false,,4,response,
-infra-server-common-1-a5,infra-server-common-1,対応内容や作業結果を記録し、報告できる,,作業結果を記録し、報告する役割,,Excel|ServiceNow|メール,1,false,,5,response,infra-server-sp-2-a5
-infra-server-sp-2-a1,infra-server-sp-2,監視アラートから異常を検知できる,,監視アラートや異常の内容を把握する役割,,Zabbix|JP1|Hinemos,1,false,,1,stability,infra-server-sp-3-a4|infra-server-sp-3-a5
-infra-server-sp-2-a2,infra-server-sp-2,発報内容から障害の概要を整理できる,,発報内容を確認し、障害概要を整理する役割,,監視画面|メール通知|チケット,1,true,common-infra-stage2-alert-triage,2,response,infra-server-sp-3-a1
-infra-server-sp-2-a3,infra-server-sp-2,障害発生時に、システム状態の一次確認ができる,,ログ、サービス状態、プロセスを確認し、一次切り分けを行う役割,,Windows Server|Linux|systemctl|Event Viewer,1,false,,3,response,infra-server-sp-3-a2
-infra-server-sp-2-a4,infra-server-sp-2,手順書に沿った障害の初動対応ができる,,手順書に沿って初動対応を行い、必要に応じて二次対応者へ引き継ぐ役割,,手順書|ServiceNow,1,true,common-infra-stage2-first-response,4,execution,infra-server-sp-3-a3
-infra-server-sp-2-a5,infra-server-sp-2,二次対応者へ状況を整理して引き継げる,,手順書に沿って初動対応を行い、必要に応じて二次対応者へ引き継ぐ役割,,ServiceNow|Jira|メール,1,true,common-infra-stage2-escalation,5,response,infra-server-sp-3-a1
-infra-server-sp-3-a1,infra-server-sp-3,サーバー障害の原因調査ができる,,サーバー障害の内容を把握し、調査対象を整理する役割,,Windows Server|Linux|Apache|Tomcat,1,false,,1,response,
-infra-server-sp-3-a2,infra-server-sp-3,ログや設定内容から、障害原因を切り分けられる,,ログや設定内容を確認し、障害原因を切り分ける役割,,syslog|Event Viewer|設定ファイル,1,false,,2,response,
-infra-server-sp-3-a3,infra-server-sp-3,サーバーの基本的な運用保守作業を一人で実施できる,,必要な運用保守作業を実施し、安定稼働を維持する役割,,systemctl|Active Directory|cron,1,false,,3,execution,infra-server-sp-4-a1|infra-server-sp-4-a2|infra-server-sp-4-a3|infra-server-sp-4-a4
-infra-server-sp-3-a4,infra-server-sp-3,定期保守作業を担当できる,,定期保守やリリース対応を行い、運用を継続する役割,,手順書|チェックシート,1,false,,4,stability,infra-server-sp-4-a5
-infra-server-sp-3-a5,infra-server-sp-3,パッチ適用・リリース作業を担当できる,,定期保守やリリース対応を行い、運用を継続する役割,,Windows Update|yum|手順書,1,false,,5,stability,infra-server-sp-4-a5
-infra-server-sp-4-a1,infra-server-sp-4,設計書に沿ってサーバーを構築できる,,設計書やパラメータシートを確認し、構築対象を整理する役割,,Windows Server|Linux|VMware,1,false,,1,execution,
-infra-server-sp-4-a2,infra-server-sp-4,ミドルウェアの導入と設定ができる,,サーバーやOSを構築し、必要な設定を反映する役割,,Apache|Tomcat|IIS|PostgreSQL,1,false,,2,execution,
-infra-server-sp-4-a3,infra-server-sp-4,構築後の動作確認ができる,,ミドルウェアを導入し、動作可能な状態まで整える役割,,ping|telnet|curl,1,false,,3,execution,
-infra-server-sp-4-a4,infra-server-sp-4,作業の証跡を残せる,,ミドルウェアを導入し、動作可能な状態まで整える役割,,Excel|スクリーンショット|作業ログ,1,false,,4,execution,
-infra-server-sp-4-a5,infra-server-sp-4,既存環境の変更作業を安全に実施できる,,構築後の確認と既存環境の変更対応を行う役割,,仮想基盤|ストレージ|バックアップ設定,1,false,,5,stability,
+abilityId,roleId,statement,roleStatement,toolsReference,weight,isCommon,commonGroupId,sortOrder,growthLineId,growsInto
+infra-server-common-1-a1,infra-server-common-1,問い合わせを受け付け、内容を整理して担当者へ連携できる,問い合わせ内容を受け付け、担当者へ連携する役割,Outlook|Teams|ServiceNow,1,true,common-infra-stage1-inquiry,1,response,infra-server-sp-2-a2
+infra-server-common-1-a2,infra-server-common-1,手順書に沿って定型作業を実施できる,手順書に沿って、アカウント対応や定型作業を行う役割,手順書|チェックシート,1,false,,2,execution,infra-server-sp-2-a4
+infra-server-common-1-a3,infra-server-common-1,アカウントの登録・変更・削除の対応ができる,手順書に沿って、アカウント対応や定型作業を行う役割,Active Directory|Microsoft Entra ID,1,false,,3,response,
+infra-server-common-1-a4,infra-server-common-1,PCや周辺機器の初期設定作業ができる,PC、端末、周辺機器の初期設定やキッティングを行う役割,Windows 10/11|BIOS|Microsoft 365,1,false,,4,response,
+infra-server-common-1-a5,infra-server-common-1,対応内容や作業結果を記録し、報告できる,作業結果を記録し、報告する役割,Excel|ServiceNow|メール,1,false,,5,response,infra-server-sp-2-a5
+infra-server-sp-2-a1,infra-server-sp-2,監視アラートから異常を検知できる,監視アラートや異常の内容を把握する役割,Zabbix|JP1|Hinemos,1,false,,1,stability,infra-server-sp-3-a4|infra-server-sp-3-a5
+infra-server-sp-2-a2,infra-server-sp-2,発報内容から障害の概要を整理できる,発報内容を確認し、障害概要を整理する役割,監視画面|メール通知|チケット,1,true,common-infra-stage2-alert-triage,2,response,infra-server-sp-3-a1
+infra-server-sp-2-a3,infra-server-sp-2,障害発生時に、システム状態の一次確認ができる,ログ、サービス状態、プロセスを確認し、一次切り分けを行う役割,Windows Server|Linux|systemctl|Event Viewer,1,false,,3,response,infra-server-sp-3-a2
+infra-server-sp-2-a4,infra-server-sp-2,手順書に沿った障害の初動対応ができる,手順書に沿って初動対応を行い、必要に応じて二次対応者へ引き継ぐ役割,手順書|ServiceNow,1,true,common-infra-stage2-first-response,4,execution,infra-server-sp-3-a3
+infra-server-sp-2-a5,infra-server-sp-2,二次対応者へ状況を整理して引き継げる,手順書に沿って初動対応を行い、必要に応じて二次対応者へ引き継ぐ役割,ServiceNow|Jira|メール,1,true,common-infra-stage2-escalation,5,response,infra-server-sp-3-a1
+infra-server-sp-3-a1,infra-server-sp-3,サーバー障害の原因調査ができる,サーバー障害の内容を把握し、調査対象を整理する役割,Windows Server|Linux|Apache|Tomcat,1,false,,1,response,
+infra-server-sp-3-a2,infra-server-sp-3,ログや設定内容から、障害原因を切り分けられる,ログや設定内容を確認し、障害原因を切り分ける役割,syslog|Event Viewer|設定ファイル,1,false,,2,response,
+infra-server-sp-3-a3,infra-server-sp-3,サーバーの基本的な運用保守作業を一人で実施できる,必要な運用保守作業を実施し、安定稼働を維持する役割,systemctl|Active Directory|cron,1,false,,3,execution,infra-server-sp-4-a1|infra-server-sp-4-a2|infra-server-sp-4-a3|infra-server-sp-4-a4
+infra-server-sp-3-a4,infra-server-sp-3,定期保守作業を担当できる,定期保守やリリース対応を行い、運用を継続する役割,手順書|チェックシート,1,false,,4,stability,infra-server-sp-4-a5
+infra-server-sp-3-a5,infra-server-sp-3,パッチ適用・リリース作業を担当できる,定期保守やリリース対応を行い、運用を継続する役割,Windows Update|yum|手順書,1,false,,5,stability,infra-server-sp-4-a5
+infra-server-sp-4-a1,infra-server-sp-4,設計書に沿ってサーバーを構築できる,設計書やパラメータシートを確認し、構築対象を整理する役割,Windows Server|Linux|VMware,1,false,,1,execution,
+infra-server-sp-4-a2,infra-server-sp-4,ミドルウェアの導入と設定ができる,サーバーやOSを構築し、必要な設定を反映する役割,Apache|Tomcat|IIS|PostgreSQL,1,false,,2,execution,
+infra-server-sp-4-a3,infra-server-sp-4,構築後の動作確認ができる,ミドルウェアを導入し、動作可能な状態まで整える役割,ping|telnet|curl,1,false,,3,execution,
+infra-server-sp-4-a4,infra-server-sp-4,作業の証跡を残せる,ミドルウェアを導入し、動作可能な状態まで整える役割,Excel|スクリーンショット|作業ログ,1,false,,4,execution,
+infra-server-sp-4-a5,infra-server-sp-4,既存環境の変更作業を安全に実施できる,構築後の確認と既存環境の変更対応を行う役割,仮想基盤|ストレージ|バックアップ設定,1,false,,5,stability,

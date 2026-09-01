@@ -1,54 +1,54 @@
-certId,track,subtrack,stage,nameJa,nameKo,note,noteKo,sortOrder
-cert-s1-01,infrastructure,サーバー,1,ITパスポート試験,,IT全般の基礎知識,,1
-cert-s1-03,infrastructure,サーバー,1,基本情報技術者試験（FE）,,開発・運用の基礎、次段階の土台,,2
-cert-s1-04,infrastructure,サーバー,1,LPIC-1,,サーバーOS（Linux）の基礎操作,,3
-cert-s1-05,infrastructure,サーバー,1,CCNA,,インフラ案件で入口として求められることが多い,,4
-cert-s2-01,infrastructure,サーバー,2,基本情報技術者試験（FE）,,未取得なら優先。運用保守の基礎,,1
-cert-s2-02,infrastructure,サーバー,2,CCNA,,未取得なら優先。障害の切り分けに必要なネットワーク知識,,2
-cert-s2-03,infrastructure,サーバー,2,LPIC-2,,サーバー運用の実務レベル,,3
-cert-s2-04,infrastructure,サーバー,2,AZ-800/AZ-801: Windows Server Hybrid Administrator Associate,,Windows Server の運用・保守（Linux 側は LPIC）。2試験構成,,4
-cert-s2-05,infrastructure,サーバー,2,ITIL 4 Foundation,,インシデント管理・サービス運用の共通言語（二次対応の土台）,,5
-cert-s3-01,infrastructure,サーバー,3,応用情報技術者試験（AP）,,運用保守の応用範囲。次段階（構築）の土台,,1
-cert-s3-02,infrastructure,サーバー,3,LPIC-2,,サーバー障害の原因調査・切り分けの実務レベル,,2
-cert-s3-03,infrastructure,サーバー,3,CCNP,,ネットワークの設計・構築レベル。次段階（構築）の土台,,3
-cert-hd1-01,it-support,ヘルプデスク系,1,ITパスポート試験,,IT全般の基礎知識,,1
-cert-hd1-02,it-support,ヘルプデスク系,1,MS-900: Microsoft 365 Fundamentals,,この段階の業務そのもの（Microsoft 365 の基礎）,,2
-cert-hd1-03,it-support,ヘルプデスク系,1,MOS エキスパート（Word / Excel / PowerPoint / Access）,,利用者から実際に来る操作質問の範囲,,3
-cert-hd2-01,it-support,ヘルプデスク系,2,ITIL 4 Foundation,,インシデント管理・エスカレーションの共通言語,,1
-cert-hd2-02,it-support,ヘルプデスク系,2,MD-102: Endpoint Administrator Associate,,端末・Intune の設定変更対応,,2
-cert-hd2-03,it-support,ヘルプデスク系,2,SC-300: Identity and Access Administrator Associate,,Active Directory・権限設定,,3
-cert-hd2-04,it-support,ヘルプデスク系,2,情報セキュリティマネジメント試験,,権限や端末を触る立場のセキュリティ判断,,4
-cert-hd3-01,it-support,ヘルプデスク系,3,基本情報技術者試験（FE）,,未取得なら優先。上の段階の土台,,1
-cert-hd3-02,it-support,ヘルプデスク系,3,応用情報技術者試験（AP）,,運用管理・企画の範囲,,2
-cert-ad1-01,it-support,事務系,1,ITパスポート試験,,IT全般の基礎知識,,1
-cert-ad1-02,it-support,事務系,1,MOS エキスパート（Word / Excel / PowerPoint / Access）,,書類作成・データ入力の道具そのもの,,2
-cert-ad2-01,it-support,事務系,2,MS-900: Microsoft 365 Fundamentals,,共有・権限まわりの前提知識,,1
-cert-ad2-02,it-support,事務系,2,PL-900: Power Platform Fundamentals,,定型業務の自動化の入口,,2
-cert-ad2-03,it-support,事務系,2,VBA エキスパート Excel ベーシック,,繰り返しの入力・集計を自分で減らす,,3
-cert-ad2-04,it-support,事務系,2,情報セキュリティマネジメント試験,,申請書・個人情報を扱う立場の判断,,4
-cert-ad3-01,it-support,事務系,3,基本情報技術者試験（FE）,,未取得なら優先。上の段階の土台,,1
-cert-ad3-02,it-support,事務系,3,応用情報技術者試験（AP）,,業務管理・企画の範囲,,2
-cert-dw1-01,development,Webアプリケーション,1,ITパスポート試験,,IT全般の基礎知識,,1
-cert-dw1-02,development,Webアプリケーション,1,Webクリエイター能力認定試験・エキスパート,,画面（HTML・CSS）の基礎。表示を確認する土台,,2
-cert-dw1-03,development,Webアプリケーション,1,Oracle認定Javaプログラマ（Bronze）,,サーバー側の言語の入口,,3
-cert-dw2-01,development,Webアプリケーション,2,ORACLE MASTER Bronze,,SQL の入口。既存SQLの軽微な修正に直結,,1
-cert-dw2-02,development,Webアプリケーション,2,Oracle認定Javaプログラマ（Silver）,,既存コードを読んで直せる範囲,,2
-cert-dw2-03,development,Webアプリケーション,2,Python 3 エンジニア認定試験 基礎,,案件の言語が Python の場合,,3
-cert-dw2-04,development,Webアプリケーション,2,情報セキュリティマネジメント試験,,コードと本番データを触る立場の判断。技術力の証明にはならないが、リスクへの嗅覚が上がる。情報処理安全確保支援士への現実的なステップ,,4
-cert-dw3-01,development,Webアプリケーション,3,基本情報技術者試験（FE）,,未取得なら優先。上の段階の土台,,1
-cert-dw3-02,development,Webアプリケーション,3,ORACLE MASTER Silver,,DB入出力を設計書どおりに実装する範囲,,2
-cert-dw3-03,development,Webアプリケーション,3,Oracle認定Javaプログラマ（Gold）,,サーバー処理を一から実装する範囲,,3
-cert-dw3-04,development,Webアプリケーション,3,Python 3 エンジニア認定試験 実践,,案件の言語が Python の場合,,4
-cert-dm1-01,development,モバイルアプリ,1,ITパスポート試験,,IT全般の基礎知識,,1
-cert-dm1-02,development,モバイルアプリ,1,Oracle認定Javaプログラマ（Bronze）,,Android は Java・Kotlin 系。言語の入口として効く,,2
-cert-dm2-01,development,モバイルアプリ,2,Oracle認定Javaプログラマ（Silver）,,既存コードを読んで直せる範囲,,1
-cert-dm2-02,development,モバイルアプリ,2,ORACLE MASTER Bronze,,ローカルデータ処理（SQLite）の土台となる SQL,,2
-cert-dm2-03,development,モバイルアプリ,2,情報セキュリティマネジメント試験,,端末内にデータを残す立場の判断。技術力の証明にはならないが、リスクへの嗅覚が上がる。情報処理安全確保支援士への現実的なステップ,,3
-cert-dm3-01,development,モバイルアプリ,3,基本情報技術者試験（FE）,,未取得なら優先。上の段階の土台,,1
-cert-dm3-02,development,モバイルアプリ,3,Oracle認定Javaプログラマ（Gold）,,画面と処理を一から実装する範囲,,2
-cert-dw2-05,development,Webアプリケーション,2,AZ-900:Azure Fundamentals,,案件が Azure 上の場合。自分が触る環境の前提を知る,,5
-cert-dw2-06,development,Webアプリケーション,2,AWS Certified Cloud Practitioner,,案件が AWS 上の場合。自分が触る環境の前提を知る,,6
-cert-dw3-05,development,Webアプリケーション,3,AZ-204:Azure Developer Associate,,Azure 上で動くアプリを実装する場合,,5
-cert-dw3-06,development,Webアプリケーション,3,AWS Certified Developer,,AWS 上で動くアプリを実装する場合,,6
-cert-dm2-04,development,モバイルアプリ,2,AZ-900:Azure Fundamentals,,連携先が Azure の場合。自分が呼ぶ環境の前提を知る,,4
-cert-dm2-05,development,モバイルアプリ,2,AWS Certified Cloud Practitioner,,連携先が AWS の場合。自分が呼ぶ環境の前提を知る,,5
+certId,track,subtrack,stage,nameJa,note,sortOrder
+cert-s1-01,infrastructure,サーバー,1,ITパスポート試験,IT全般の基礎知識,1
+cert-s1-03,infrastructure,サーバー,1,基本情報技術者試験（FE）,開発・運用の基礎、次段階の土台,2
+cert-s1-04,infrastructure,サーバー,1,LPIC-1,サーバーOS（Linux）の基礎操作,3
+cert-s1-05,infrastructure,サーバー,1,CCNA,インフラ案件で入口として求められることが多い,4
+cert-s2-01,infrastructure,サーバー,2,基本情報技術者試験（FE）,未取得なら優先。運用保守の基礎,1
+cert-s2-02,infrastructure,サーバー,2,CCNA,未取得なら優先。障害の切り分けに必要なネットワーク知識,2
+cert-s2-03,infrastructure,サーバー,2,LPIC-2,サーバー運用の実務レベル,3
+cert-s2-04,infrastructure,サーバー,2,AZ-800/AZ-801: Windows Server Hybrid Administrator Associate,Windows Server の運用・保守（Linux 側は LPIC）。2試験構成,4
+cert-s2-05,infrastructure,サーバー,2,ITIL 4 Foundation,インシデント管理・サービス運用の共通言語（二次対応の土台）,5
+cert-s3-01,infrastructure,サーバー,3,応用情報技術者試験（AP）,運用保守の応用範囲。次段階（構築）の土台,1
+cert-s3-02,infrastructure,サーバー,3,LPIC-2,サーバー障害の原因調査・切り分けの実務レベル,2
+cert-s3-03,infrastructure,サーバー,3,CCNP,ネットワークの設計・構築レベル。次段階（構築）の土台,3
+cert-hd1-01,it-support,ヘルプデスク系,1,ITパスポート試験,IT全般の基礎知識,1
+cert-hd1-02,it-support,ヘルプデスク系,1,MS-900: Microsoft 365 Fundamentals,この段階の業務そのもの（Microsoft 365 の基礎）,2
+cert-hd1-03,it-support,ヘルプデスク系,1,MOS エキスパート（Word / Excel / PowerPoint / Access）,利用者から実際に来る操作質問の範囲,3
+cert-hd2-01,it-support,ヘルプデスク系,2,ITIL 4 Foundation,インシデント管理・エスカレーションの共通言語,1
+cert-hd2-02,it-support,ヘルプデスク系,2,MD-102: Endpoint Administrator Associate,端末・Intune の設定変更対応,2
+cert-hd2-03,it-support,ヘルプデスク系,2,SC-300: Identity and Access Administrator Associate,Active Directory・権限設定,3
+cert-hd2-04,it-support,ヘルプデスク系,2,情報セキュリティマネジメント試験,権限や端末を触る立場のセキュリティ判断,4
+cert-hd3-01,it-support,ヘルプデスク系,3,基本情報技術者試験（FE）,未取得なら優先。上の段階の土台,1
+cert-hd3-02,it-support,ヘルプデスク系,3,応用情報技術者試験（AP）,運用管理・企画の範囲,2
+cert-ad1-01,it-support,事務系,1,ITパスポート試験,IT全般の基礎知識,1
+cert-ad1-02,it-support,事務系,1,MOS エキスパート（Word / Excel / PowerPoint / Access）,書類作成・データ入力の道具そのもの,2
+cert-ad2-01,it-support,事務系,2,MS-900: Microsoft 365 Fundamentals,共有・権限まわりの前提知識,1
+cert-ad2-02,it-support,事務系,2,PL-900: Power Platform Fundamentals,定型業務の自動化の入口,2
+cert-ad2-03,it-support,事務系,2,VBA エキスパート Excel ベーシック,繰り返しの入力・集計を自分で減らす,3
+cert-ad2-04,it-support,事務系,2,情報セキュリティマネジメント試験,申請書・個人情報を扱う立場の判断,4
+cert-ad3-01,it-support,事務系,3,基本情報技術者試験（FE）,未取得なら優先。上の段階の土台,1
+cert-ad3-02,it-support,事務系,3,応用情報技術者試験（AP）,業務管理・企画の範囲,2
+cert-dw1-01,development,Webアプリケーション,1,ITパスポート試験,IT全般の基礎知識,1
+cert-dw1-02,development,Webアプリケーション,1,Webクリエイター能力認定試験・エキスパート,画面（HTML・CSS）の基礎。表示を確認する土台,2
+cert-dw1-03,development,Webアプリケーション,1,Oracle認定Javaプログラマ（Bronze）,サーバー側の言語の入口,3
+cert-dw2-01,development,Webアプリケーション,2,ORACLE MASTER Bronze,SQL の入口。既存SQLの軽微な修正に直結,1
+cert-dw2-02,development,Webアプリケーション,2,Oracle認定Javaプログラマ（Silver）,既存コードを読んで直せる範囲,2
+cert-dw2-03,development,Webアプリケーション,2,Python 3 エンジニア認定試験 基礎,案件の言語が Python の場合,3
+cert-dw2-04,development,Webアプリケーション,2,情報セキュリティマネジメント試験,コードと本番データを触る立場の判断。技術力の証明にはならないが、リスクへの嗅覚が上がる。情報処理安全確保支援士への現実的なステップ,4
+cert-dw3-01,development,Webアプリケーション,3,基本情報技術者試験（FE）,未取得なら優先。上の段階の土台,1
+cert-dw3-02,development,Webアプリケーション,3,ORACLE MASTER Silver,DB入出力を設計書どおりに実装する範囲,2
+cert-dw3-03,development,Webアプリケーション,3,Oracle認定Javaプログラマ（Gold）,サーバー処理を一から実装する範囲,3
+cert-dw3-04,development,Webアプリケーション,3,Python 3 エンジニア認定試験 実践,案件の言語が Python の場合,4
+cert-dm1-01,development,モバイルアプリ,1,ITパスポート試験,IT全般の基礎知識,1
+cert-dm1-02,development,モバイルアプリ,1,Oracle認定Javaプログラマ（Bronze）,Android は Java・Kotlin 系。言語の入口として効く,2
+cert-dm2-01,development,モバイルアプリ,2,Oracle認定Javaプログラマ（Silver）,既存コードを読んで直せる範囲,1
+cert-dm2-02,development,モバイルアプリ,2,ORACLE MASTER Bronze,ローカルデータ処理（SQLite）の土台となる SQL,2
+cert-dm2-03,development,モバイルアプリ,2,情報セキュリティマネジメント試験,端末内にデータを残す立場の判断。技術力の証明にはならないが、リスクへの嗅覚が上がる。情報処理安全確保支援士への現実的なステップ,3
+cert-dm3-01,development,モバイルアプリ,3,基本情報技術者試験（FE）,未取得なら優先。上の段階の土台,1
+cert-dm3-02,development,モバイルアプリ,3,Oracle認定Javaプログラマ（Gold）,画面と処理を一から実装する範囲,2
+cert-dw2-05,development,Webアプリケーション,2,AZ-900:Azure Fundamentals,案件が Azure 上の場合。自分が触る環境の前提を知る,5
+cert-dw2-06,development,Webアプリケーション,2,AWS Certified Cloud Practitioner,案件が AWS 上の場合。自分が触る環境の前提を知る,6
+cert-dw3-05,development,Webアプリケーション,3,AZ-204:Azure Developer Associate,Azure 上で動くアプリを実装する場合,5
+cert-dw3-06,development,Webアプリケーション,3,AWS Certified Developer,AWS 上で動くアプリを実装する場合,6
+cert-dm2-04,development,モバイルアプリ,2,AZ-900:Azure Fundamentals,連携先が Azure の場合。自分が呼ぶ環境の前提を知る,4
+cert-dm2-05,development,モバイルアプリ,2,AWS Certified Cloud Practitioner,連携先が AWS の場合。自分が呼ぶ環境の前提を知る,5

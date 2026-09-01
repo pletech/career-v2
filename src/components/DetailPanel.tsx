@@ -228,7 +228,7 @@ function isEmphasizedSubtitle(title: string): boolean {
   return false;
 }
 
-/** ✅ A/B/C/D 그룹은 접어서 볼 수 있게(아코디언) */
+/** A/B/C/D のグループは畳めるようにする (アコーディオン) */
 function isCollapsibleGroupSection(title: string): boolean {
   if (!title) return false;
   if (title === '分野別業務') return true;
@@ -476,8 +476,8 @@ const DetailPanel: React.FC<DetailPanelProps> = ({
       </Section>
 
       {/*
-        1차 공개판에서는 役割 / スキル / 経験만 핵심 섹션으로 노출한다.
-        아래 섹션들은 제거하지 않고 비활성화만 유지한다.
+        初版では 役割 / スキル / 経験 だけを主要セクションとして出す。
+        以下のセクションは消さず、無効のまま残す。
 
       <Section title="資格" accentClass="bg-emerald-400">...</Section>
       <Section title="ツール・環境・言語" accentClass="bg-slate-400">...</Section>

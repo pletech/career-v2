@@ -15,9 +15,9 @@ import {
 } from './loadLadderData';
 
 const rolesCsv = [
-  'roleId,track,category,stageOrder,pathType,titleJa,shortLabel,summary,status,shortGoal,titleKo,shortLabelKo,summaryKo,shortGoalKo',
-  'r1,infrastructure,サーバー,1,common,運用監視補助,補助,要約,published,目標,보조역할,보조,요약,목표',
-  'r2,infrastructure,サーバー,2,specialist,運用監視,監視,,placeholder,,,,,',
+  'roleId,track,category,stageOrder,pathType,titleJa,shortLabel,summary,status,shortGoal',
+  'r1,infrastructure,サーバー,1,common,運用監視補助,補助,要約,published,目標',
+  'r2,infrastructure,サーバー,2,specialist,運用監視,監視,,placeholder,',
 ].join('\n');
 
 const depsCsv = [
@@ -26,54 +26,54 @@ const depsCsv = [
 ].join('\n');
 
 const abilitiesCsv = [
-  'abilityId,roleId,statement,statementKo,roleStatement,roleStatementKo,toolsReference,weight,isCommon,commonGroupId,sortOrder,growthLineId',
-  'a1,r1,"問い合わせを受け付け、連携できる","문의를 접수, 전달할 수 있다",役割文,역할문,Outlook|Teams,1,true,grp-1,1,response',
+  'abilityId,roleId,statement,roleStatement,toolsReference,weight,isCommon,commonGroupId,sortOrder,growthLineId',
+  'a1,r1,問い合わせを受け付け、連携できる,役割文,Outlook|Teams,1,true,grp-1,1,response',
 ].join('\n');
 
 const growthLinesCsv = [
-  'lineId,labelJa,labelKo,sortOrder',
-  'response,依頼・障害対応,의뢰·장애 대응,1',
-  'execution,作業実施（手順書→設計書）,작업 수행 (절차서→설계서),2',
+  'lineId,labelJa,sortOrder',
+  'response,依頼・障害対応,1',
+  'execution,作業実施（手順書→設計書）,2',
 ].join('\n');
 
 const evidencesCsv = [
-  'evidenceId,abilityId,statement,statementKo,evidenceType,workTags,selfCheckTip,selfCheckTipKo,sortOrder',
-  'a1-e1,a1,要点を記録できる,요점을 기록할 수 있다,practice,inquiry|reporting,説明できますか？,설명할 수 있나요?,1',
-  'a1-e2,a1,経験がある,경험이 있다,experience,inquiry,,,2',
+  'evidenceId,abilityId,statement,evidenceType,workTags,selfCheckTip,sortOrder',
+  'a1-e1,a1,要点を記録できる,practice,inquiry|reporting,説明できますか？,1',
+  'a1-e2,a1,経験がある,experience,inquiry,,2',
 ].join('\n');
 
 // v2.7 素材→武器モデル
 const tagsCsv = [
-  'tagId,labelJa,labelKo,sortOrder',
-  'inquiry,問い合わせ対応,문의 대응,1',
-  'reporting,記録・報告,기록·보고,2',
+  'tagId,labelJa,sortOrder',
+  'inquiry,問い合わせ対応,1',
+  'reporting,記録・報告,2',
 ].join('\n');
 
 const actionsCsv = [
-  'actionId,categoryIds, statement,statementKo,sortOrder,kind',
-  'at1,c1-inquiry,問い合わせを受け付けられる,문의를 접수할 수 있다,1,practice',
-  'at2,c1-reporting,要点を記録できる,요점을 기록할 수 있다,1,practice',
-  'at3,c2-triage,発報内容を照合できる,발보 내용을 대조할 수 있다,1,knowledge',
+  'actionId,categoryIds, statement,sortOrder,kind',
+  'at1,c1-inquiry,問い合わせを受け付けられる,1,practice',
+  'at2,c1-reporting,要点を記録できる,1,practice',
+  'at3,c2-triage,発報内容を照合できる,1,knowledge',
 ].join('\n');
 
 const weaponsCsv = [
-  'weaponId,roleId,tagId,statement,statementKo,composedOf,sortOrder',
-  'w1,r2,inquiry,障害の概要を整理できる,장애 개요를 정리할 수 있다,at1|at2|at3,1',
+  'weaponId,roleId,tagId,statement,composedOf,sortOrder',
+  'w1,r2,inquiry,障害の概要を整理できる,at1|at2|at3,1',
 ].join('\n');
 
 // v2.7d カテゴリモデル
 const categoriesCsv = [
-  'categoryId,track,subtrack,stage,labelJa,labelKo,includes,sortOrder',
-  'c1-inquiry,infrastructure,サーバー,1,問い合わせ対応,문의 대응,,1',
-  'c1-reporting,infrastructure,サーバー,1,記録・報告,기록·보고,,2',
-  'c2-triage,infrastructure,サーバー,2,監視・一次対応,감시·일차 대응,c1-inquiry|c1-reporting,1',
+  'categoryId,track,subtrack,stage,labelJa,includes,sortOrder',
+  'c1-inquiry,infrastructure,サーバー,1,問い合わせ対応,,1',
+  'c1-reporting,infrastructure,サーバー,1,記録・報告,,2',
+  'c2-triage,infrastructure,サーバー,2,監視・一次対応,c1-inquiry|c1-reporting,1',
 ].join('\n');
 
 // v2.7n 推奨資格
 const certsCsv = [
-  'certId,track,subtrack,stage,nameJa,nameKo,note,noteKo,sortOrder',
-  'cert-1,infrastructure,サーバー,1,ITパスポート,IT 패스포트,基礎,기초,1',
-  'cert-2,infrastructure,サーバー,2,CCNA,CCNA,,,1',
+  'certId,track,subtrack,stage,nameJa,note,sortOrder',
+  'cert-1,infrastructure,サーバー,1,ITパスポート,基礎,1',
+  'cert-2,infrastructure,サーバー,2,CCNA,,1',
 ].join('\n');
 
 /** validateReferences 用のフルデータセットを組み立てる */
@@ -180,12 +180,12 @@ describe('loadLadderData の CSV 変換 (CSV が DB — 確定 #24)', () => {
 
   it('abilities: growsInto はパイプ区切りで変換され、列が無ければ空 (v2.6e)', () => {
     const header =
-      'abilityId,roleId,statement,statementKo,roleStatement,roleStatementKo,toolsReference,weight,isCommon,commonGroupId,sortOrder,growthLineId,growsInto';
+      'abilityId,roleId,statement,roleStatement,toolsReference,weight,isCommon,commonGroupId,sortOrder,growthLineId,growsInto';
     const withEdges = [
       header,
-      'a1,r1,文,문,役,역,,1,false,,1,response,a2|a3',
-      'a2,r1,文,문,役,역,,1,false,,2,response,',
-      'a3,r1,文,문,役,역,,1,false,,3,response,',
+      'a1,r1,文,役,,1,false,,1,response,a2|a3',
+      'a2,r1,文,役,,1,false,,2,response,',
+      'a3,r1,文,役,,1,false,,3,response,',
     ].join('\n');
     const parsed = parseAbilities(withEdges);
     expect(parsed[0].growsInto).toEqual(['a2', 'a3']);
@@ -196,9 +196,9 @@ describe('loadLadderData の CSV 変換 (CSV が DB — 確定 #24)', () => {
 
   it('参照整合性: growsInto が存在しない能力を参照するとエラー (v2.6e)', () => {
     const header =
-      'abilityId,roleId,statement,statementKo,roleStatement,roleStatementKo,toolsReference,weight,isCommon,commonGroupId,sortOrder,growthLineId,growsInto';
+      'abilityId,roleId,statement,roleStatement,toolsReference,weight,isCommon,commonGroupId,sortOrder,growthLineId,growsInto';
     const data = buildDataSet({
-      abilities: parseAbilities([header, 'a1,r1,文,문,役,역,,1,false,,1,response,aX'].join('\n')),
+      abilities: parseAbilities([header, 'a1,r1,文,役,,1,false,,1,response,aX'].join('\n')),
     });
     expect(() => validateReferences(data)).toThrow(/growsInto/);
   });

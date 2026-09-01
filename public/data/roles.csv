@@ -1,25 +1,25 @@
-﻿roleId,track,category,stageOrder,pathType,titleJa,shortLabel,summary,status,shortGoal,titleKo,shortLabelKo,summaryKo,shortGoalKo
-infra-server-common-1,infrastructure,サーバー,1,common,運用監視補助・ヘルプデスク,運用監視補助,問い合わせ対応、定型作業の支援、基本確認業務を通じて、運用現場を支える役割,published,運用現場の基本動作を身につける,,,,
-infra-server-sp-2,infrastructure,サーバー,2,specialist,運用監視（一次対応担当）,運用監視（一次対応）,監視システムを用いて異常を検知し、手順に沿って一次対応とエスカレーションを行う役割,published,監視と一次対応を一人で回せるようになる,,,,
-infra-server-sp-3,infrastructure,サーバー,3,specialist,運用保守（二次対応・障害対応担当）,運用保守（二次対応）,障害の原因調査、ログ確認、設定確認、復旧対応など、より深い運用保守を担う役割,published,障害の原因調査と復旧対応を担えるようになる,,,,
-infra-server-sp-4,infrastructure,サーバー,4,specialist,構築・設定（手順書・詳細設計書ベース構築担当）,構築・設定,設計情報やパラメータをもとに、インフラ環境を構築・設定する役割,published,設計書ベースの構築を担えるようになる,,,,
-infra-server-sp-5,infrastructure,サーバー,5,specialist,システム設計（詳細設計・運用設計担当）,システム設計,,placeholder,,,,,
-infra-server-sp-6,infrastructure,サーバー,6,specialist,TL（テックリード／技術責任）,TL（技術責任）,,placeholder,,,,,
-its-helpdesk-mg-1,it-support,ヘルプデスク系,1,manager,ヘルプデスク（一次対応）,ヘルプデスク（一次対応）,利用者からの問い合わせを受け付け、内容を整理して一次切り分けと定型的な案内を行い、必要に応じて担当者へ引き継ぐ役割,published,問い合わせの受付と一次対応の基本動作を身につける,,,,
-its-helpdesk-mg-2,it-support,ヘルプデスク系,2,manager,SV（スーパーバイザー）,SV（スーパーバイザー）,一次対応で解決しない事象の状況を把握し、ログや設定を確認して原因を切り分け、解決対応とエスカレーションを行う役割,published,一次対応で解決しない事象を一人で切り分けられるようになる,,,,
-its-helpdesk-mg-3,it-support,ヘルプデスク系,3,manager,リーダー（ヘルプデスク）,リーダー（ヘルプデスク）,問い合わせや障害対応の優先度を判断し、案件の振り分けと進捗管理を通じて現場運営を調整する役割,published,現場の優先度判断と進行管理を担えるようになる,,,,
-its-admin-mg-1,it-support,事務系,1,manager,事務,事務,申請内容や資料を確認し、定型的な入力・登録・更新を行い、処理結果を記録して関係者へ共有する役割,published,申請の確認と定型処理の基本動作を身につける,,,,
-its-admin-mg-2,it-support,事務系,2,manager,内部調整,内部調整,不足情報を洗い出して関係者へ確認し、申請者・担当者・関係部署の間に立って業務が止まらないよう調整する役割,published,関係者をつないで案件を止めずに進められるようになる,,,,
-its-admin-mg-3,it-support,事務系,3,manager,リーダー（事務）,リーダー（事務）,案件の優先度を判断して業務を振り分け、メンバーの作業を確認しながら進行状況と滞留を管理する役割,published,優先度判断と進行管理を担えるようになる,,,,
-dev-web-common-1,development,Webアプリケーション,1,common,テスト（Webアプリケーション QA）,テスト（QA）,テスト仕様書や確認項目をもとにテストを実施し、不具合の有無を確認して結果を記録・報告する役割,published,手順に沿ってテストを実施し、結果を報告できるようになる,,,,
-dev-web-sp-2,development,Webアプリケーション,2,specialist,改修,改修,既存の画面・機能・API に対して修正対象を把握し、軽微な改修と詳細設計書の更新を行う役割,published,既存機能の軽微な改修を一人で担えるようになる,,,,
-dev-web-sp-3,development,Webアプリケーション,3,specialist,PG（コーディング）,PG（コーディング）,詳細設計書をもとに画面機能・API・サーバー処理・DB入出力を実装し、単体テストまで行う役割,published,詳細設計書をもとに実装と単体テストを担えるようになる,,,,
-dev-web-sp-4,development,Webアプリケーション,4,specialist,SE（詳細設計）,SE（詳細設計）,,placeholder,,,,,
-dev-web-sp-5,development,Webアプリケーション,5,specialist,SE（基本設計）,SE（基本設計）,,placeholder,,,,,
-dev-web-sp-6,development,Webアプリケーション,6,specialist,SE（要件定義）,SE（要件定義）,,placeholder,,,,,
-dev-mobile-common-1,development,モバイルアプリ,1,common,テスト（モバイルアプリケーション QA）,テスト（QA）,テスト仕様書や確認項目をもとにテストを実施し、不具合の有無を確認して結果を記録・報告する役割,published,手順に沿ってテストを実施し、結果を報告できるようになる,,,,
-dev-mobile-sp-2,development,モバイルアプリ,2,specialist,改修,改修,既存の画面・入力制御・API連携に対して修正対象を把握し、軽微な改修と詳細設計書の更新を行う役割,published,既存機能の軽微な改修を一人で担えるようになる,,,,
-dev-mobile-sp-3,development,モバイルアプリ,3,specialist,PG（コーディング）,PG（コーディング）,詳細設計書をもとに画面機能・画面遷移・API連携・ローカルデータ処理を実装し、単体テストまで行う役割,published,詳細設計書をもとに実装と単体テストを担えるようになる,,,,
-dev-mobile-sp-4,development,モバイルアプリ,4,specialist,SE（詳細設計）,SE（詳細設計）,,placeholder,,,,,
-dev-mobile-sp-5,development,モバイルアプリ,5,specialist,SE（基本設計）,SE（基本設計）,,placeholder,,,,,
-dev-mobile-sp-6,development,モバイルアプリ,6,specialist,SE（要件定義）,SE（要件定義）,,placeholder,,,,,
+roleId,track,category,stageOrder,pathType,titleJa,shortLabel,summary,status,shortGoal
+infra-server-common-1,infrastructure,サーバー,1,common,運用監視補助・ヘルプデスク,運用監視補助,問い合わせ対応、定型作業の支援、基本確認業務を通じて、運用現場を支える役割,published,運用現場の基本動作を身につける
+infra-server-sp-2,infrastructure,サーバー,2,specialist,運用監視（一次対応担当）,運用監視（一次対応）,監視システムを用いて異常を検知し、手順に沿って一次対応とエスカレーションを行う役割,published,監視と一次対応を一人で回せるようになる
+infra-server-sp-3,infrastructure,サーバー,3,specialist,運用保守（二次対応・障害対応担当）,運用保守（二次対応）,障害の原因調査、ログ確認、設定確認、復旧対応など、より深い運用保守を担う役割,published,障害の原因調査と復旧対応を担えるようになる
+infra-server-sp-4,infrastructure,サーバー,4,specialist,構築・設定（手順書・詳細設計書ベース構築担当）,構築・設定,設計情報やパラメータをもとに、インフラ環境を構築・設定する役割,published,設計書ベースの構築を担えるようになる
+infra-server-sp-5,infrastructure,サーバー,5,specialist,システム設計（詳細設計・運用設計担当）,システム設計,,placeholder,
+infra-server-sp-6,infrastructure,サーバー,6,specialist,TL（テックリード／技術責任）,TL（技術責任）,,placeholder,
+its-helpdesk-mg-1,it-support,ヘルプデスク系,1,manager,ヘルプデスク（一次対応）,ヘルプデスク（一次対応）,利用者からの問い合わせを受け付け、内容を整理して一次切り分けと定型的な案内を行い、必要に応じて担当者へ引き継ぐ役割,published,問い合わせの受付と一次対応の基本動作を身につける
+its-helpdesk-mg-2,it-support,ヘルプデスク系,2,manager,SV（スーパーバイザー）,SV（スーパーバイザー）,一次対応で解決しない事象の状況を把握し、ログや設定を確認して原因を切り分け、解決対応とエスカレーションを行う役割,published,一次対応で解決しない事象を一人で切り分けられるようになる
+its-helpdesk-mg-3,it-support,ヘルプデスク系,3,manager,リーダー（ヘルプデスク）,リーダー（ヘルプデスク）,問い合わせや障害対応の優先度を判断し、案件の振り分けと進捗管理を通じて現場運営を調整する役割,published,現場の優先度判断と進行管理を担えるようになる
+its-admin-mg-1,it-support,事務系,1,manager,事務,事務,申請内容や資料を確認し、定型的な入力・登録・更新を行い、処理結果を記録して関係者へ共有する役割,published,申請の確認と定型処理の基本動作を身につける
+its-admin-mg-2,it-support,事務系,2,manager,内部調整,内部調整,不足情報を洗い出して関係者へ確認し、申請者・担当者・関係部署の間に立って業務が止まらないよう調整する役割,published,関係者をつないで案件を止めずに進められるようになる
+its-admin-mg-3,it-support,事務系,3,manager,リーダー（事務）,リーダー（事務）,案件の優先度を判断して業務を振り分け、メンバーの作業を確認しながら進行状況と滞留を管理する役割,published,優先度判断と進行管理を担えるようになる
+dev-web-common-1,development,Webアプリケーション,1,common,テスト（Webアプリケーション QA）,テスト（QA）,テスト仕様書や確認項目をもとにテストを実施し、不具合の有無を確認して結果を記録・報告する役割,published,手順に沿ってテストを実施し、結果を報告できるようになる
+dev-web-sp-2,development,Webアプリケーション,2,specialist,改修,改修,既存の画面・機能・API に対して修正対象を把握し、軽微な改修と詳細設計書の更新を行う役割,published,既存機能の軽微な改修を一人で担えるようになる
+dev-web-sp-3,development,Webアプリケーション,3,specialist,PG（コーディング）,PG（コーディング）,詳細設計書をもとに画面機能・API・サーバー処理・DB入出力を実装し、単体テストまで行う役割,published,詳細設計書をもとに実装と単体テストを担えるようになる
+dev-web-sp-4,development,Webアプリケーション,4,specialist,SE（詳細設計）,SE（詳細設計）,,placeholder,
+dev-web-sp-5,development,Webアプリケーション,5,specialist,SE（基本設計）,SE（基本設計）,,placeholder,
+dev-web-sp-6,development,Webアプリケーション,6,specialist,SE（要件定義）,SE（要件定義）,,placeholder,
+dev-mobile-common-1,development,モバイルアプリ,1,common,テスト（モバイルアプリケーション QA）,テスト（QA）,テスト仕様書や確認項目をもとにテストを実施し、不具合の有無を確認して結果を記録・報告する役割,published,手順に沿ってテストを実施し、結果を報告できるようになる
+dev-mobile-sp-2,development,モバイルアプリ,2,specialist,改修,改修,既存の画面・入力制御・API連携に対して修正対象を把握し、軽微な改修と詳細設計書の更新を行う役割,published,既存機能の軽微な改修を一人で担えるようになる
+dev-mobile-sp-3,development,モバイルアプリ,3,specialist,PG（コーディング）,PG（コーディング）,詳細設計書をもとに画面機能・画面遷移・API連携・ローカルデータ処理を実装し、単体テストまで行う役割,published,詳細設計書をもとに実装と単体テストを担えるようになる
+dev-mobile-sp-4,development,モバイルアプリ,4,specialist,SE（詳細設計）,SE（詳細設計）,,placeholder,
+dev-mobile-sp-5,development,モバイルアプリ,5,specialist,SE（基本設計）,SE（基本設計）,,placeholder,
+dev-mobile-sp-6,development,モバイルアプリ,6,specialist,SE（要件定義）,SE（要件定義）,,placeholder,
