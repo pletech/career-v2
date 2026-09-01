@@ -144,6 +144,25 @@ describe('loadLadderData の CSV 変換 (CSV が DB — 確定 #24)', () => {
     expect(() => validateReferences(buildDataSet())).not.toThrow();
   });
 
+  it('参照整合性: hidden の役割にぶら下がるカテゴリは落とさない', () => {
+    // 公開前の職種は roles.csv を `hidden` にして選択肢から外す。その時
+    // 配下のカテゴリまで「役割と一致しない」で落ちると、**データを持っている
+    // のに読み込みごと死ぬ**。表示の絞り込みは画面側の仕事 (2026-09-02)
+    // **そのルートの役割を全部**隠す。1つでも残っているとルートが生き、
+    // 検査が通ってしまって規則を試したことにならない
+    const hidden = rolesCsv.replace(',published,', ',hidden,').replace(',placeholder,', ',hidden,');
+    expect(hidden.split(',hidden,').length - 1).toBe(2);
+    expect(() => validateReferences(buildDataSet({ roles: parseRoles(hidden) }))).not.toThrow();
+  });
+
+  it('参照整合性: 綴りが違うカテゴリは hidden があっても落ちる', () => {
+    // hidden を通すようにしたせいで綴り間違いまで通ってしまう、を防ぐ
+    const data = buildDataSet({
+      categories: parseCategories(categoriesCsv.replace(/,サーバー,/g, ',サーバ,')),
+    });
+    expect(() => validateReferences(data)).toThrow(/track\/subtrack/);
+  });
+
   // ------------------------------------------------------------------
   // 業務ロードマップ (v2.6 — AC-11.1/11.2/AC-11.12)
   // ------------------------------------------------------------------

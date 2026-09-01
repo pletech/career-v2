@@ -340,9 +340,15 @@ export function validateReferences(data: LadderDataSet): void {
     エラーも警告も出ないので、`ヘルプデスク系` を `ヘルプデスク` と書いただけで
     26 カテゴリがまるごと行方不明になる。ここで落とす (v2.16)。
   */
-  const routes = new Set(
-    data.roles.filter((r) => r.status !== 'hidden').map((r) => `${r.track}/${r.category}`),
-  );
+  /*
+    ⚠️ **`hidden` を除かない。** ここが見たいのは「その組み合わせが roles.csv に
+    在るか」だけで、画面に出すかどうかとは別の話。除くと、公開前の職種を
+    `hidden` にした瞬間その配下のカテゴリが全部「役割と一致しない」で落ち、
+    **データを持っているのに読み込みごと死ぬ** (2026-09-02 に踏んだ)。
+    表示の絞り込みは LadderScreen 側が `status !== 'hidden'` でやっている。
+    綴り間違いの検出はこのままで効く — 打ち間違えた綴りはどの役割とも一致しない。
+  */
+  const routes = new Set(data.roles.map((r) => `${r.track}/${r.category}`));
   const onKnownRoute = (id: string, file: string, track: string, subtrack: string) => {
     const key = `${track}/${subtrack}`;
     if (!routes.has(key)) {
