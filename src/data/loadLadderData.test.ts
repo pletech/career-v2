@@ -50,7 +50,7 @@ const tagsCsv = [
 ].join('\n');
 
 const actionsCsv = [
-  'actionId,categoryId,statement,statementKo,sortOrder,kind',
+  'actionId,categoryIds, statement,statementKo,sortOrder,kind',
   'at1,c1-inquiry,問い合わせを受け付けられる,문의를 접수할 수 있다,1,practice',
   'at2,c1-reporting,要点を記録できる,요점을 기록할 수 있다,1,practice',
   'at3,c2-triage,発報内容を照合できる,발보 내용을 대조할 수 있다,1,knowledge',
@@ -63,17 +63,17 @@ const weaponsCsv = [
 
 // v2.7d カテゴリモデル
 const categoriesCsv = [
-  'categoryId,track,stage,labelJa,labelKo,includes,sortOrder',
-  'c1-inquiry,infrastructure,1,問い合わせ対応,문의 대응,,1',
-  'c1-reporting,infrastructure,1,記録・報告,기록·보고,,2',
-  'c2-triage,infrastructure,2,監視・一次対応,감시·일차 대응,c1-inquiry|c1-reporting,1',
+  'categoryId,track,subtrack,stage,labelJa,labelKo,includes,sortOrder',
+  'c1-inquiry,infrastructure,サーバー,1,問い合わせ対応,문의 대응,,1',
+  'c1-reporting,infrastructure,サーバー,1,記録・報告,기록·보고,,2',
+  'c2-triage,infrastructure,サーバー,2,監視・一次対応,감시·일차 대응,c1-inquiry|c1-reporting,1',
 ].join('\n');
 
 // v2.7n 推奨資格
 const certsCsv = [
-  'certId,track,stage,nameJa,nameKo,note,noteKo,sortOrder',
-  'cert-1,infrastructure,1,ITパスポート,IT 패스포트,基礎,기초,1',
-  'cert-2,infrastructure,2,CCNA,CCNA,,,1',
+  'certId,track,subtrack,stage,nameJa,nameKo,note,noteKo,sortOrder',
+  'cert-1,infrastructure,サーバー,1,ITパスポート,IT 패스포트,基礎,기초,1',
+  'cert-2,infrastructure,サーバー,2,CCNA,CCNA,,,1',
 ].join('\n');
 
 /** validateReferences 用のフルデータセットを組み立てる */
@@ -219,7 +219,7 @@ describe('loadLadderData の CSV 変換 (CSV が DB — 確定 #24)', () => {
     expect(cats[2]).toMatchObject({ categoryId: 'c2-triage', stage: 2 });
     expect(cats[2].includes).toEqual(['c1-inquiry', 'c1-reporting']);
     const actions = parseActions(actionsCsv);
-    expect(actions[2]).toMatchObject({ actionId: 'at3', categoryId: 'c2-triage' });
+    expect(actions[2]).toMatchObject({ actionId: 'at3', categoryIds: ['c2-triage'] });
   });
 
   it('参照整合性: action の categoryId が categories に無いとエラー (v2.7d)', () => {
@@ -270,17 +270,70 @@ describe('categories / certs の track (v2.15)', () => {
   });
 
   it('track が空ならエラー', () => {
-    const csv = ['categoryId,track,stage,labelJa,sortOrder', 'c1,,1,問い合わせ,1'].join('\n');
+    const csv = ['categoryId,track,subtrack,stage,labelJa,sortOrder', 'c1,,1,問い合わせ,1'].join('\n');
     expect(() => parseCategories(csv)).toThrow(/track/);
   });
 
   it('綴り違いを黙って通さない', () => {
-    const csv = ['categoryId,track,stage,labelJa,sortOrder', 'c1,it-suport,1,問い合わせ,1'].join('\n');
+    const csv = ['categoryId,track,subtrack,stage,labelJa,sortOrder', 'c1,it-suport,1,問い合わせ,1'].join('\n');
     expect(() => parseCategories(csv)).toThrow(/it-support/);
   });
 
   it('certs も同じ', () => {
-    const csv = ['certId,track,stage,nameJa,sortOrder', 'x,infra,1,ITパスポート,1'].join('\n');
+    const csv = ['certId,track,subtrack,stage,nameJa,sortOrder', 'x,infra,1,ITパスポート,1'].join('\n');
     expect(() => parseCerts(csv)).toThrow(/track/);
+  });
+});
+
+describe('分類 (subtrack) の検証 (2026-08-15)', () => {
+  const roles =
+    'roleId,track,category,stageOrder,pathType,titleJa,shortLabel,status\n'
+    + 'r1,it-support,ヘルプデスク系,1,manager,HD,HD,published\n'
+    + 'r2,it-support,事務系,1,manager,事務,事務,published\n';
+  const cat = (subtrack: string) =>
+    'categoryId,track,subtrack,stage,labelJa,sortOrder\n'
+    + `c1,it-support,${subtrack},1,受付,1\n`;
+
+  it('subtrack の列が無ければエラー', () => {
+    expect(() => parseCategories('categoryId,track,stage,labelJa,sortOrder\nc1,it-support,1,受付,1\n'))
+      .toThrow(/subtrack/);
+  });
+
+  it('subtrack が空ならエラー', () => {
+    expect(() => parseCategories(cat(''))).toThrow(/subtrack/);
+  });
+
+  it('certs も同じ', () => {
+    expect(() => parseCerts('certId,track,stage,nameJa,sortOrder\nx1,it-support,1,MOS,1\n'))
+      .toThrow(/subtrack/);
+  });
+
+  /*
+    綴り違いは**ここで落とさないと画面から静かに消える**。
+    `ヘルプデスク系` を `ヘルプデスク` と書くと、そのルートは roles.csv に無いので
+    どのルートでも表示されず、エラーも警告も出ない。
+  */
+  const dataWith = (subtrack: string) => ({
+    roles: parseRoles(roles),
+    dependencies: [], abilities: [], evidences: [], growthLines: [], tags: [], weapons: [],
+    categories: parseCategories(cat(subtrack)),
+    actions: [], certs: [],
+  });
+
+  it('roles.csv にある組み合わせなら通る', () => {
+    expect(() => validateReferences(dataWith('ヘルプデスク系'))).not.toThrow();
+    expect(() => validateReferences(dataWith('事務系'))).not.toThrow();
+  });
+
+  it('roles.csv に無い分類は落とす — 黙って消えるのを防ぐ', () => {
+    expect(() => validateReferences(dataWith('ヘルプデスク')))
+      .toThrow(/it-support\/ヘルプデスク/);
+  });
+
+  it('職種と分類の組が合っていなければ落とす', () => {
+    // 分類名は実在するが、職種が違う組み合わせ
+    const bad = 'categoryId,track,subtrack,stage,labelJa,sortOrder\nc1,infrastructure,ヘルプデスク系,1,受付,1\n';
+    expect(() => validateReferences({ ...dataWith('事務系'), categories: parseCategories(bad) }))
+      .toThrow(/infrastructure\/ヘルプデスク系/);
   });
 });

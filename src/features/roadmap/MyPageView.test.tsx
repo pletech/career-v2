@@ -24,27 +24,27 @@ const roles: Role[] = [
 ];
 
 const categories: Category[] = [
-  { categoryId: 'c1', track: 'infrastructure', stage: 1, labelJa: '手順書・定型作業', includes: [], sortOrder: 1 },
-  { categoryId: 'c1b', track: 'infrastructure', stage: 1, labelJa: '現場理解・体制', includes: [], sortOrder: 2 },
-  { categoryId: 'c2', track: 'infrastructure', stage: 2, labelJa: '初動対応の実施', includes: ['c1', 'c1b'], sortOrder: 1 },
+  { categoryId: 'c1', track: 'infrastructure', subtrack: 'サーバー', stage: 1, labelJa: '手順書・定型作業', includes: [], sortOrder: 1 },
+  { categoryId: 'c1b', track: 'infrastructure', subtrack: 'サーバー', stage: 1, labelJa: '現場理解・体制', includes: [], sortOrder: 2 },
+  { categoryId: 'c2', track: 'infrastructure', subtrack: 'サーバー', stage: 2, labelJa: '初動対応の実施', includes: ['c1', 'c1b'], sortOrder: 1 },
 ];
 
 // STEP1: 実務3 (p1,p2,p3) / 知識2 (k1,k2)   STEP2: 実務2 / 知識1 (k3)
 const actions: Action[] = [
-  { actionId: 'p1', categoryId: 'c1', statement: '作業できる', sortOrder: 1, kind: 'practice' },
-  { actionId: 'p2', categoryId: 'c1', statement: '記録できる', sortOrder: 2, kind: 'practice' },
-  { actionId: 'k1', categoryId: 'c1', statement: '流れを説明できる', sortOrder: 3, kind: 'knowledge' },
-  { actionId: 'p3', categoryId: 'c1b', statement: '朝会に出られる', sortOrder: 1, kind: 'practice' },
-  { actionId: 'k2', categoryId: 'c1b', statement: '体制を説明できる', sortOrder: 2, kind: 'knowledge' },
-  { actionId: 'p4', categoryId: 'c2', statement: '初動できる', sortOrder: 1, kind: 'practice' },
-  { actionId: 'p5', categoryId: 'c2', statement: '記録を残せる', sortOrder: 2, kind: 'practice' },
-  { actionId: 'k3', categoryId: 'c2', statement: '手順を説明できる', sortOrder: 3, kind: 'knowledge' },
+  { actionId: 'p1', categoryIds: ['c1'], statement: '作業できる', sortOrder: 1, kind: 'practice' },
+  { actionId: 'p2', categoryIds: ['c1'], statement: '記録できる', sortOrder: 2, kind: 'practice' },
+  { actionId: 'k1', categoryIds: ['c1'], statement: '流れを説明できる', sortOrder: 3, kind: 'knowledge' },
+  { actionId: 'p3', categoryIds: ['c1b'], statement: '朝会に出られる', sortOrder: 1, kind: 'practice' },
+  { actionId: 'k2', categoryIds: ['c1b'], statement: '体制を説明できる', sortOrder: 2, kind: 'knowledge' },
+  { actionId: 'p4', categoryIds: ['c2'], statement: '初動できる', sortOrder: 1, kind: 'practice' },
+  { actionId: 'p5', categoryIds: ['c2'], statement: '記録を残せる', sortOrder: 2, kind: 'practice' },
+  { actionId: 'k3', categoryIds: ['c2'], statement: '手順を説明できる', sortOrder: 3, kind: 'knowledge' },
 ];
 
 const certs: Cert[] = [
-  { certId: 'ce1', track: 'infrastructure', stage: 1, nameJa: 'ITパスポート試験', note: 'IT全般の基礎', sortOrder: 1 },
-  { certId: 'ce2', track: 'infrastructure', stage: 1, nameJa: '基本情報技術者試験', sortOrder: 2 },
-  { certId: 'ce9', track: 'infrastructure', stage: 2, nameJa: 'LPIC-1', sortOrder: 1 },
+  { certId: 'ce1', track: 'infrastructure', subtrack: 'サーバー', stage: 1, nameJa: 'ITパスポート試験', note: 'IT全般の基礎', sortOrder: 1 },
+  { certId: 'ce2', track: 'infrastructure', subtrack: 'サーバー', stage: 1, nameJa: '基本情報技術者試験', sortOrder: 2 },
+  { certId: 'ce9', track: 'infrastructure', subtrack: 'サーバー', stage: 2, nameJa: 'LPIC-1', sortOrder: 1 },
 ];
 
 const setup = (assisted: string[] = [], solo: string[] = []) => {
@@ -326,8 +326,8 @@ const renderIts = (cats: Category[]) =>
   );
 
 const itsCats: Category[] = [
-  { categoryId: 'hd1-intake', track: 'it-support', stage: 1, labelJa: '問い合わせの受付・整理', includes: [], sortOrder: 1 },
-  { categoryId: 'hd2-assess', track: 'it-support', stage: 2, labelJa: '二次対応の受付', includes: ['hd1-intake'], sortOrder: 1 },
+  { categoryId: 'hd1-intake', track: 'it-support', subtrack: 'ヘルプデスク系', stage: 1, labelJa: '問い合わせの受付・整理', includes: [], sortOrder: 1 },
+  { categoryId: 'hd2-assess', track: 'it-support', subtrack: 'ヘルプデスク系', stage: 2, labelJa: '二次対応の受付', includes: ['hd1-intake'], sortOrder: 1 },
 ];
 
 describe('中身がまだ無い区分', () => {

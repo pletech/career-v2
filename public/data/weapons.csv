@@ -1,2 +1,2 @@
 weaponId,roleId,tagId,statement,statementKo,composedOf,sortOrder
-w2-1,infra-server-sp-2,monitoring,発報内容から障害の概要を整理できる,발보 내용에서 장애 개요를 정리할 수 있다,t1-06|t2-01|t2-10|t6-02|t6-03|t6-04|t7-04|t6-10|t6-11|t6-12,1
+w2-1,infra-server-sp-2,monitoring,発報内容から障害の概要を整理できる,,t1-06|t2-01|t2-10|t6-02|t6-03|t6-04|t7-04|t6-10|t6-11|t6-12,1
