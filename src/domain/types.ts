@@ -8,7 +8,7 @@
  * - 能力の4状態は根拠チェックから自動派生し、直接選択する UI は存在しない (確定 #13)。
  * - 必須/任意の区分は廃止し、根拠には業務種類タグを付ける (確定 #18)。
  * - 上長の「面談で確認した」トグルは根拠チェックと独立して付けられる (確定 #19)。
- * - コンテンツは日本語が正本。*Ko フィールドは作業用の韓国語表示 (確定 #21)。
+ * - コンテンツは日本語のみ。韓国語は 2026-09-02 に撤去した (CSV の *Ko 列は空のまま残置)。
  *
  * 表示用の固定文言・タグ表示名は domain/i18n.ts が持つ。
  * 旧 CareerNode モデル (types/career.ts) は全体マップ用に温存。
@@ -34,10 +34,6 @@ export interface Role {
   status: RoleStatus;
   shortGoal?: string;
   // 韓国語表示 (作業用 — 正本は日本語)
-  titleKo?: string;
-  shortLabelKo?: string;
-  summaryKo?: string;
-  shortGoalKo?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -82,8 +78,6 @@ export interface Ability {
    */
   growsInto?: string[];
   // 韓国語表示 (作業用)
-  statementKo?: string;
-  roleStatementKo?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -99,7 +93,6 @@ export interface GrowthLine {
   labelJa: string;
   sortOrder: number;
   // 韓国語表示 (作業用)
-  labelKo?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -152,8 +145,6 @@ export interface Evidence {
   /** 階段順 (易しいものから) */
   sortOrder: number;
   // 韓国語表示 (作業用)
-  statementKo?: string;
-  selfCheckTipKo?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -199,7 +190,6 @@ export interface Category {
   /** 丸ごと包含する下位カテゴリの categoryId 一覧 (ロールアップ表示・達成率で1項目扱い) */
   includes: string[];
   sortOrder: number;
-  labelKo?: string;
 }
 
 /**
@@ -225,8 +215,6 @@ export interface Cert {
   sortOrder: number;
   /** 補足 (何の資格か・レベル感など。任意) */
   note?: string;
-  nameKo?: string;
-  noteKo?: string;
 }
 
 /**
@@ -264,7 +252,6 @@ export interface Action {
   sortOrder: number;
   /** 自己学習で満たせるか (v2.13)。段階ごとの「知識100% / 実務70%」判定に使う */
   kind: ActionKind;
-  statementKo?: string;
 }
 
 /** @deprecated v2.7d でカテゴリモデルへ移行。旧タグ (残置・未使用) */
@@ -272,7 +259,6 @@ export interface Tag {
   tagId: string;
   labelJa: string;
   sortOrder: number;
-  labelKo?: string;
 }
 
 /**
@@ -289,7 +275,6 @@ export interface Weapon {
   /** 構成アクションの actionId 一覧。差分アクション (firstStage = この武器の段階) を含む */
   composedOf: string[];
   sortOrder: number;
-  statementKo?: string;
 }
 
 /** actionId -> チェック済みか (アクション単位のチェック — v2.7) */

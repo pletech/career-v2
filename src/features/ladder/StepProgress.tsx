@@ -1,6 +1,6 @@
 import React from 'react';
 import type { StepEvaluation } from '../../domain/evaluate';
-import { STRINGS, type Lang } from '../../domain/i18n';
+import { STRINGS } from '../../domain/i18n';
 
 /**
  * 段の達成率バー・ゲート表示 (v2.3)
@@ -12,14 +12,13 @@ import { STRINGS, type Lang } from '../../domain/i18n';
 
 interface StepProgressProps {
   evaluation: StepEvaluation;
-  lang: Lang;
   /** 折りたたみ時のコンパクト表示 */
   compact?: boolean;
 }
 
-const StepProgress: React.FC<StepProgressProps> = ({ evaluation, lang, compact = false }) => {
+const StepProgress: React.FC<StepProgressProps> = ({ evaluation, compact = false }) => {
   const percent = Math.round(evaluation.weightedRate * 100);
-  const s = STRINGS[lang];
+  const s = STRINGS;
 
   if (compact) {
     return (

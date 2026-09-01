@@ -132,10 +132,6 @@ export function parseRoles(csvText: string): Role[] {
       summary: r.summary ?? '',
       status: oneOf(r.status, STATUSES, 'status', 'roles.csv', roleId),
       shortGoal: opt(r.shortGoal ?? ''),
-      titleKo: opt(r.titleKo ?? ''),
-      shortLabelKo: opt(r.shortLabelKo ?? ''),
-      summaryKo: opt(r.summaryKo ?? ''),
-      shortGoalKo: opt(r.shortGoalKo ?? ''),
     } satisfies Role;
   });
   requireUnique(roles.map((r) => r.roleId), 'roles.csv');
@@ -179,8 +175,6 @@ export function parseAbilities(csvText: string): Ability[] {
       growthLineId: opt(r.growthLineId ?? ''),
       // v2.6e: 次の段階の業務への継承 (パイプ区切り)。列が無ければ空
       growsInto: toList(r.growsInto ?? ''),
-      statementKo: opt(r.statementKo ?? ''),
-      roleStatementKo: opt(r.roleStatementKo ?? ''),
     } satisfies Ability;
   });
   requireUnique(abilities.map((a) => a.abilityId), 'abilities.csv');
@@ -203,8 +197,6 @@ export function parseEvidences(csvText: string): Evidence[] {
       workTags,
       selfCheckTip: opt(r.selfCheckTip ?? ''),
       sortOrder: toNumber(r.sortOrder, 'sortOrder', 'evidences.csv', evidenceId),
-      statementKo: opt(r.statementKo ?? ''),
-      selfCheckTipKo: opt(r.selfCheckTipKo ?? ''),
     } satisfies Evidence;
   });
   requireUnique(evidences.map((e) => e.evidenceId), 'evidences.csv');
@@ -221,7 +213,6 @@ export function parseGrowthLines(csvText: string): GrowthLine[] {
       lineId,
       labelJa: requireValue(r, 'labelJa', 'growth-lines.csv', lineId),
       sortOrder: toNumber(r.sortOrder, 'sortOrder', 'growth-lines.csv', lineId),
-      labelKo: opt(r.labelKo ?? ''),
     } satisfies GrowthLine;
   });
   requireUnique(lines.map((l) => l.lineId), 'growth-lines.csv');
@@ -238,7 +229,6 @@ export function parseTags(csvText: string): Tag[] {
       tagId,
       labelJa: requireValue(r, 'labelJa', 'tags.csv', tagId),
       sortOrder: toNumber(r.sortOrder, 'sortOrder', 'tags.csv', tagId),
-      labelKo: opt(r.labelKo ?? ''),
     } satisfies Tag;
   });
   requireUnique(tags.map((t) => t.tagId), 'tags.csv');
@@ -265,7 +255,6 @@ export function parseActions(csvText: string): Action[] {
       statement: requireValue(r, 'statement', 'actions.csv', actionId),
       sortOrder: toNumber(r.sortOrder, 'sortOrder', 'actions.csv', actionId),
       kind,
-      statementKo: opt(r.statementKo ?? ''),
     } satisfies Action;
   });
   requireUnique(actions.map((a) => a.actionId), 'actions.csv');
@@ -286,8 +275,6 @@ export function parseCerts(csvText: string): Cert[] {
       nameJa: requireValue(r, 'nameJa', 'certs.csv', certId),
       sortOrder: toNumber(r.sortOrder, 'sortOrder', 'certs.csv', certId),
       note: opt(r.note ?? ''),
-      nameKo: opt(r.nameKo ?? ''),
-      noteKo: opt(r.noteKo ?? ''),
     } satisfies Cert;
   });
   requireUnique(certs.map((c) => c.certId), 'certs.csv');
@@ -320,7 +307,6 @@ export function parseCategories(csvText: string): Category[] {
       labelJa: requireValue(r, 'labelJa', 'categories.csv', categoryId),
       includes: toList(r.includes ?? ''),
       sortOrder: toNumber(r.sortOrder, 'sortOrder', 'categories.csv', categoryId),
-      labelKo: opt(r.labelKo ?? ''),
     } satisfies Category;
   });
   requireUnique(categories.map((c) => c.categoryId), 'categories.csv');
@@ -340,7 +326,6 @@ export function parseWeapons(csvText: string): Weapon[] {
       statement: requireValue(r, 'statement', 'weapons.csv', weaponId),
       composedOf: toList(r.composedOf ?? ''),
       sortOrder: toNumber(r.sortOrder, 'sortOrder', 'weapons.csv', weaponId),
-      statementKo: opt(r.statementKo ?? ''),
     } satisfies Weapon;
   });
   requireUnique(weapons.map((w) => w.weaponId), 'weapons.csv');

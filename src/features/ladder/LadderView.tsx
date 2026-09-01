@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import type { Ladder } from '../../domain/buildLadder';
 import { evaluateStep, type StepEvaluation } from '../../domain/evaluate';
-import { STRINGS, loc, type Lang } from '../../domain/i18n';
+import { STRINGS } from '../../domain/i18n';
 import type {
   Evidence,
   EvidenceCheckMap,
@@ -22,7 +22,6 @@ interface LadderViewProps {
   evidenceChecks: EvidenceCheckMap;
   managerConfirms: ManagerConfirmMap;
   selectedAbilityId: string | null;
-  lang: Lang;
   onSelectAbility: (abilityId: string) => void;
 }
 
@@ -40,10 +39,9 @@ const LadderView: React.FC<LadderViewProps> = ({
   evidenceChecks,
   managerConfirms,
   selectedAbilityId,
-  lang,
   onSelectAbility,
 }) => {
-  const s = STRINGS[lang];
+  const s = STRINGS;
 
   const evaluations = useMemo(() => {
     const map = new Map<string, StepEvaluation>();
@@ -102,7 +100,7 @@ const LadderView: React.FC<LadderViewProps> = ({
                 className="flex items-center gap-2 rounded-lg border border-dashed border-gray-200 bg-gray-50/60 px-4 py-2 text-[11px] text-gray-400"
               >
                 <span className="shrink-0 font-semibold">STEP {role.stageOrder}</span>
-                <span className="truncate">{loc(lang, role.titleJa, role.titleKo)}</span>
+                <span className="truncate">{role.titleJa}</span>
                 <span className="ml-auto shrink-0 rounded bg-gray-200/70 px-1.5 py-0.5 text-[10px]">
                   {s.preparing}
                 </span>
@@ -122,7 +120,6 @@ const LadderView: React.FC<LadderViewProps> = ({
               evidenceChecks={evidenceChecks}
               managerConfirms={managerConfirms}
               selectedAbilityId={selectedAbilityId}
-              lang={lang}
               collapsed={isCollapsed(step.role.roleId)}
               onToggleCollapse={toggleCollapse}
               onSelectAbility={onSelectAbility}

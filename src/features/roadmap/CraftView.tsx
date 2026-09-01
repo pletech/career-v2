@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { STRINGS, loc, type Lang } from '../../domain/i18n';
+import { STRINGS } from '../../domain/i18n';
 import type {
   Action,
   ActionCheckMap,
@@ -65,19 +65,16 @@ export const levelOfAction = (kind: Action['kind'], stageLevel: CheckLevel): Che
  *
  * ※ どの段階を2水準にするかは `allowsAssist` だけで決まる。文言もここだけ直せばよい。
  */
-const STAGE_AUTONOMY: Record<number, { ja: string; ko: string; allowsAssist?: true }> = {
+const STAGE_AUTONOMY: Record<number, { ja: string; allowsAssist?: true }> = {
   1: {
     allowsAssist: true,
     ja: 'この段階は「サポートあり」でできればチェックして構いません。あわせて「1人称」でできるかも記録します（上の段階はこちらを見ます）。',
-    ko: '이 단계는 "지원 있음"으로 가능하면 체크해도 괜찮습니다. 함께 "1인칭"으로 가능한지도 기록합니다(상위 단계는 이쪽을 봅니다).',
   },
   2: {
     ja: 'この段階のチェックは「1人称」（手順書があれば、ひとりで対応できる）が目安です。',
-    ko: '이 단계의 체크는 "1인칭"(절차서가 있으면 혼자 대응 가능)이 기준입니다.',
   },
   3: {
     ja: 'この段階は「1人称」に加え、「改善や対策を提案できる」ことが目安です。',
-    ko: '이 단계는 "1인칭"에 더해 "개선·대책을 제안할 수 있음"이 기준입니다.',
   },
 };
 
@@ -113,7 +110,6 @@ interface CraftViewProps {
   /** マイページから「ここへ行け」と指定されたカテゴリ。処理したら onFocusHandled を呼ぶ */
   focusRequest?: { stage: number; categoryId: string } | null;
   onFocusHandled?: () => void;
-  lang: Lang;
 }
 
 interface CatStat {
@@ -151,12 +147,10 @@ const CraftView: React.FC<CraftViewProps> = ({
   onImport,
   focusRequest,
   onFocusHandled,
-  lang,
 }) => {
   const fileRef = React.useRef<HTMLInputElement>(null);
   const [ioMessage, setIoMessage] = useState<{ ok: boolean; text: string } | null>(null);
-  const s = STRINGS[lang];
-  const ko = lang === 'ko';
+  const s = STRINGS;
 
   /** ロールアップ (包含カテゴリ) のその場展開状態。キーは "親>子" (同じ子が複数の親に出るため) */
   const [expandedRollups, setExpandedRollups] = useState<Set<string>>(() => new Set());
@@ -417,7 +411,7 @@ const CraftView: React.FC<CraftViewProps> = ({
         <span className="relative hidden h-1.5 flex-1 bg-gray-100 md:block">
           <span
             className={`block h-full transition-all ${
-              cleared || met ? 'bg-emerald-500' : label === '知識' || label === '지식'
+              cleared || met ? 'bg-emerald-500' : label === '知識'
                 ? 'bg-indigo-400' : 'bg-cyan-400'
             }`}
             style={{ width: `${pct}%` }}
@@ -448,7 +442,7 @@ const CraftView: React.FC<CraftViewProps> = ({
         </span>
         {st.cleared ? (
           <span className={`rounded bg-emerald-500 font-bold text-white shadow-sm ${pad}`}>
-            {ko ? '✓ 클리어' : '✓ クリア'}
+            {'✓ クリア'}
           </span>
         ) : pendingNote ? (
           <span className={`rounded bg-amber-100 font-bold text-amber-700 ${pad}`}>
@@ -462,7 +456,7 @@ const CraftView: React.FC<CraftViewProps> = ({
         ) : st.blockedByKnowledge ? (
           // 実務は足りているのにクリアにならない状態。理由を言わないとバグに見える
           <span className={`rounded bg-indigo-100 font-bold text-indigo-700 ${pad}`}>
-            {ko ? `지식 앞으로 ${st.knowledgeTotal - st.knowledgeDone}` : `知識をあと${st.knowledgeTotal - st.knowledgeDone}件`}
+            {`知識をあと${st.knowledgeTotal - st.knowledgeDone}件`}
           </span>
         ) : st.blockedByPractice ? (
           // 知識は埋め切った = **勉強では埋まらない分だけが残っている**。
@@ -470,17 +464,13 @@ const CraftView: React.FC<CraftViewProps> = ({
           // バッジは短く、理由は title に置く (長い文字列を狭い行に入れると名前が切れる)
           <span
             className={`rounded bg-amber-100 font-bold text-amber-700 ${pad}`}
-            title={ko
-              ? '지식은 다 채웠습니다. 남은 것은 안건에서 경험해야 채워집니다'
-              : '知識は埋め切りました。残りは案件で経験しないと埋まりません'}
+            title={'知識は埋め切りました。残りは案件で経験しないと埋まりません'}
           >
-            {ko
-              ? `실무 앞으로 ${Math.max(0, Math.ceil(st.practiceTotal * CLEAR) - st.practiceDone)}`
-              : `実務をあと${Math.max(0, Math.ceil(st.practiceTotal * CLEAR) - st.practiceDone)}件`}
+            {`実務をあと${Math.max(0, Math.ceil(st.practiceTotal * CLEAR) - st.practiceDone)}件`}
           </span>
         ) : (
           <span className={`rounded bg-amber-100 font-bold text-amber-700 ${pad}`}>
-            {ko ? `클리어까지 앞으로 ${need}` : `クリアまであと${need}`}
+            {`クリアまであと${need}`}
           </span>
         )}
       </span>
@@ -530,7 +520,7 @@ const CraftView: React.FC<CraftViewProps> = ({
           checked={checked}
           onChange={() => onToggleAction(a.actionId, level)}
           className={`h-4 w-4 shrink-0 ${level === 'solo' ? 'accent-violet-600' : 'accent-cyan-600'}`}
-          aria-label={`${loc(lang, a.statement, a.statementKo)} — ${label}`}
+          aria-label={`${a.statement} — ${label}`}
         />
       </label>
     );
@@ -542,12 +532,12 @@ const CraftView: React.FC<CraftViewProps> = ({
       >
         <span className="mt-0.5 flex shrink-0 items-center gap-2">
           {twoLevel &&
-            box('assisted', assisted, ko ? '지원 있음으로 대응 가능' : 'サポートありで対応できる')}
-          {box('solo', solo, ko ? '1인칭으로 대응 가능' : '1人称で対応できる')}
+            box('assisted', assisted, 'サポートありで対応できる')}
+          {box('solo', solo, '1人称で対応できる')}
         </span>
         <span className="min-w-0 flex-1">
           <span className="block text-[11.5px] leading-snug text-gray-800">
-            {loc(lang, a.statement, a.statementKo)}
+            {a.statement}
           </span>
           {opts.isNew && (
             <span className="mt-0.5 inline-block rounded bg-amber-100 px-1 py-px text-[9px] font-bold text-amber-700">
@@ -573,12 +563,12 @@ const CraftView: React.FC<CraftViewProps> = ({
    */
   const levelHeader = () => (
     <p className="px-0.5 pt-0.5 text-[9px] leading-relaxed text-gray-400">
-      {ko ? '왼쪽 ' : '左 '}
-      <span className="font-bold text-cyan-700">{ko ? '지원 있음' : 'サポートあり'}</span>
+      {'左 '}
+      <span className="font-bold text-cyan-700">{'サポートあり'}</span>
       {' ／ '}
-      {ko ? '오른쪽 ' : '右 '}
-      <span className="font-bold text-violet-700">{ko ? '1인칭' : '1人称'}</span>
-      {ko ? ' — 각각 대응 가능한지를 기록합니다' : ' — それぞれ対応できるかを記録します'}
+      {'右 '}
+      <span className="font-bold text-violet-700">{'1人称'}</span>
+      {' — それぞれ対応できるかを記録します'}
     </p>
   );
 
@@ -597,13 +587,13 @@ const CraftView: React.FC<CraftViewProps> = ({
     const groups: { kind: ActionKind; label: string; cls: string; items: Action[] }[] = [
       {
         kind: 'knowledge',
-        label: ko ? '지식' : '知識',
+        label: '知識',
         cls: 'text-indigo-700',
         items: own.filter((a) => a.kind === 'knowledge'),
       },
       {
         kind: 'practice',
-        label: ko ? '실무' : '実務',
+        label: '実務',
         cls: 'text-gray-600',
         items: own.filter((a) => a.kind === 'practice'),
       },
@@ -629,8 +619,8 @@ const CraftView: React.FC<CraftViewProps> = ({
               */}
               <span className="ml-1 font-normal text-gray-500">
                 {g.kind === 'knowledge'
-                  ? (ko ? '（100%로 클리어）' : '（100%でクリア）')
-                  : (ko ? '（70% 이상으로 클리어）' : '（70%以上でクリア）')}
+                  ? ('（100%でクリア）')
+                  : ('（70%以上でクリア）')}
               </span>
             </p>
             {showLevelHint && levelHeader()}
@@ -686,7 +676,7 @@ const CraftView: React.FC<CraftViewProps> = ({
               }`}
             >
               {cst.cleared && <span aria-hidden>✓ </span>}
-              {loc(lang, child.labelJa, child.labelKo)}
+              {child.labelJa}
             </span>
           </span>
           {/*
@@ -742,11 +732,11 @@ const CraftView: React.FC<CraftViewProps> = ({
             }`}
           >
             {st.cleared && <span aria-hidden>✓ </span>}
-            {loc(lang, cat.labelJa, cat.labelKo)}
+            {cat.labelJa}
           </span>
           {st.cleared ? (
             <span className="rounded bg-white/95 px-2 py-0.5 text-[11px] font-bold text-emerald-600 shadow-sm">
-              {st.done}/{st.total} {ko ? '클리어' : 'クリア'}
+              {st.done}/{st.total} {'クリア'}
             </span>
           ) : (
             statusBadge(st)
@@ -761,9 +751,9 @@ const CraftView: React.FC<CraftViewProps> = ({
         */}
         <div className="flex flex-col gap-px px-2 py-1" aria-hidden>
           {st.knowledgeTotal > 0 &&
-            progressBar(ko ? '지식' : '知識', st.knowledgeDone, st.knowledgeTotal, 1, st.cleared)}
+            progressBar('知識', st.knowledgeDone, st.knowledgeTotal, 1, st.cleared)}
           {st.practiceTotal > 0 &&
-            progressBar(ko ? '실무' : '実務', st.practiceDone, st.practiceTotal, CLEAR, st.cleared)}
+            progressBar('実務', st.practiceDone, st.practiceTotal, CLEAR, st.cleared)}
         </div>
 
         <div className={`flex flex-col gap-1 p-2 ${st.cleared ? 'bg-emerald-50/40' : ''}`}>
@@ -777,11 +767,9 @@ const CraftView: React.FC<CraftViewProps> = ({
           */}
           {cat.includes.length > 0 && (
             <p className="px-0.5 text-[9.5px] font-semibold leading-relaxed text-gray-400">
-              {ko ? '아래 단계에서 인계' : '下の段階から引き継ぎ'}
+              {'下の段階から引き継ぎ'}
               <span className="ml-1 font-normal text-gray-400">
-                {ko
-                  ? '（누르면 항목이 열립니다）'
-                  : '— ここでは「1人称」でできるかを問い直します（押すと項目が開きます）'}
+                {'— ここでは「1人称」でできるかを問い直します（押すと項目が開きます）'}
               </span>
             </p>
           )}
@@ -790,7 +778,7 @@ const CraftView: React.FC<CraftViewProps> = ({
           {/* その段階固有のアクション (チェック対象)。上位段階では NEW として強調 */}
           {own.length > 0 && ownIsNew && (
             <p className="mt-1 px-0.5 text-[9.5px] font-semibold text-amber-700">
-              {ko ? `이 단계에서 추가 (${own.length})` : `この段階で追加（${own.length}）`}
+              {`この段階で追加（${own.length}）`}
             </p>
           )}
           {actionGroups(own, level, ownIsNew)}
@@ -819,7 +807,7 @@ const CraftView: React.FC<CraftViewProps> = ({
           className={`text-[11px] font-semibold ${st.cleared ? 'text-white' : 'text-gray-700'}`}
         >
           {st.cleared && <span aria-hidden>✓ </span>}
-          {loc(lang, cat.labelJa, cat.labelKo)}
+          {cat.labelJa}
         </span>
         <span
           className={`rounded px-1 py-0.5 text-[10px] font-bold ${
@@ -928,7 +916,7 @@ const CraftView: React.FC<CraftViewProps> = ({
             className="h-3.5 w-3.5 accent-cyan-600"
           />
           <span className="text-[10.5px] font-medium text-gray-600">
-            {ko ? '미체크만 표시' : '未チェックのみ表示'}
+            {'未チェックのみ表示'}
           </span>
         </label>
         {/*
@@ -942,21 +930,19 @@ const CraftView: React.FC<CraftViewProps> = ({
           type="button"
           onClick={onExport}
           className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-[10.5px] font-medium text-gray-600 hover:border-cyan-300 hover:text-cyan-700"
-          title={ko
-            ? '체크 상태를 파일로 저장합니다 (이 브라우저에만 남아 있으므로 백업용)'
-            : 'チェック状態をファイルに保存します（このブラウザにしか残らないため）'}
+          title={'チェック状態をファイルに保存します（このブラウザにしか残らないため）'}
         >
           <span aria-hidden>⬇</span>
-          {ko ? '내보내기' : '書き出し'}
+          {'書き出し'}
         </button>
         <button
           type="button"
           onClick={() => fileRef.current?.click()}
           className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-[10.5px] font-medium text-gray-600 hover:border-cyan-300 hover:text-cyan-700"
-          title={ko ? '저장해 둔 파일을 읽어옵니다' : '書き出したファイルを読み込みます'}
+          title={'書き出したファイルを読み込みます'}
         >
           <span aria-hidden>⬆</span>
-          {ko ? '읽어오기' : '読み込み'}
+          {'読み込み'}
         </button>
         <input
           ref={fileRef}
@@ -997,9 +983,7 @@ const CraftView: React.FC<CraftViewProps> = ({
             <span className="mr-1 rounded bg-amber-100 px-1 py-0.5 text-[9px] font-bold text-amber-700">
               BETA
             </span>
-            {ko
-              ? '베타판입니다. 반기마다 재검토하여 내용을 갱신합니다.'
-              : 'ベータ版です。半期ごとに見直し、内容を更新します。'}
+            {'ベータ版です。半期ごとに見直し、内容を更新します。'}
           </span>
           {/*
             以前ここは「インフラ > サーバー の STEP1〜3（…）」という **手書きの文章**だった。
@@ -1033,9 +1017,7 @@ const CraftView: React.FC<CraftViewProps> = ({
           */}
           {activeRoute?.track === 'infrastructure' && (
             <span>
-              {ko
-                ? '서버와 네트워크는 역할이 겹치는 부분이 많아 제1판에서는 공통 카테고리로 다룹니다(필요에 따라 향후 분할).'
-                : 'サーバーとネットワークは役割が重なるため、第1版では共通のカテゴリとして扱っています（必要に応じて今後分割します）。'}
+              {'サーバーとネットワークは役割が重なるため、第1版では共通のカテゴリとして扱っています（必要に応じて今後分割します）。'}
             </span>
           )}
         </div>
@@ -1049,21 +1031,15 @@ const CraftView: React.FC<CraftViewProps> = ({
         {stagesDesc.length === 0 && (
           <div className="rounded-xl border border-dashed border-gray-300 bg-white px-4 py-6 text-center">
             <p className="text-[12.5px] font-bold text-gray-600">
-              {ko ? '이 구분의 체크리스트는 준비 중입니다' : 'この区分のチェックリストは準備中です'}
+              {'この区分のチェックリストは準備中です'}
             </p>
             <p className="mt-1.5 text-[11px] leading-relaxed text-gray-500">
               {activeRoute && ladderMax !== null
-                ? ko
-                  ? `${TRACK_LABELS[activeRoute.track]} > ${activeRoute.subtrack} 는 STEP1〜${ladderMax} 의 단계가 정해져 있고, 업무 카테고리와 체크 항목을 순차적으로 추가할 예정입니다.`
-                  : `${TRACK_LABELS[activeRoute.track]} > ${activeRoute.subtrack} は STEP1〜${ladderMax} の段階が決まっており、業務カテゴリとチェック項目を順次追加していきます。`
-                : ko
-                  ? '업무 카테고리와 체크 항목을 순차적으로 추가할 예정입니다.'
-                  : '業務カテゴリとチェック項目を順次追加していきます。'}
+                ? `${TRACK_LABELS[activeRoute.track]} > ${activeRoute.subtrack} は STEP1〜${ladderMax} の段階が決まっており、業務カテゴリとチェック項目を順次追加していきます。`
+                : '業務カテゴリとチェック項目を順次追加していきます。'}
             </p>
             <p className="mt-1.5 text-[10.5px] leading-relaxed text-gray-400">
-              {ko
-                ? '단계별 역할은 「전체 맵」에서 볼 수 있습니다.'
-                : '段階ごとの役割は「全体マップ」で確認できます。'}
+              {'段階ごとの役割は「全体マップ」で確認できます。'}
             </p>
           </div>
         )}
@@ -1088,17 +1064,13 @@ const CraftView: React.FC<CraftViewProps> = ({
                       STEP {stage}
                     </span>
                     <span className="text-[12.5px] font-semibold text-gray-700">
-                      {role ? loc(lang, role.shortLabel, role.shortLabelKo) : ''}
+                      {role ? role.shortLabel : ''}
                     </span>
                   </span>
                   <span className="text-[11px] font-medium text-cyan-700">
                     {open
-                      ? ko
-                        ? '닫기 ▾'
-                        : '閉じる ▾'
-                      : ko
-                        ? '체크리스트 열기 ▸'
-                        : 'チェックリストを開く ▸'}
+                      ? '閉じる ▾'
+                      : 'チェックリストを開く ▸'}
                   </span>
                 </button>
 
@@ -1108,22 +1080,18 @@ const CraftView: React.FC<CraftViewProps> = ({
                     {STAGE_AUTONOMY[stage] && (
                       <p className="border-t border-amber-100 bg-amber-50/60 px-3 py-2 text-[10.5px] leading-relaxed text-amber-900">
                         <span className="font-semibold">
-                          {ko ? '체크 기준' : 'チェックの目安'}:{' '}
+                          {'チェックの目安'}:{' '}
                         </span>
-                        {loc(lang, STAGE_AUTONOMY[stage].ja, STAGE_AUTONOMY[stage].ko)}
+                        {STAGE_AUTONOMY[stage].ja}
                         {/*
                           知識/実務 の意味はここで一度だけ説明する。
                           件数とグループ分け自体はカテゴリ側の見出しが持つ (actionGroups)。
                         */}
                         <span className="ml-1">
-                          <span className="font-bold text-indigo-800">{ko ? '지식' : '知識'}</span>
-                          {ko
-                            ? '은 지금 안건 그대로 채울 수 있는 항목, '
-                            : ' は今の案件のままでも埋められる項目、'}
-                          <span className="font-bold">{ko ? '실무' : '実務'}</span>
-                          {ko
-                            ? '는 안건에서 경험해야 채워지는 항목입니다.'
-                            : ' は案件で経験しないと埋まらない項目です。'}
+                          <span className="font-bold text-indigo-800">{'知識'}</span>
+                          {' は今の案件のままでも埋められる項目、'}
+                          <span className="font-bold">{'実務'}</span>
+                          {' は案件で経験しないと埋まらない項目です。'}
                         </span>
                       </p>
                     )}
@@ -1133,9 +1101,7 @@ const CraftView: React.FC<CraftViewProps> = ({
                       <div className="flex flex-col gap-1.5 border-t border-indigo-100 bg-indigo-50/50 px-3 py-2.5">
                         <span className="text-[10.5px] font-semibold text-indigo-800">
                           🎓{' '}
-                          {ko
-                            ? '다음 단계로 올라가기 위한 추천 자격증 (참고)'
-                            : '次の段階へ進むための推奨資格（参考）'}
+                          {'次の段階へ進むための推奨資格（参考）'}
                         </span>
                         {/*
                           チェックは持たない (2026-08-14)。2026-08-12 に入れて2日で戻した —
@@ -1147,23 +1113,21 @@ const CraftView: React.FC<CraftViewProps> = ({
                         */}
                         {/* 会社の支援制度 (外部レビュー FB: 「会社は何をしてくれるのか」に答える) */}
                         <span className="text-[9.5px] leading-relaxed text-indigo-500">
-                          {ko
-                            ? '참고서·온라인 강좌·수험료 보조와 자격 수당 제도가 있습니다. 사내 스터디(아카데미)나 상사에게 상담할 수 있습니다.'
-                            : '参考書・オンライン講座・受験費用の補助と資格手当の制度があります。社内勉強会（アカデミー）や上長に相談できます。'}
+                          {'参考書・オンライン講座・受験費用の補助と資格手当の制度があります。社内勉強会（アカデミー）や上長に相談できます。'}
                         </span>
                         <div className="flex flex-wrap gap-1.5">
                           {stageCerts.map((cert) => (
                             <span
                               key={cert.certId}
                               className="inline-flex items-center gap-1 rounded-lg border border-indigo-200 bg-white px-2 py-1"
-                              title={cert.note ? loc(lang, cert.note, cert.noteKo) : undefined}
+                              title={cert.note ? cert.note : undefined}
                             >
                               <span className="text-[11px] font-semibold text-indigo-900">
-                                {loc(lang, cert.nameJa, cert.nameKo)}
+                                {cert.nameJa}
                               </span>
                               {cert.note && (
                                 <span className="text-[9.5px] text-indigo-400">
-                                  {loc(lang, cert.note, cert.noteKo)}
+                                  {cert.note}
                                 </span>
                               )}
                             </span>

@@ -98,7 +98,6 @@ const setup = (
       onExport={onExport}
       onImport={onImport}
       focusRequest={opts.focusRequest ?? null}
-      lang="ja"
     />,
   );
   return { onToggleAction, onExport, onImport };
@@ -522,7 +521,6 @@ const renderIts = (cats: Category[], acts: Action[]) =>
       onExport={vi.fn()}
       onImport={vi.fn(async () => ({ ok: true, message: '' }))}
       focusRequest={null}
-      lang="ja"
     />,
   );
 

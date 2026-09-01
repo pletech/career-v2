@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import type { LadderStepData } from '../../domain/buildLadder';
 import { deriveAbilityState, evaluateAbility } from '../../domain/evaluate';
-import { STRINGS, WORK_TAG_LABELS, loc, type Lang } from '../../domain/i18n';
+import { STRINGS, WORK_TAG_LABELS } from '../../domain/i18n';
 import type {
   Ability,
   Evidence,
@@ -28,7 +28,6 @@ interface InterviewPanelProps {
   evidencesByAbility: ReadonlyMap<string, Evidence[]>;
   evidenceChecks: EvidenceCheckMap;
   managerConfirms: ManagerConfirmMap;
-  lang: Lang;
   onToggleEvidence: (evidenceId: string) => void;
   onToggleManagerConfirm: (abilityId: string) => void;
   onSelectAbility: (abilityId: string | null) => void;
@@ -49,13 +48,12 @@ const InterviewPanel: React.FC<InterviewPanelProps> = ({
   evidencesByAbility,
   evidenceChecks,
   managerConfirms,
-  lang,
   onToggleEvidence,
   onToggleManagerConfirm,
   onSelectAbility,
 }) => {
   const [showRoleStatement, setShowRoleStatement] = useState(false);
-  const s = STRINGS[lang];
+  const s = STRINGS;
 
   if (selectedAbility) {
     const confirmed = managerConfirms[selectedAbility.abilityId] === true;
@@ -69,7 +67,7 @@ const InterviewPanel: React.FC<InterviewPanelProps> = ({
           <div className="min-w-0">
             <p className={sectionLabel}>{s.selectedAbility}</p>
             <h3 className="mt-0.5 text-sm font-bold leading-snug text-gray-800">
-              {loc(lang, selectedAbility.statement, selectedAbility.statementKo)}
+              {selectedAbility.statement}
             </h3>
             <p className="mt-1 text-[11px] text-gray-500">
               {s.stateWord}:{' '}
@@ -84,7 +82,7 @@ const InterviewPanel: React.FC<InterviewPanelProps> = ({
             onClick={() => onSelectAbility(null)}
             className="shrink-0 rounded-md border border-gray-200 px-2 py-1 text-[11px] text-gray-500 hover:bg-gray-50"
           >
-            {lang === 'ko' ? '목록으로' : '一覧へ'}
+            {'一覧へ'}
           </button>
         </div>
 
@@ -122,7 +120,7 @@ const InterviewPanel: React.FC<InterviewPanelProps> = ({
                         <span
                           className={`block text-xs leading-relaxed ${checked ? 'text-gray-500' : 'text-gray-800'}`}
                         >
-                          {loc(lang, ev.statement, ev.statementKo)}
+                          {ev.statement}
                         </span>
                         <span className="mt-1 flex flex-wrap items-center gap-1.5">
                           <span
@@ -135,13 +133,13 @@ const InterviewPanel: React.FC<InterviewPanelProps> = ({
                               key={tag}
                               className="rounded bg-violet-50 px-1.5 py-0.5 text-[10px] text-violet-600"
                             >
-                              {WORK_TAG_LABELS[tag][lang]}
+                              {WORK_TAG_LABELS[tag]}
                             </span>
                           ))}
                         </span>
                         {ev.selfCheckTip && (
                           <span className="mt-1 block rounded bg-cyan-50/70 px-2 py-1 text-[10px] leading-relaxed text-cyan-900">
-                            ✍ {s.selfCheckLabel}: {loc(lang, ev.selfCheckTip, ev.selfCheckTipKo)}
+                            ✍ {s.selfCheckLabel}: {ev.selfCheckTip}
                           </span>
                         )}
                       </span>
@@ -171,7 +169,7 @@ const InterviewPanel: React.FC<InterviewPanelProps> = ({
               <ul className="mt-1 flex flex-col gap-1">
                 {unchecked.map((ev) => (
                   <li key={ev.evidenceId} className="text-xs leading-relaxed text-gray-600">
-                    ・{loc(lang, ev.statement, ev.statementKo)}
+                    ・{ev.statement}
                   </li>
                 ))}
               </ul>
@@ -204,7 +202,7 @@ const InterviewPanel: React.FC<InterviewPanelProps> = ({
             </button>
             {showRoleStatement && (
               <p className="mt-1 rounded-lg bg-gray-50 px-3 py-2 text-[11px] leading-relaxed text-gray-500">
-                {loc(lang, selectedAbility.roleStatement, selectedAbility.roleStatementKo)}
+                {selectedAbility.roleStatement}
               </p>
             )}
           </div>
@@ -223,12 +221,12 @@ const InterviewPanel: React.FC<InterviewPanelProps> = ({
         <p className={sectionLabel}>{s.interviewRef}</p>
         <h3 className="mt-0.5 text-sm font-bold text-gray-800">
           {focusStep
-            ? `${s.focusStepPrefix}: ${focusStep.stepLabel} ${loc(lang, focusStep.role.shortLabel, focusStep.role.shortLabelKo)}`
+            ? `${s.focusStepPrefix}: ${focusStep.stepLabel} ${focusStep.role.shortLabel}`
             : s.selectAbilityPrompt}
         </h3>
         {focusStep?.role.shortGoal && (
           <p className="mt-0.5 text-[11px] text-gray-400">
-            {loc(lang, focusStep.role.shortGoal, focusStep.role.shortGoalKo)}
+            {focusStep.role.shortGoal}
           </p>
         )}
       </div>
@@ -240,7 +238,6 @@ const InterviewPanel: React.FC<InterviewPanelProps> = ({
             evidencesByAbility={evidencesByAbility}
             evidenceChecks={evidenceChecks}
             managerConfirms={managerConfirms}
-            lang={lang}
             onSelectAbility={(id) => onSelectAbility(id)}
           />
         ) : (

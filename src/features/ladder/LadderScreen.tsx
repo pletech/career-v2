@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { buildLadder } from '../../domain/buildLadder';
 import { evaluateStep, groupEvidencesByAbility } from '../../domain/evaluate';
-import { loc } from '../../domain/i18n';
 import { loadLadderData, type LadderDataSet } from '../../data/loadLadderData';
 import type { TrackId } from '../../domain/types';
 import { DEFAULT_TARGET, useLadderState } from '../../state/useLadderState';
@@ -20,7 +19,7 @@ import LadderView from './LadderView';
  *   ロードする (確定 #24)。値のハードコードは持たない。
  * - デスクトップ: 左 = 目標選択 / 中央 = 階段ビュー / 右 = 面談用パネル の3カラム
  * - モバイル: 縦スクロール + 目標選択ドロワー + ボトムシート (確定 #11)
- * - 表示言語: 日本語 (正本) / 한국어 (作業用) — 確定 #21
+ * - 表示言語: 日本語のみ (韓国語は 2026-09-02 に撤去 — i18n.ts)
  */
 
 interface LadderScreenProps {
@@ -55,8 +54,6 @@ const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps', onNavigate 
     toggleAction,
     selectedAbilityId,
     setSelectedAbilityId,
-    lang,
-    setLang,
     exportJson,
     importJson,
   } = useLadderState();
@@ -179,7 +176,7 @@ const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps', onNavigate 
   const dataControls = (
     <div className="flex flex-col gap-1.5 px-4 pb-4">
       <p className="text-[11px] font-semibold text-gray-500">
-        {lang === 'ko' ? '체크 상태 저장' : 'チェック状態の保存'}
+        {'チェック状態の保存'}
       </p>
       <div className="flex gap-1.5">
         <button
@@ -211,9 +208,7 @@ const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps', onNavigate 
         <p className="rounded bg-cyan-50 px-2 py-1 text-[10px] text-cyan-800">{importMessage}</p>
       )}
       <p className="text-[10px] leading-relaxed text-gray-400">
-        {lang === 'ko'
-          ? '체크 상태는 이 단말의 브라우저에만 저장됩니다. 면담 후 JSON 내보내기로 보관을 권장합니다.'
-          : 'チェック状態はこの端末のブラウザにのみ保存されます。面談後はJSONエクスポートでの保存をおすすめします。'}
+        {'チェック状態はこの端末のブラウザにのみ保存されます。面談後はJSONエクスポートでの保存をおすすめします。'}
       </p>
     </div>
   );
@@ -221,7 +216,7 @@ const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps', onNavigate 
   if (loading) {
     return (
       <div className="flex flex-1 items-center justify-center text-sm text-gray-400">
-        {lang === 'ko' ? '데이터를 불러오는 중…' : 'データを読み込んでいます…'}
+        {'データを読み込んでいます…'}
       </div>
     );
   }
@@ -260,7 +255,6 @@ const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps', onNavigate 
       evidenceChecks={evidenceChecks}
       managerConfirms={managerConfirms}
       selectedAbilityId={selectedAbilityId}
-      lang={lang}
       onSelectAbility={(id) => setSelectedAbilityId(id)}
     />
   );
@@ -273,7 +267,6 @@ const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps', onNavigate 
       evidencesByAbility={evidencesByAbility}
       evidenceChecks={evidenceChecks}
       managerConfirms={managerConfirms}
-      lang={lang}
       onToggleEvidence={toggleEvidence}
       onToggleManagerConfirm={toggleManagerConfirm}
       onSelectAbility={setSelectedAbilityId}
@@ -284,9 +277,7 @@ const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps', onNavigate 
     <TargetSelector
       roles={data.roles}
       targetRoleId={effectiveTargetId}
-      lang={lang}
       onTargetChange={setTargetRoleId}
-      onLangChange={setLang}
     />
   );
 
@@ -329,7 +320,6 @@ const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps', onNavigate 
               setFocusRequest({ stage, categoryId });
               onNavigate?.('roadmap');
             }}
-            lang={lang}
           />
         </div>
       );
@@ -352,7 +342,6 @@ const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps', onNavigate 
           onImport={importJson}
           focusRequest={focusRequest}
           onFocusHandled={() => setFocusRequest(null)}
-          lang={lang}
         />
       </div>
     );
@@ -379,10 +368,10 @@ const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps', onNavigate 
         <div className="flex shrink-0 items-center justify-between gap-2 border-b border-gray-200 bg-white px-3 py-2">
           <p className="min-w-0 truncate text-xs text-gray-600">
             <span className="text-gray-400">
-              {lang === 'ko' ? '인프라 > 서버 > ' : 'インフラ > サーバー > '}
+              {'インフラ > サーバー > '}
             </span>
             <span className="font-semibold text-gray-800">
-              {targetRole ? loc(lang, targetRole.shortLabel, targetRole.shortLabelKo) : ''}
+              {targetRole ? targetRole.shortLabel : ''}
             </span>
           </p>
           <button
@@ -390,7 +379,7 @@ const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps', onNavigate 
             onClick={() => setIsSelectorDrawerOpen(true)}
             className="shrink-0 rounded-lg border border-cyan-200 bg-cyan-50 px-2.5 py-1.5 text-[11px] font-medium text-cyan-700"
           >
-            {lang === 'ko' ? '목표 선택' : '目標を選ぶ'}
+            {'目標を選ぶ'}
           </button>
         </div>
 
@@ -411,25 +400,23 @@ const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps', onNavigate 
             <div className="absolute inset-y-0 left-0 flex w-[82%] max-w-[320px] flex-col overflow-y-auto bg-white shadow-xl">
               <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
                 <p className="text-sm font-bold text-gray-800">
-                  {lang === 'ko' ? '목표 선택' : '目標を選ぶ'}
+                  {'目標を選ぶ'}
                 </p>
                 <button
                   type="button"
                   onClick={() => setIsSelectorDrawerOpen(false)}
                   className="rounded-md border border-gray-200 px-2 py-1 text-[11px] text-gray-500"
                 >
-                  {lang === 'ko' ? '닫기' : '閉じる'}
+                  {'閉じる'}
                 </button>
               </div>
               <TargetSelector
                 roles={data.roles}
                 targetRoleId={effectiveTargetId}
-                lang={lang}
                 onTargetChange={(roleId) => {
                   setTargetRoleId(roleId);
                   setIsSelectorDrawerOpen(false);
                 }}
-                onLangChange={setLang}
               />
             </div>
           </div>
@@ -454,7 +441,7 @@ const LadderScreen: React.FC<LadderScreenProps> = ({ mode = 'steps', onNavigate 
                 onClick={() => setSelectedAbilityId(null)}
                 className="border-t border-gray-100 py-2.5 text-center text-xs font-medium text-gray-500"
               >
-                {lang === 'ko' ? '닫기' : '閉じる'}
+                {'閉じる'}
               </button>
             </div>
           </div>

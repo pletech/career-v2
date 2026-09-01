@@ -1,37 +1,19 @@
 /**
- * 表示言語 (v2.3 — 確定 #21 / 2026-08-22 に韓国語を廃止)
+ * 画面に出す文言 (v2.3 — 確定 #21)
  *
  * もともとは「作成・検討は韓国語、共有時は日本語」の切り替えだった。
- * **韓国語は使わないことになったので落とした** (2026-08-22 ユーザー指示)。
- * シードの `*Ko` フィールドも全て空にしてある。
+ * **韓国語は廃止** (2026-08-22 ユーザー指示)。2026-09-02 に呼び出し側まで畳み、
+ * `Lang` 型・`KO_UI_ENABLED`・`loc()`・`lang` の受け渡しを全て落とした。
  *
- * ⚠️ 型・`loc()`・`*Ko` フィールドは**残してある**。消すには 34 箇所の
- * 呼び出しと 13 ファイルの `lang` 受け渡しを畳むことになり、そこは
- * 機能側の担当範囲で `main` と `draft` が既に分岐している。
- * `KO_UI_ENABLED` が false であれば言語は 'ja' に固定され、
- * `loc()` は日本語を返すだけになるので、**製品としては韓国語が無い状態**になる。
- * 呼び出し側を畳むのは、draft を main に合流させた後の別作業。
+ * 畳むのを待っていたのは、`main` と `draft` が分岐していて対象 16 ファイルのうち
+ * 6 つが両方で変わっていたため。先に片方で外すとその 6 つが全部衝突する。
+ * 合流 (f40249e) を待ってから一度に外した。
+ *
+ * ⚠️ CSV の `*Ko` 列と型の `*Ko` フィールドは**残してある**。値は全て空で、
+ * 読む側はもう無い。列を落とすのはデータ側の移行なので別件。
  */
 
 import type { AbilityState, EvidenceType, WorkTagId } from './types';
-
-export type Lang = 'ja' | 'ko';
-
-/**
- * 韓国語 UI は廃止 (2026-08-22)。**常に false**。
- *
- * これが false だと `loadLang()` が 'ja' を返し、言語トグルも描かれない。
- * 以前は `DEV || VITE_ENABLE_KO` で dev だけ出していたが、
- * 韓国語を使わないことになったので出さない。
- */
-export const KO_UI_ENABLED = false;
-
-/**
- * 韓国語フィールドがあればそれを、なければ日本語を返す。
- * 韓国語廃止後は `lang` が常に 'ja' なので、実質「日本語を返す」だけ。
- */
-export const loc = (lang: Lang, ja: string, ko?: string): string =>
-  lang === 'ko' && ko ? ko : ja;
 
 interface UiStrings {
   disclaimer: string;
@@ -67,127 +49,77 @@ interface UiStrings {
   targetRole: string;
   stagePrefix: string; // 段階
   preparingNote: string;
-  langLabel: string;
   roadmapLegend: string;
   noLine: string;
 }
 
-export const STRINGS: Record<Lang, UiStrings> = {
-  ja: {
-    disclaimer:
-      'この判定は昇格・評価を自動的に決定するものではありません。上長との面談における育成相談の参考情報です。',
-    gatePassed:
-      'チェックリストの達成率が基準（70%）に達しています。案件変更や次の段階への挑戦を希望する場合は、上長との面談を申請してください。（正式な検討は面談で行われます）',
-    gateNotPassed:
-      '未確認の項目があります。不足している経験については、上長との面談で相談してください。',
-    stateLabels: {
-      'not-started': '未着手',
-      'in-progress': '経験中',
-      'can-do': 'できる',
-      confirmed: '面談確認済み',
-    },
-    typeLabels: { knowledge: '理解', practice: '作業', experience: '経験' },
-    evidenceWord: '根拠',
-    canDoWord: 'できる',
-    totalWord: '全体',
-    managerConfirm: '面談で確認した（上長）',
-    managerConfirmNote: '根拠のチェック状況に関わらず、上長の判断で付けられます。',
-    checklistSection: 'できると言える根拠（チェックリスト）',
-    nextItemsSection: '次に補う項目（今後経験させたい業務）',
-    toolsSection: '参考ツール（判定要件ではなく会話の手がかりです）',
-    selectedAbility: '選択中の能力',
-    stateWord: '状態',
-    interviewRef: '育成面談の参考',
-    focusStepPrefix: 'いま確認する段',
-    selectAbilityPrompt:
-      '階段ビューの能力項目を選ぶと、できると言える根拠のチェックリストがここに表示されます。',
-    allDone: 'この段の能力は、根拠がすべてチェック済みです。',
-    nextItemPrefix: '次に補う項目',
-    othersSuffix: (n) => ` ほか${n}件`,
-    incompleteSection: '確認が必要な項目',
-    selfCheckLabel: 'セルフチェック',
-    roleStatementShow: '元の役割文を表示',
-    roleStatementHide: '元の役割文を閉じる',
-    preparing: '準備中',
-    preparingStep: 'この段階のチェック項目は準備中です（後日公開予定）',
-    higherSteps: '— この先の段階 —',
-    kubun: '区分',
-    bunrui: '分類',
-    targetRole: '目標役割',
-    stagePrefix: '段階',
-    preparingNote: '「準備中」の役割は、階段の段として表示されますが、チェック項目は後日公開されます。',
-    langLabel: '表示言語',
-    roadmapLegend:
-      '段階の見出しを押すと、その段階の業務カテゴリが開きます（他の段階は畳んで件数のみ）。カテゴリは「何項目中いくつできるか」を示し、7割達成で「クリア」になります。上位段階のカテゴリは、下位段階のカテゴリを1行に畳んで取り込み（押すとその場で展開）、その段階で新たに必要な項目は NEW で強調されます。',
-    noLine: '（ラインなし）',
+export const STRINGS: UiStrings = {
+  disclaimer:
+    'この判定は昇格・評価を自動的に決定するものではありません。上長との面談における育成相談の参考情報です。',
+  gatePassed:
+    'チェックリストの達成率が基準（70%）に達しています。案件変更や次の段階への挑戦を希望する場合は、上長との面談を申請してください。（正式な検討は面談で行われます）',
+  gateNotPassed:
+    '未確認の項目があります。不足している経験については、上長との面談で相談してください。',
+  stateLabels: {
+    'not-started': '未着手',
+    'in-progress': '経験中',
+    'can-do': 'できる',
+    confirmed: '面談確認済み',
   },
-  ko: {
-    disclaimer:
-      '이 판정은 승격·평가를 자동으로 결정하는 것이 아닙니다. 상장과의 면담에서 육성 상담의 참고 정보입니다.',
-    gatePassed:
-      '체크리스트 달성률이 기준(70%)에 도달했습니다. 안건 변경이나 다음 단계 도전을 희망하는 경우, 상장과의 면담을 신청해 주세요. (정식 검토는 면담에서 이루어집니다)',
-    gateNotPassed: '미확인 항목이 있습니다. 부족한 경험은 상장과의 면담에서 상담해 주세요.',
-    stateLabels: {
-      'not-started': '미착수',
-      'in-progress': '경험 중',
-      'can-do': '가능',
-      confirmed: '면담 확인 완료',
-    },
-    typeLabels: { knowledge: '이해', practice: '작업', experience: '경험' },
-    evidenceWord: '근거',
-    canDoWord: '가능',
-    totalWord: '전체',
-    managerConfirm: '면담에서 확인함 (상장)',
-    managerConfirmNote: '근거 체크 상황과 무관하게 상장 판단으로 표시할 수 있습니다.',
-    checklistSection: '가능하다고 말할 수 있는 근거 (체크리스트)',
-    nextItemsSection: '다음에 보완할 항목 (앞으로 경험시킬 업무)',
-    toolsSection: '참고 도구 (판정 요건이 아닌 대화의 실마리입니다)',
-    selectedAbility: '선택 중인 능력',
-    stateWord: '상태',
-    interviewRef: '육성 면담 참고',
-    focusStepPrefix: '지금 확인할 단',
-    selectAbilityPrompt: '계단 뷰에서 능력 항목을 선택하면 근거 체크리스트가 여기에 표시됩니다.',
-    allDone: '이 단의 능력은 근거가 모두 체크되었습니다.',
-    nextItemPrefix: '다음에 보완할 항목',
-    othersSuffix: (n) => ` 외 ${n}건`,
-    incompleteSection: '확인이 필요한 항목',
-    selfCheckLabel: '자가진단 팁',
-    roleStatementShow: '원래 역할 문장 표시',
-    roleStatementHide: '원래 역할 문장 닫기',
-    preparing: '준비 중',
-    preparingStep: '이 단계의 체크 항목은 준비 중입니다 (추후 공개 예정)',
-    higherSteps: '— 이후의 단계 —',
-    kubun: '구분',
-    bunrui: '분류',
-    targetRole: '목표 역할',
-    stagePrefix: '단계',
-    preparingNote: '「준비 중」인 역할은 계단의 단으로 표시되지만, 체크 항목은 추후 공개됩니다.',
-    langLabel: '표시 언어',
-    roadmapLegend:
-      '단계 제목을 누르면 그 단계의 업무 카테고리가 열립니다(다른 단계는 접혀 개수만). 카테고리는 "몇 항목 중 몇 개 가능"을 나타내고, 7할 달성 시 "클리어"가 됩니다. 상위 단계 카테고리는 하위 단계 카테고리를 1줄로 접어 포함하고(누르면 그 자리에서 펼침), 그 단계에서 새로 필요한 항목은 NEW로 강조됩니다.',
-    noLine: '(라인 없음)',
-  },
+  typeLabels: { knowledge: '理解', practice: '作業', experience: '経験' },
+  evidenceWord: '根拠',
+  canDoWord: 'できる',
+  totalWord: '全体',
+  managerConfirm: '面談で確認した（上長）',
+  managerConfirmNote: '根拠のチェック状況に関わらず、上長の判断で付けられます。',
+  checklistSection: 'できると言える根拠（チェックリスト）',
+  nextItemsSection: '次に補う項目（今後経験させたい業務）',
+  toolsSection: '参考ツール（判定要件ではなく会話の手がかりです）',
+  selectedAbility: '選択中の能力',
+  stateWord: '状態',
+  interviewRef: '育成面談の参考',
+  focusStepPrefix: 'いま確認する段',
+  selectAbilityPrompt:
+    '階段ビューの能力項目を選ぶと、できると言える根拠のチェックリストがここに表示されます。',
+  allDone: 'この段の能力は、根拠がすべてチェック済みです。',
+  nextItemPrefix: '次に補う項目',
+  othersSuffix: (n) => ` ほか${n}件`,
+  incompleteSection: '確認が必要な項目',
+  selfCheckLabel: 'セルフチェック',
+  roleStatementShow: '元の役割文を表示',
+  roleStatementHide: '元の役割文を閉じる',
+  preparing: '準備中',
+  preparingStep: 'この段階のチェック項目は準備中です（後日公開予定）',
+  higherSteps: '— この先の段階 —',
+  kubun: '区分',
+  bunrui: '分類',
+  targetRole: '目標役割',
+  stagePrefix: '段階',
+  preparingNote: '「準備中」の役割は、階段の段として表示されますが、チェック項目は後日公開されます。',
+  roadmapLegend:
+    '段階の見出しを押すと、その段階の業務カテゴリが開きます（他の段階は畳んで件数のみ）。カテゴリは「何項目中いくつできるか」を示し、7割達成で「クリア」になります。上位段階のカテゴリは、下位段階のカテゴリを1行に畳んで取り込み（押すとその場で展開）、その段階で新たに必要な項目は NEW で強調されます。',
+  noLine: '（ラインなし）',
 };
 
 /** 業務種類タグの表示名 (v2.3 — 確定 #18) */
-export const WORK_TAG_LABELS: Record<WorkTagId, { ja: string; ko: string }> = {
-  inquiry: { ja: '問い合わせ対応', ko: '문의 대응' },
-  reporting: { ja: '記録・報告', ko: '기록·보고' },
-  procedure: { ja: '手順書作業', ko: '절차서 작업' },
-  account: { ja: 'アカウント管理', ko: '계정 관리' },
-  kitting: { ja: '端末設定', ko: '단말 설정' },
-  monitoring: { ja: '監視', ko: '감시' },
-  incident: { ja: '障害対応', ko: '장애 대응' },
-  escalation: { ja: 'エスカレーション', ko: '에스컬레이션' },
-  investigation: { ja: '原因調査', ko: '원인 조사' },
-  log: { ja: 'ログ確認', ko: '로그 확인' },
-  config: { ja: '設定変更', ko: '설정 변경' },
-  maintenance: { ja: '保守作業', ko: '보수 작업' },
-  release: { ja: 'パッチ・リリース', ko: '패치·릴리스' },
-  build: { ja: '構築', ko: '구축' },
-  middleware: { ja: 'ミドルウェア', ko: '미들웨어' },
-  verification: { ja: '動作確認', ko: '동작 확인' },
-  'evidence-record': { ja: '証跡', ko: '증적' },
-  'design-read': { ja: '設計書読解', ko: '설계서 읽기' },
-  'knowledge-base': { ja: '基礎知識', ko: '기초 지식' },
+export const WORK_TAG_LABELS: Record<WorkTagId, string> = {
+  inquiry: '問い合わせ対応',
+  reporting: '記録・報告',
+  procedure: '手順書作業',
+  account: 'アカウント管理',
+  kitting: '端末設定',
+  monitoring: '監視',
+  incident: '障害対応',
+  escalation: 'エスカレーション',
+  investigation: '原因調査',
+  log: 'ログ確認',
+  config: '設定変更',
+  maintenance: '保守作業',
+  release: 'パッチ・リリース',
+  build: '構築',
+  middleware: 'ミドルウェア',
+  verification: '動作確認',
+  'evidence-record': '証跡',
+  'design-read': '設計書読解',
+  'knowledge-base': '基礎知識',
 };

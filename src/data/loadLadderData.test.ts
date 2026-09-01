@@ -102,10 +102,8 @@ describe('loadLadderData の CSV 変換 (CSV が DB — 確定 #24)', () => {
       track: 'infrastructure',
       stageOrder: 1,
       status: 'published',
-      titleKo: '보조역할',
     });
     expect(roles[1].shortGoal).toBeUndefined();
-    expect(roles[1].titleKo).toBeUndefined();
   });
 
   it('abilities: パイプ区切りツール・boolean 変換・引用符付きカンマ', () => {
@@ -113,13 +111,11 @@ describe('loadLadderData の CSV 変換 (CSV が DB — 確定 #24)', () => {
     expect(abilities[0].toolsReference).toEqual(['Outlook', 'Teams']);
     expect(abilities[0].isCommon).toBe(true);
     expect(abilities[0].statement).toBe('問い合わせを受け付け、連携できる');
-    expect(abilities[0].statementKo).toBe('문의를 접수, 전달할 수 있다');
   });
 
   it('evidences: workTags の検証つき変換・任意 selfCheckTip', () => {
     const evidences = parseEvidences(evidencesCsv);
     expect(evidences[0].workTags).toEqual(['inquiry', 'reporting']);
-    expect(evidences[0].selfCheckTipKo).toBe('설명할 수 있나요?');
     expect(evidences[1].selfCheckTip).toBeUndefined();
   });
 
@@ -152,13 +148,10 @@ describe('loadLadderData の CSV 変換 (CSV が DB — 確定 #24)', () => {
   // 業務ロードマップ (v2.6 — AC-11.1/11.2/AC-11.12)
   // ------------------------------------------------------------------
 
-  it('growth-lines: 型変換と任意 labelKo', () => {
+  it('growth-lines: 型変換', () => {
     const lines = parseGrowthLines(growthLinesCsv);
     expect(lines).toHaveLength(2);
     expect(lines[0]).toMatchObject({ lineId: 'response', labelJa: '依頼・障害対応', sortOrder: 1 });
-    expect(lines[0].labelKo).toBe('의뢰·장애 대응');
-    const noKo = parseGrowthLines('lineId,labelJa,sortOrder\nx,ラベル,1');
-    expect(noKo[0].labelKo).toBeUndefined();
   });
 
   it('growth-lines: lineId 重複はエラー', () => {

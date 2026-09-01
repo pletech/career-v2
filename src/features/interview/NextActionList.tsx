@@ -1,6 +1,6 @@
 import React from 'react';
 import { evaluateAbility } from '../../domain/evaluate';
-import { STRINGS, loc, type Lang } from '../../domain/i18n';
+import { STRINGS } from '../../domain/i18n';
 import type {
   Ability,
   Evidence,
@@ -20,7 +20,6 @@ interface NextActionListProps {
   evidencesByAbility: ReadonlyMap<string, Evidence[]>;
   evidenceChecks: EvidenceCheckMap;
   managerConfirms: ManagerConfirmMap;
-  lang: Lang;
   onSelectAbility: (abilityId: string) => void;
 }
 
@@ -29,10 +28,9 @@ const NextActionList: React.FC<NextActionListProps> = ({
   evidencesByAbility,
   evidenceChecks,
   managerConfirms,
-  lang,
   onSelectAbility,
 }) => {
-  const s = STRINGS[lang];
+  const s = STRINGS;
 
   const incomplete = abilities
     .map((ability) => {
@@ -64,7 +62,7 @@ const NextActionList: React.FC<NextActionListProps> = ({
             >
               <span className="flex items-start justify-between gap-2">
                 <span className="font-medium text-gray-800">
-                  {loc(lang, ability.statement, ability.statementKo)}
+                  {ability.statement}
                 </span>
                 <span className="shrink-0 rounded bg-gray-100 px-1.5 py-0.5 text-[10px] text-gray-500">
                   {s.evidenceWord} {evaluation.evidenceChecked}/{evaluation.evidenceTotal}
@@ -72,7 +70,7 @@ const NextActionList: React.FC<NextActionListProps> = ({
               </span>
               {unchecked[0] && (
                 <span className="mt-1 block text-[11px] text-gray-500">
-                  {s.nextItemPrefix}: {loc(lang, unchecked[0].statement, unchecked[0].statementKo)}
+                  {s.nextItemPrefix}: {unchecked[0].statement}
                   {unchecked.length > 1 && s.othersSuffix(unchecked.length - 1)}
                 </span>
               )}

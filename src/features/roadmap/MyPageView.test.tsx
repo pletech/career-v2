@@ -59,7 +59,6 @@ const setup = (assisted: string[] = [], solo: string[] = []) => {
       actionChecks={Object.fromEntries(assisted.map((k) => [k, true]))}
       actionSoloChecks={Object.fromEntries(solo.map((k) => [k, true]))}
       onJump={onJump}
-      lang="ja"
     />,
   );
   return { onJump };
@@ -321,7 +320,6 @@ const renderIts = (cats: Category[]) =>
       actionChecks={{}}
       actionSoloChecks={{}}
       onJump={vi.fn()}
-      lang="ja"
     />,
   );
 

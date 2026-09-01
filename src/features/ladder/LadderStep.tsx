@@ -1,7 +1,7 @@
 import React from 'react';
 import type { LadderStepData } from '../../domain/buildLadder';
 import { evaluateAbility, type StepEvaluation } from '../../domain/evaluate';
-import { STRINGS, loc, type Lang } from '../../domain/i18n';
+import { STRINGS } from '../../domain/i18n';
 import type { Evidence, EvidenceCheckMap, ManagerConfirmMap } from '../../domain/types';
 import AbilityRow from './AbilityRow';
 import StepProgress from './StepProgress';
@@ -17,7 +17,6 @@ interface LadderStepProps {
   evidenceChecks: EvidenceCheckMap;
   managerConfirms: ManagerConfirmMap;
   selectedAbilityId: string | null;
-  lang: Lang;
   collapsed: boolean;
   onToggleCollapse: (roleId: string) => void;
   onSelectAbility: (abilityId: string) => void;
@@ -30,13 +29,12 @@ const LadderStep: React.FC<LadderStepProps> = ({
   evidenceChecks,
   managerConfirms,
   selectedAbilityId,
-  lang,
   collapsed,
   onToggleCollapse,
   onSelectAbility,
 }) => {
   const { role } = step;
-  const s = STRINGS[lang];
+  const s = STRINGS;
 
   return (
     <section
@@ -59,7 +57,7 @@ const LadderStep: React.FC<LadderStepProps> = ({
             </span>
             {step.isTarget && (
               <span className="rounded bg-cyan-100 px-1.5 py-0.5 text-[10px] font-semibold text-cyan-700">
-                ★ {lang === 'ko' ? '목표' : '目標'}
+                ★ {'目標'}
               </span>
             )}
             {step.isPlaceholder && (
@@ -69,17 +67,17 @@ const LadderStep: React.FC<LadderStepProps> = ({
             )}
           </p>
           <h3 className="mt-0.5 truncate text-sm font-bold text-gray-800">
-            {loc(lang, role.titleJa, role.titleKo)}
+            {role.titleJa}
           </h3>
           {role.shortGoal && !collapsed && (
             <p className="mt-0.5 text-[11px] text-gray-400">
-              {loc(lang, role.shortGoal, role.shortGoalKo)}
+              {role.shortGoal}
             </p>
           )}
         </div>
         <div className="flex shrink-0 items-center gap-2">
           {collapsed && !step.isPlaceholder && (
-            <StepProgress evaluation={evaluation} lang={lang} compact />
+            <StepProgress evaluation={evaluation} compact />
           )}
           <span className="text-gray-300">{collapsed ? '▸' : '▾'}</span>
         </div>
@@ -104,12 +102,11 @@ const LadderStep: React.FC<LadderStepProps> = ({
                       managerConfirms[ability.abilityId] === true,
                     )}
                     selected={ability.abilityId === selectedAbilityId}
-                    lang={lang}
                     onSelect={onSelectAbility}
                   />
                 ))}
               </div>
-              <StepProgress evaluation={evaluation} lang={lang} />
+              <StepProgress evaluation={evaluation} />
             </>
           )}
         </div>

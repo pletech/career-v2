@@ -11,8 +11,6 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ActionCheckMap, EvidenceCheckMap, ManagerConfirmMap, CheckLevel } from '../domain/types';
-import { KO_UI_ENABLED } from '../domain/i18n';
-import type { Lang } from '../domain/i18n';
 
 const CHECKS_KEY = 'career-ladder-evidence-checks:v2';
 const CONFIRMS_KEY = 'career-ladder-manager-confirms:v2';
@@ -44,7 +42,6 @@ const ACTION_SOLO_CHECKS_KEY = 'career-ladder-action-solo-checks:v1';
  * ※ 旧キー `career-ladder-cert-checks:v1` は **消さずに放置**する。
  *   2日ぶんの他人の記録を、こちらの都合で消しに行く必要はない。
  */
-const LANG_KEY = 'career-ladder-lang:v1';
 /**
  * 「いつ・何件の状態で書き出したか」の控え (2026-08-15、引っ越し告知のため)。
  *
@@ -74,15 +71,6 @@ function loadExportMark(): ExportMark | null {
   }
 }
 
-/** 既定は日本語 (共有時の事故防止 — 確定 #21)。韓国語は作業用 */
-function loadLang(): Lang {
-  if (!KO_UI_ENABLED) return 'ja';
-  try {
-    return window.localStorage.getItem(LANG_KEY) === 'ko' ? 'ko' : 'ja';
-  } catch {
-    return 'ja';
-  }
-}
 const EXPORT_FORMAT = 'career-ladder-check-states';
 /**
  * v3 で **業務ロードマップのチェック (`actionChecks` / `actionSoloChecks`) を含めた**。
@@ -176,16 +164,6 @@ export function useLadderState() {
   const [actionSoloChecks, setActionSoloChecks] = useState<ActionCheckMap>(() =>
     loadBooleanMap(ACTION_SOLO_CHECKS_KEY),
   );
-  const [lang, setLangRaw] = useState<Lang>(loadLang);
-
-  const setLang = useCallback((next: Lang) => {
-    setLangRaw(next);
-    try {
-      window.localStorage.setItem(LANG_KEY, next);
-    } catch {
-      /* noop */
-    }
-  }, []);
 
   // localStorage 永続化
   useEffect(() => {
@@ -461,8 +439,6 @@ export function useLadderState() {
       toggleAction,
       selectedAbilityId,
       setSelectedAbilityId,
-      lang,
-      setLang,
       exportJson,
       importJson,
       resetStates,
@@ -481,8 +457,6 @@ export function useLadderState() {
       toggleAction,
       selectedAbilityId,
       setSelectedAbilityId,
-      lang,
-      setLang,
       exportJson,
       importJson,
       resetStates,

@@ -1,7 +1,7 @@
 import React from 'react';
 import type { AbilityEvaluation } from '../../domain/evaluate';
 import { deriveAbilityState } from '../../domain/evaluate';
-import { STRINGS, loc, type Lang } from '../../domain/i18n';
+import { STRINGS } from '../../domain/i18n';
 import type { Ability } from '../../domain/types';
 
 /**
@@ -16,7 +16,6 @@ interface AbilityRowProps {
   ability: Ability;
   evaluation: AbilityEvaluation;
   selected: boolean;
-  lang: Lang;
   onSelect: (abilityId: string) => void;
 }
 
@@ -31,12 +30,11 @@ const AbilityRow: React.FC<AbilityRowProps> = ({
   ability,
   evaluation,
   selected,
-  lang,
   onSelect,
 }) => {
   const state = deriveAbilityState(evaluation);
   const { icon, className } = STATE_ICON[state];
-  const s = STRINGS[lang];
+  const s = STRINGS;
 
   return (
     <button
@@ -54,7 +52,7 @@ const AbilityRow: React.FC<AbilityRowProps> = ({
       </span>
       <span className="min-w-0 flex-1">
         <span className="block text-[13px] leading-snug text-gray-800">
-          {loc(lang, ability.statement, ability.statementKo)}
+          {ability.statement}
         </span>
         <span className="mt-1 flex flex-wrap items-center gap-1.5">
           {state === 'confirmed' && (
